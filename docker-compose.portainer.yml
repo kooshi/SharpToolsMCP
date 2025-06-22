@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  sharptools-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sharptools-mcp
+    ports:
+      - "3001:3001"
+    volumes:
+      - sharptools-logs:/app/logs
+      - sharptools-solutions:/app/solutions
+    environment:
+      - LOG_LEVEL=Information
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:3001
+    restart: unless-stopped
+    networks:
+      - sharptools-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  sharptools-logs:
+    driver: local
+  sharptools-solutions:
+    driver: local
+
+networks:
+  sharptools-network:
+    driver: bridge
