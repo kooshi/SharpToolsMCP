@@ -1,19 +1,13 @@
-﻿using SharpTools.Tools.Services;
-using SharpTools.Tools.Interfaces;
+﻿using SharpTools.Tools.Interfaces;
 using SharpTools.Tools.Mcp.Tools;
 using SharpTools.Tools.Extensions;
 using Serilog;
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using System.Reflection;
 using ModelContextProtocol.Protocol;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using System;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace SharpTools.StdioServer;
 

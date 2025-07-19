@@ -1,27 +1,13 @@
-using SharpTools.Tools.Services;
 using SharpTools.Tools.Interfaces;
 using SharpTools.Tools.Mcp.Tools;
 using SharpTools.Tools.Extensions;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using Microsoft.AspNetCore.HttpLogging;
 using Serilog;
 using ModelContextProtocol.Protocol;
-using System.Reflection;
+
 namespace SharpTools.SseServer;
-
-using SharpTools.Tools.Services;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Mcp.Tools;
-using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.Parsing;
-using Microsoft.AspNetCore.HttpLogging;
-using Serilog;
-using ModelContextProtocol.Protocol;
-using System.Reflection;
-
 public class Program {
     // --- Application ---
     public const string ApplicationName = "SharpToolsMcpSseServer";
