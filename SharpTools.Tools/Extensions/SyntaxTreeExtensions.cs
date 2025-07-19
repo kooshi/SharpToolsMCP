@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Linq;
-
+﻿
 namespace SharpTools.Tools.Extensions;
 
 public static class SyntaxTreeExtensions
