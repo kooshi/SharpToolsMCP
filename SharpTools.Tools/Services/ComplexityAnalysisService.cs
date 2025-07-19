@@ -1,14 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using SharpTools.Tools.Extensions;
-using SharpTools.Tools.Services;
+﻿using SharpTools.Tools.Extensions;
 using ModelContextProtocol;
 
 namespace SharpTools.Tools.Services;

@@ -1,25 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using DiffPlex.DiffBuilder;
-using DiffPlex.DiffBuilder.Model;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.FindSymbols;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Mcp;
-using SharpTools.Tools.Services;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace SharpTools.Tools.Mcp.Tools;
 

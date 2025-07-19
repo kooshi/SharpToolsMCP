@@ -1,6 +1,6 @@
-using Microsoft.Extensions.FileSystemGlobbing;
-using ModelContextProtocol;
 using SharpTools.Tools.Mcp;
+using ModelContextProtocol;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace SharpTools.Tools.Services;
 

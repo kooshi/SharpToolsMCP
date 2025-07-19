@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis;
 using ModelContextProtocol;
 using SharpTools.Tools.Services;
 using SharpTools.Tools.Mcp;
-using SharpTools.Tools.Mcp.Tools;
 using System.Security;
 using System.Text;
 using DiffPlex.DiffBuilder;

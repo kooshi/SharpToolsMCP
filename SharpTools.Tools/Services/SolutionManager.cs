@@ -1,7 +1,5 @@
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
 using ModelContextProtocol;
-using SharpTools.Tools.Mcp.Tools;
 namespace SharpTools.Tools.Services;
 
 public sealed class SolutionManager : ISolutionManager {

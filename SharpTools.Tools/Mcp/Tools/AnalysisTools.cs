@@ -2,7 +2,6 @@ using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 using ModelContextProtocol;
 using SharpTools.Tools.Services;
-using System.Text.Json;
 
 namespace SharpTools.Tools.Mcp.Tools;
 

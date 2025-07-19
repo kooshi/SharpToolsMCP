@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SharpTools.Tools.Interfaces;
 using SharpTools.Tools.Services;
 using System.Reflection;
