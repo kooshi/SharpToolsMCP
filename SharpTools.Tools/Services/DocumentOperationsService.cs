@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.Text;
 using System.Xml;
 
 namespace SharpTools.Tools.Services;

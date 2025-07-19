@@ -1,6 +1,4 @@
 
-using System.Collections.Generic;
-
 namespace SharpTools.Tools.Services {
     public class MethodSimilarityResult {
         public List<MethodSemanticFeatures> SimilarMethods { get; }

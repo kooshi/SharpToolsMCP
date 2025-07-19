@@ -1,16 +1,7 @@
-using System.IO;
-using System.Net.Http;
-using System.Reflection;
 using System.Reflection.Metadata;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.TypeSystem;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.Extensions.Logging;
-using SharpTools.Tools.Interfaces;
 
 namespace SharpTools.Tools.Services {
     public class SourceResolutionService : ISourceResolutionService {
