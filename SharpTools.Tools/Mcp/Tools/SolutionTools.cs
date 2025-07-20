@@ -1,8 +1,8 @@
-using ModelContextProtocol;
-using SharpTools.Tools.Services;
-using SharpTools.Tools.Mcp;
-using System.Xml.Linq;
 using System.Xml;
+using System.Xml.Linq;
+using ModelContextProtocol;
+using SharpTools.Tools.Mcp;
+using SharpTools.Tools.Mcp.Tools;
 
 // Marker class for ILogger<T> category specific to SolutionTools
 public class SolutionToolsLogCategory { }
@@ -164,7 +164,7 @@ public static class SolutionTools {
                         try {
                             if (!string.IsNullOrEmpty(project.FilePath) && File.Exists(project.FilePath)) {
                                 // Get all packages
-                                var packages = LegacyNuGetPackageReader.GetAllPackages(project.FilePath);
+                                var packages = SharpTools.Tools.Services.LegacyNuGetPackageReader.GetAllPackages(project.FilePath);
                                 foreach (var package in packages) {
                                     packageRefs.Add($"{package.PackageId} ({package.Version})");
                                 }
@@ -514,7 +514,7 @@ public static class SolutionTools {
                     }
                 }
 
-                return $"<typeTree note=\"Use {ToolHelpers.SharpToolPrefix}GetMembers for more detailed information about specific types.\">" +
+                return $"<typeTree note=\"Use {ToolHelpers.SharpToolPrefix}{nameof(AnalysisTools.GetMembers)} for more detailed information about specific types.\">" +
                     output +
                     "\n</typeTree>";
 

@@ -10,7 +10,7 @@ internal static class ToolHelpers {
 
     public static void EnsureSolutionLoaded(ISolutionManager solutionManager) {
         if (!solutionManager.IsSolutionLoaded) {
-            throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}LoadSolution' first.");
+            throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}{nameof(Tools.SolutionTools.LoadSolution)}' first.");
         }
     }
 
@@ -20,10 +20,10 @@ internal static class ToolHelpers {
     public static void EnsureSolutionLoadedWithDetails(ISolutionManager solutionManager, ILogger logger, string operationName) {
         if (!solutionManager.IsSolutionLoaded) {
             logger.LogError("Attempted to execute {Operation} without a loaded solution", operationName);
-            throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}LoadSolution' before calling '{operationName}'.");
+            throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}{nameof(Tools.SolutionTools.LoadSolution)}' before calling '{operationName}'.");
         }
     }
-    private const string FqnHelpMessage = $" Try `{ToolHelpers.SharpToolPrefix}SearchDefinitions`, `{ToolHelpers.SharpToolPrefix}GetMembers`, or `{ToolHelpers.SharpToolPrefix}ReadTypesFromRoslynDocument` to find what you need.";
+    private const string FqnHelpMessage = $" Try `{ToolHelpers.SharpToolPrefix}{nameof(Tools.AnalysisTools.SearchDefinitions)}`, `{ToolHelpers.SharpToolPrefix}{nameof(Tools.AnalysisTools.GetMembers)}`, or `{ToolHelpers.SharpToolPrefix}{nameof(Tools.DocumentTools.ReadTypesFromRoslynDocument)}`  to find what you need.";
     public static async Task<ISymbol> GetRoslynSymbolOrThrowAsync(
         ISolutionManager solutionManager,
         string fullyQualifiedSymbolName,
