@@ -153,7 +153,7 @@ public class Program {
                     var editorConfigProvider = app.Services.GetRequiredService<IEditorConfigProvider>();
 
                     Log.Information("Loading solution: {SolutionPath}", solutionPath);
-                    await solutionManager.LoadSolutionAsync(solutionPath, CancellationToken.None);
+                    await solutionManager.LoadSolutionAsync(solutionPath, "Debug", CancellationToken.None);
 
                     var solutionDir = Path.GetDirectoryName(solutionPath);
                     if (!string.IsNullOrEmpty(solutionDir)) {

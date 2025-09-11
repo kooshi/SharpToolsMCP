@@ -9,6 +9,7 @@ public sealed class SolutionManager : ISolutionManager {
     private readonly IFuzzyFqnLookupService _fuzzyFqnLookupService;
     private MSBuildWorkspace? _workspace;
     private Solution? _currentSolution;
+    private string _buildConfiguration = "Debug";
     private MetadataLoadContext? _metadataLoadContext;
     private PathAssemblyResolver? _pathAssemblyResolver;
     private HashSet<string> _assemblyPathsForReflection = new();
@@ -23,7 +24,10 @@ public sealed class SolutionManager : ISolutionManager {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fuzzyFqnLookupService = fuzzyFqnLookupService ?? throw new ArgumentNullException(nameof(fuzzyFqnLookupService));
     }
-    public async Task LoadSolutionAsync(string solutionPath, CancellationToken cancellationToken) {
+    public async Task LoadSolutionAsync(string solutionPath, string buildConfiguration, CancellationToken cancellationToken) {
+        
+        _buildConfiguration = buildConfiguration;
+        
         if (!File.Exists(solutionPath)) {
             _logger.LogError("Solution file not found: {SolutionPath}", solutionPath);
             throw new FileNotFoundException("Solution file not found.", solutionPath);
@@ -34,6 +38,10 @@ public sealed class SolutionManager : ISolutionManager {
             var properties = new Dictionary<string, string> {
                 { "DesignTimeBuild", "true" }
             };
+        
+            properties["Configuration"] = _buildConfiguration;
+            _logger.LogInformation("Using build configuration: {BuildConfiguration}", buildConfiguration);
+            
             _workspace = MSBuildWorkspace.Create(properties, MefHostServices.DefaultHost);
             _workspace.WorkspaceFailed += OnWorkspaceFailed;
             _logger.LogInformation("Loading solution: {SolutionPath}", solutionPath);
@@ -224,7 +232,7 @@ public sealed class SolutionManager : ISolutionManager {
             _logger.LogWarning("Cannot reload solution: No solution loaded.");
             return;
         }
-        await LoadSolutionAsync(_workspace.CurrentSolution.FilePath!, cancellationToken);
+        await LoadSolutionAsync(_workspace.CurrentSolution.FilePath!, _buildConfiguration, cancellationToken);
         _logger.LogDebug("Current solution state has been refreshed from workspace.");
     }
     private void OnWorkspaceFailed(object? sender, WorkspaceDiagnosticEventArgs e) {
