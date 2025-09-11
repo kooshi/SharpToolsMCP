@@ -6,7 +6,7 @@ public interface ISolutionManager : IDisposable {
     MSBuildWorkspace? CurrentWorkspace { get; }
     Solution? CurrentSolution { get; }
 
-    Task LoadSolutionAsync(string solutionPath, CancellationToken cancellationToken);
+    Task LoadSolutionAsync(string solutionPath, string? buildConfiguration, CancellationToken cancellationToken);
     void UnloadSolution();
 
     Task<ISymbol?> FindRoslynSymbolAsync(string fullyQualifiedName, CancellationToken cancellationToken);

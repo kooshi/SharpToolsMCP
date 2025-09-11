@@ -41,7 +41,8 @@ public static class SolutionTools {
     IEditorConfigProvider editorConfigProvider,
     ILogger<SolutionToolsLogCategory> logger,
     [Description("The absolute file path to the .sln solution file.")] string solutionPath,
-    CancellationToken cancellationToken) {
+    CancellationToken cancellationToken,
+    [Description("Build configuration (Debug, Release, etc.). Defaults to 'Debug'.")] string? buildConfiguration = "Debug") {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(solutionPath, "solutionPath", logger);
@@ -59,7 +60,7 @@ public static class SolutionTools {
             }
 
             try {
-                await solutionManager.LoadSolutionAsync(solutionPath, cancellationToken);
+                await solutionManager.LoadSolutionAsync(solutionPath, buildConfiguration, cancellationToken);
             } catch (Exception ex) when (!(ex is McpException || ex is OperationCanceledException)) {
                 logger.LogError(ex, "Failed to load solution at {SolutionPath}", solutionPath);
                 throw new McpException($"Failed to load solution: {ex.Message}");
