@@ -15,9 +15,15 @@ public static class ServiceCollectionExtensions {
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection WithSharpToolsServices(this IServiceCollection services, bool enableGit = true) {
+    public static IServiceCollection WithSharpToolsServices(this IServiceCollection services, bool enableGit = true, string? buildConfiguration = null) {
         services.AddSingleton<IFuzzyFqnLookupService, FuzzyFqnLookupService>();
-        services.AddSingleton<ISolutionManager, SolutionManager>();
+        services.AddSingleton<ISolutionManager>(sp => 
+            new SolutionManager(
+                sp.GetRequiredService<ILogger<SolutionManager>>(), 
+                sp.GetRequiredService<IFuzzyFqnLookupService>(),
+                buildConfiguration
+            )
+        );
         services.AddSingleton<ICodeAnalysisService, CodeAnalysisService>();
         if (enableGit) {
             services.AddSingleton<IGitService, GitService>();

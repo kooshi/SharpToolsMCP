@@ -143,7 +143,7 @@ public class Program {
                                               // Can be configured: logging.RootPath = ...
             });
 
-            builder.Services.WithSharpToolsServices(!disableGit);
+            builder.Services.WithSharpToolsServices(!disableGit, buildConfiguration);
 
             builder.Services
                 .AddMcpServer(options => {
@@ -159,11 +159,7 @@ public class Program {
 
             var app = builder.Build();
 
-            if (!string.IsNullOrEmpty(buildConfiguration)) {
-                var solutionManager = app.Services.GetRequiredService<ISolutionManager>();
-                solutionManager.BuildConfiguration = buildConfiguration;
-                Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
-            }
+            
 
             // Load solution if specified in command line arguments
             if (!string.IsNullOrEmpty(solutionPath)) {

@@ -19,10 +19,12 @@ public sealed class SolutionManager : ISolutionManager {
     public bool IsSolutionLoaded => _workspace != null && _currentSolution != null;
     public MSBuildWorkspace? CurrentWorkspace => _workspace;
     public Solution? CurrentSolution => _currentSolution;
-    public string? BuildConfiguration { get; set; }
-    public SolutionManager(ILogger<SolutionManager> logger, IFuzzyFqnLookupService fuzzyFqnLookupService) {
+    private readonly string? _buildConfiguration;
+
+    public SolutionManager(ILogger<SolutionManager> logger, IFuzzyFqnLookupService fuzzyFqnLookupService, string? buildConfiguration = null) {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fuzzyFqnLookupService = fuzzyFqnLookupService ?? throw new ArgumentNullException(nameof(fuzzyFqnLookupService));
+        _buildConfiguration = buildConfiguration;
     }
     public async Task LoadSolutionAsync(string solutionPath, CancellationToken cancellationToken) {
         if (!File.Exists(solutionPath)) {
@@ -36,11 +38,11 @@ public sealed class SolutionManager : ISolutionManager {
                 { "DesignTimeBuild", "true" }
             };
 
-            if (!string.IsNullOrEmpty(BuildConfiguration)) {
-                properties.Add("Configuration", BuildConfiguration);
+            if (!string.IsNullOrEmpty(_buildConfiguration)) {
+                properties.Add("Configuration", _buildConfiguration);
             }
             
-            _logger.LogInformation("Using build configuration: {BuildConfiguration}", BuildConfiguration);
+            _logger.LogInformation("Using build configuration: {BuildConfiguration}", _buildConfiguration);
             _workspace = MSBuildWorkspace.Create(properties, MefHostServices.DefaultHost);
             _workspace.WorkspaceFailed += OnWorkspaceFailed;
             _logger.LogInformation("Loading solution: {SolutionPath}", solutionPath);

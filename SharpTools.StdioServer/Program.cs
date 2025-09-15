@@ -118,7 +118,7 @@ public static class Program {
         var builder = Host.CreateApplicationBuilder(args);
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog();
-        builder.Services.WithSharpToolsServices(!disableGit);
+        builder.Services.WithSharpToolsServices(!disableGit, buildConfiguration);
 
         builder.Services
             .AddMcpServer(options => {
@@ -134,11 +134,7 @@ public static class Program {
             Log.Information("Starting {AppName} v{AppVersion}", ApplicationName, ApplicationVersion);
             var host = builder.Build();
             
-            if (!string.IsNullOrWhiteSpace(buildConfiguration)) {
-                var solutionManager = host.Services.GetRequiredService<ISolutionManager>();
-                solutionManager.BuildConfiguration = buildConfiguration; 
-                Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
-            }
+            
 
             if (!string.IsNullOrEmpty(solutionPath)) {
                 try {
