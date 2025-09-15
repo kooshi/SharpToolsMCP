@@ -167,8 +167,6 @@ public class Program {
 
             var app = builder.Build();
 
-            
-
             // Load solution if specified in command line arguments
             if (!string.IsNullOrEmpty(solutionPath)) {
                 try {

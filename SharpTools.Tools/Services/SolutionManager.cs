@@ -42,7 +42,6 @@ public sealed class SolutionManager : ISolutionManager {
                 properties.Add("Configuration", _buildConfiguration);
             }
             
-            
             _workspace = MSBuildWorkspace.Create(properties, MefHostServices.DefaultHost);
             _workspace.WorkspaceFailed += OnWorkspaceFailed;
             _logger.LogInformation("Loading solution: {SolutionPath}", solutionPath);

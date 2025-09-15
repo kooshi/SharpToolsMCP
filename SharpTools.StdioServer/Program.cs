@@ -141,8 +141,6 @@ public static class Program {
         try {
             Log.Information("Starting {AppName} v{AppVersion}", ApplicationName, ApplicationVersion);
             var host = builder.Build();
-            
-            
 
             if (!string.IsNullOrEmpty(solutionPath)) {
                 try {
