@@ -19,6 +19,7 @@ public sealed class SolutionManager : ISolutionManager {
     public bool IsSolutionLoaded => _workspace != null && _currentSolution != null;
     public MSBuildWorkspace? CurrentWorkspace => _workspace;
     public Solution? CurrentSolution => _currentSolution;
+    public string? BuildConfiguration { get; set; }
     public SolutionManager(ILogger<SolutionManager> logger, IFuzzyFqnLookupService fuzzyFqnLookupService) {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fuzzyFqnLookupService = fuzzyFqnLookupService ?? throw new ArgumentNullException(nameof(fuzzyFqnLookupService));
@@ -34,6 +35,12 @@ public sealed class SolutionManager : ISolutionManager {
             var properties = new Dictionary<string, string> {
                 { "DesignTimeBuild", "true" }
             };
+
+            if (!string.IsNullOrEmpty(BuildConfiguration)) {
+                properties.Add("Configuration", BuildConfiguration);
+            }
+            
+            _logger.LogInformation("Using build configuration: {BuildConfiguration}", BuildConfiguration);
             _workspace = MSBuildWorkspace.Create(properties, MefHostServices.DefaultHost);
             _workspace.WorkspaceFailed += OnWorkspaceFailed;
             _logger.LogInformation("Loading solution: {SolutionPath}", solutionPath);

@@ -39,11 +39,16 @@ public static class Program {
             name: "--load-solution",
             description: "Path to a solution file (.sln) to load immediately on startup.");
 
+        var buildConfigurationOption = new Option<string?>(
+            name: "--build-configuration",
+            description: "Build configuration to use when loading the solution (Debug, Release, etc.).");
+
         var rootCommand = new RootCommand("SharpTools MCP StdIO Server")
         {
         logDirOption,
         logLevelOption,
-        loadSolutionOption
+        loadSolutionOption,
+        buildConfigurationOption
     };
 
         ParseResult? parseResult = null;
@@ -61,6 +66,7 @@ public static class Program {
         string? logDirPath = parseResult.GetValueForOption(logDirOption);
         Serilog.Events.LogEventLevel minimumLogLevel = parseResult.GetValueForOption(logLevelOption);
         string? solutionPath = parseResult.GetValueForOption(loadSolutionOption);
+        string? buildConfiguration = parseResult.GetValueForOption(buildConfigurationOption)!;
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Is(minimumLogLevel)
@@ -73,7 +79,7 @@ public static class Program {
                 outputTemplate: LogOutputTemplate,
                 standardErrorFromLevel: Serilog.Events.LogEventLevel.Verbose,
                 restrictedToMinimumLevel: minimumLogLevel));
-
+        
         if (!string.IsNullOrWhiteSpace(logDirPath)) {
             if (string.IsNullOrWhiteSpace(logDirPath)) {
                 Console.Error.WriteLine("Log directory is not valid.");
@@ -120,6 +126,12 @@ public static class Program {
         try {
             Log.Information("Starting {AppName} v{AppVersion}", ApplicationName, ApplicationVersion);
             var host = builder.Build();
+            
+            if (!string.IsNullOrWhiteSpace(buildConfiguration)) {
+                var solutionManager = host.Services.GetRequiredService<ISolutionManager>();
+                solutionManager.BuildConfiguration = buildConfiguration; 
+                Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
+            }
 
             if (!string.IsNullOrEmpty(solutionPath)) {
                 try {

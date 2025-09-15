@@ -51,11 +51,16 @@ public class Program {
             name: "--load-solution",
             description: "Path to a solution file (.sln) to load immediately on startup.");
 
+        var buildConfigurationOption = new Option<string?>(
+            name: "--build-configuration",
+            description: "Build configuration to use when loading the solution (Debug, Release, etc.).");
+
         var rootCommand = new RootCommand("SharpTools MCP Server") {
         portOption,
         logFileOption,
         logLevelOption,
-        loadSolutionOption
+        loadSolutionOption,
+        buildConfigurationOption
     };
 
         ParseResult? parseResult = null;
@@ -74,6 +79,7 @@ public class Program {
         string? logFilePath = parseResult.GetValueForOption(logFileOption);
         Serilog.Events.LogEventLevel minimumLogLevel = parseResult.GetValueForOption(logLevelOption);
         string? solutionPath = parseResult.GetValueForOption(loadSolutionOption);
+        string? buildConfiguration = parseResult.GetValueForOption(buildConfigurationOption)!;
         string serverUrl = $"http://localhost:{port}";
 
         var loggerConfiguration = new LoggerConfiguration()
@@ -145,6 +151,12 @@ public class Program {
                 .WithSharpTools();
 
             var app = builder.Build();
+
+            if (!string.IsNullOrEmpty(buildConfiguration)) {
+                var solutionManager = app.Services.GetRequiredService<ISolutionManager>();
+                solutionManager.BuildConfiguration = buildConfiguration;
+                Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
+            }
 
             // Load solution if specified in command line arguments
             if (!string.IsNullOrEmpty(solutionPath)) {
