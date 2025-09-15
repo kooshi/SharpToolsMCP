@@ -1,3 +1,7 @@
+# app specific user settings
+.claude
+.gemini
+
 # Prerequisites
 *.vsconfig
 
