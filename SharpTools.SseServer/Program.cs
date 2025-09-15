@@ -124,6 +124,14 @@ public class Program {
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();
 
+        if (disableGit) {
+            Log.Information("Git integration is disabled.");
+        }
+
+        if (!string.IsNullOrEmpty(buildConfiguration)) {
+            Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
+        }
+
         try {
             Log.Information("Configuring {AppName} v{AppVersion} to run on {ServerUrl} with minimum log level {LogLevel}",
                 ApplicationName, ApplicationVersion, serverUrl, minimumLogLevel);

@@ -115,6 +115,14 @@ public static class Program {
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();
 
+        if (disableGit) {
+            Log.Information("Git integration is disabled.");
+        }
+
+        if (!string.IsNullOrEmpty(buildConfiguration)) {
+            Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
+        }
+
         var builder = Host.CreateApplicationBuilder(args);
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog();
