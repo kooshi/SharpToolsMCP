@@ -55,12 +55,18 @@ public class Program {
             name: "--build-configuration",
             description: "Build configuration to use when loading the solution (Debug, Release, etc.).");
 
+        var disableGitOption = new Option<bool>(
+            name: "--disable-git",
+            description: "Disable Git integration.",
+            getDefaultValue: () => false);
+
         var rootCommand = new RootCommand("SharpTools MCP Server") {
         portOption,
         logFileOption,
         logLevelOption,
         loadSolutionOption,
-        buildConfigurationOption
+        buildConfigurationOption,
+        disableGitOption
     };
 
         ParseResult? parseResult = null;
@@ -80,6 +86,7 @@ public class Program {
         Serilog.Events.LogEventLevel minimumLogLevel = parseResult.GetValueForOption(logLevelOption);
         string? solutionPath = parseResult.GetValueForOption(loadSolutionOption);
         string? buildConfiguration = parseResult.GetValueForOption(buildConfigurationOption)!;
+        bool disableGit = parseResult.GetValueForOption(disableGitOption);
         string serverUrl = $"http://localhost:{port}";
 
         var loggerConfiguration = new LoggerConfiguration()
@@ -136,7 +143,7 @@ public class Program {
                                               // Can be configured: logging.RootPath = ...
             });
 
-            builder.Services.WithSharpToolsServices();
+            builder.Services.WithSharpToolsServices(!disableGit);
 
             builder.Services
                 .AddMcpServer(options => {
