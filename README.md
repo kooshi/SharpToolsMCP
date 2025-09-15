@@ -142,6 +142,8 @@ Key Options:
 *   `--log-file <path>`: Path to a log file.
 *   `--log-level <level>`: Minimum log level (Verbose, Debug, Information, Warning, Error, Fatal).
 *   `--load-solution <path>`: Path to a `.sln` file to load on startup. Useful for manual testing. It is recommended to let the AI run the LoadSolution tool instead, as it returns some useful information.
+*   `--build-configuration <config>`: Build configuration to use when loading the solution (e.g., `Debug`, `Release`).
+*   `--disable-git`: Disables all Git integration features.
 
 ### Stdio Server
 
@@ -170,6 +172,8 @@ Key Options:
 *   `--log-directory <path>`: Directory to store log files.
 *   `--log-level <level>`: Minimum log level.
 *   `--load-solution <path>`: Path to a `.sln` file to load on startup. Useful for manual testing. It is recommended to let the AI run the LoadSolution tool instead, as it returns some useful information.
+*   `--build-configuration <config>`: Build configuration to use when loading the solution (e.g., `Debug`, `Release`).
+*   `--disable-git`: Disables all Git integration features.
 
 ## Contributing
 
