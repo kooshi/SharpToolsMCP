@@ -5,6 +5,7 @@ public interface ISolutionManager : IDisposable {
     bool IsSolutionLoaded { get; }
     MSBuildWorkspace? CurrentWorkspace { get; }
     Solution? CurrentSolution { get; }
+    
 
     Task LoadSolutionAsync(string solutionPath, CancellationToken cancellationToken);
     void UnloadSolution();

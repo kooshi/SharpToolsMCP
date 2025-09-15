@@ -51,11 +51,22 @@ public class Program {
             name: "--load-solution",
             description: "Path to a solution file (.sln) to load immediately on startup.");
 
+        var buildConfigurationOption = new Option<string?>(
+            name: "--build-configuration",
+            description: "Build configuration to use when loading the solution (Debug, Release, etc.).");
+
+        var disableGitOption = new Option<bool>(
+            name: "--disable-git",
+            description: "Disable Git integration.",
+            getDefaultValue: () => false);
+
         var rootCommand = new RootCommand("SharpTools MCP Server") {
         portOption,
         logFileOption,
         logLevelOption,
-        loadSolutionOption
+        loadSolutionOption,
+        buildConfigurationOption,
+        disableGitOption
     };
 
         ParseResult? parseResult = null;
@@ -74,6 +85,8 @@ public class Program {
         string? logFilePath = parseResult.GetValueForOption(logFileOption);
         Serilog.Events.LogEventLevel minimumLogLevel = parseResult.GetValueForOption(logLevelOption);
         string? solutionPath = parseResult.GetValueForOption(loadSolutionOption);
+        string? buildConfiguration = parseResult.GetValueForOption(buildConfigurationOption)!;
+        bool disableGit = parseResult.GetValueForOption(disableGitOption);
         string serverUrl = $"http://localhost:{port}";
 
         var loggerConfiguration = new LoggerConfiguration()
@@ -111,6 +124,14 @@ public class Program {
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();
 
+        if (disableGit) {
+            Log.Information("Git integration is disabled.");
+        }
+
+        if (!string.IsNullOrEmpty(buildConfiguration)) {
+            Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
+        }
+
         try {
             Log.Information("Configuring {AppName} v{AppVersion} to run on {ServerUrl} with minimum log level {LogLevel}",
                 ApplicationName, ApplicationVersion, serverUrl, minimumLogLevel);
@@ -130,7 +151,7 @@ public class Program {
                                               // Can be configured: logging.RootPath = ...
             });
 
-            builder.Services.WithSharpToolsServices();
+            builder.Services.WithSharpToolsServices(!disableGit, buildConfiguration);
 
             builder.Services
                 .AddMcpServer(options => {

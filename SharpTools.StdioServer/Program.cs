@@ -39,11 +39,22 @@ public static class Program {
             name: "--load-solution",
             description: "Path to a solution file (.sln) to load immediately on startup.");
 
+        var buildConfigurationOption = new Option<string?>(
+            name: "--build-configuration",
+            description: "Build configuration to use when loading the solution (Debug, Release, etc.).");
+
+        var disableGitOption = new Option<bool>(
+            name: "--disable-git",
+            description: "Disable Git integration.",
+            getDefaultValue: () => false);
+
         var rootCommand = new RootCommand("SharpTools MCP StdIO Server")
         {
         logDirOption,
         logLevelOption,
-        loadSolutionOption
+        loadSolutionOption,
+        buildConfigurationOption,
+        disableGitOption
     };
 
         ParseResult? parseResult = null;
@@ -61,6 +72,8 @@ public static class Program {
         string? logDirPath = parseResult.GetValueForOption(logDirOption);
         Serilog.Events.LogEventLevel minimumLogLevel = parseResult.GetValueForOption(logLevelOption);
         string? solutionPath = parseResult.GetValueForOption(loadSolutionOption);
+        string? buildConfiguration = parseResult.GetValueForOption(buildConfigurationOption)!;
+        bool disableGit = parseResult.GetValueForOption(disableGitOption);
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Is(minimumLogLevel)
@@ -73,7 +86,7 @@ public static class Program {
                 outputTemplate: LogOutputTemplate,
                 standardErrorFromLevel: Serilog.Events.LogEventLevel.Verbose,
                 restrictedToMinimumLevel: minimumLogLevel));
-
+        
         if (!string.IsNullOrWhiteSpace(logDirPath)) {
             if (string.IsNullOrWhiteSpace(logDirPath)) {
                 Console.Error.WriteLine("Log directory is not valid.");
@@ -102,10 +115,18 @@ public static class Program {
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();
 
+        if (disableGit) {
+            Log.Information("Git integration is disabled.");
+        }
+
+        if (!string.IsNullOrEmpty(buildConfiguration)) {
+            Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
+        }
+
         var builder = Host.CreateApplicationBuilder(args);
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog();
-        builder.Services.WithSharpToolsServices();
+        builder.Services.WithSharpToolsServices(!disableGit, buildConfiguration);
 
         builder.Services
             .AddMcpServer(options => {
