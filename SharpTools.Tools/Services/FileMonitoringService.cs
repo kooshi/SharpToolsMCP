@@ -16,8 +16,6 @@ public sealed class FileMonitoringService : IFileMonitoringService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public bool IsReloadNeeded { get; private set; }
-
     public void StartMonitoring(string directory)
     {
         _logger.LogInformation("Starting file monitoring for directory: {Directory}", directory);
@@ -32,8 +30,11 @@ public sealed class FileMonitoringService : IFileMonitoringService
     {
         _logger.LogInformation("Setting known file paths: {FileCount} files", filePathsToWatch.Count);
     }
+    public Task<bool> AssessIfReloadNecessary() {
+        return Task.FromResult(false);
+    }
 
-    public void RegisterExpectedChange(string filePath)
+    public void RegisterExpectedChange(string filePath, string fileContents)
     {
         _logger.LogTrace("Registering expected change to {FilePath}", filePath);
     }

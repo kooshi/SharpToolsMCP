@@ -83,7 +83,7 @@ public class DocumentOperationsService : IDocumentOperationsService {
             Directory.CreateDirectory(directory);
         }
 
-        _fileMonitoring.RegisterExpectedChange(filePath);
+        _fileMonitoring.RegisterExpectedChange(filePath, content);
 
         // Write the content to the file
         await File.WriteAllTextAsync(filePath, content, cancellationToken);
