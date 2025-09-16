@@ -1,49 +1,94 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SharpTools.Tools.Interfaces;
 
-namespace SharpTools.Tools.Services;
-
-/// <summary>
-/// Stub implementation of file monitoring service.
-/// This implementation has no side effects and does not trigger reloads.
-/// </summary>
-public sealed class FileMonitoringService : IFileMonitoringService
+namespace SharpTools.Tools.Services
 {
-    private readonly ILogger<FileMonitoringService> _logger;
-    private bool _disposed;
-
-    public FileMonitoringService(ILogger<FileMonitoringService> logger)
+    public sealed class FileMonitoringService : IFileMonitoringService
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+        private readonly ILogger<FileMonitoringService> _logger;
+        private readonly object _lock = new();
+        
+        // _listener has its own lock. To prevent deadlock we never pick up _lock while _listener
+        // might be locked. We may hold _lock while calling into _listener, which is necessary for
+        // threadsafe cleanup.
+        
+        private FileChangeListener? _listener;
+        private bool _disposed;
 
-    public void StartMonitoring(string directory)
-    {
-        _logger.LogInformation("Starting file monitoring for directory: {Directory}", directory);
-    }
+        public FileMonitoringService(ILogger<FileMonitoringService> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
-    public void StopMonitoring()
-    {
-        _logger.LogInformation("Stopping file monitoring");
-    }
+        public void StartMonitoring(string directory)
+        {
+            lock (_lock)
+            {
+                StopMonitoring();
 
-    public void SetKnownFilePaths(ISet<string> filePathsToWatch)
-    {
-        _logger.LogInformation("Setting known file paths: {FileCount} files", filePathsToWatch.Count);
-    }
-    public Task<bool> AssessIfReloadNecessary() {
-        return Task.FromResult(false);
-    }
+                _logger.LogInformation("Starting file monitoring for directory: {Directory}", directory);
+                _listener = new FileChangeListener(_logger, directory);
+            }
+        }
 
-    public void RegisterExpectedChange(string filePath, string fileContents)
-    {
-        _logger.LogTrace("Registering expected change to {FilePath}", filePath);
-    }
+        public void StopMonitoring()
+        {
+            lock (_lock)
+            {
+                var listenerToDisable = _listener;
+                _listener = null;
+                
+                // StopMonitoring is called from StartMonitoring within the lock so there is no point in doing
+                // this cleanup outside the lock.
+                if (listenerToDisable != null)
+                {
+                    listenerToDisable.Disable();
+                    listenerToDisable.Dispose();
+                }
+            }
+        }
+        
+        private FileChangeListener? ThreadSafeGetCurrentListener()
+        {
+            FileChangeListener? listener;
+            lock (_lock) {
+                listener = _listener;
+            }
+            return listener;
+        }
 
-    public void Dispose()
-    {
-        if (_disposed) return;
+        public void SetKnownFilePaths(ISet<string> filePathsToWatch) {
+            FileChangeListener? listener = ThreadSafeGetCurrentListener();
 
-        StopMonitoring();
-        _disposed = true;
+            listener?.SetKnownFilePaths(filePathsToWatch);
+        }
+
+        public async Task<bool> AssessIfReloadNecessary()
+        {
+            FileChangeListener? listener = ThreadSafeGetCurrentListener();
+
+            if (listener is null)
+                return true;
+
+            return await listener.AssessIfReloadNecessary();
+        }
+
+        public void RegisterExpectedChange(string filePath, string fileContents)
+        {
+            FileChangeListener? listener = ThreadSafeGetCurrentListener();
+            
+            listener?.RegisterExpectedChange(filePath, fileContents);
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            StopMonitoring();
+            _disposed = true;
+        }
     }
 }
