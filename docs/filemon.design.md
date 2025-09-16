@@ -6,82 +6,35 @@ The file monitoring system provides intelligent detection of external file chang
 
 ## Core Concepts
 
+### Open Concerns
+
+- Is watching DocumentOperationService.WriteFileAsync sufficient for discovering all expected file changes? 
+- Comparison of filenames given case insensitivity on Windows?
+
 ### Comprehensive file monitoring
 
 The file monitoring service is starts watching the solution folder recursively before the solution build starts. Once the
 build is complete information from Roslyn is used to control what files can actually trigger a reload. All MCP operations 
 will check if a reload is needed before continuing their operation.
 
+Monitoring always ignores certain directories altogether: ".git", "bin" and "obj".
+
+Monitoring is halted when SolutionManager unloads the solution or when singleton is disposed by application close.
+
 ### Tracking Expected Changes To Avoid Reloading
 
-Operations use an `IFileChangeVisitor` to register files they expect to modify as they discover them during execution. This allows file monitoring to ignore expected changes and prevent unnecessary reloads.
+Operations register files they expect to modify as they discover them during execution. This allows file monitoring to ignore expected changes and prevent unnecessary reloads.
 
-```csharp
-// Operation gets visitor and registers expected changes as discovered
-var fileChangeVisitor = _fileMonitoring.BeginOperation(operationId);
-fileChangeVisitor.ExpectChange("C:\Solution\MyClass.cs");  // As we discover changes
-fileChangeVisitor.ExpectChanges(additionalFiles);         // Batch registration
-fileChangeVisitor.EndOperation();
-```
+### Implementation
 
-### External Change Detection
-
-The system triggers reload only in these scenarios:
-
-1. **File changes while no operations are active** - Clearly external
-2. **Unexpected file changes during operation** - File wasn't in expected list
-3. **Multiple changes to same file during operation** - Indicates external interference
-
-## Architecture Components
-
-### IFileMonitoringService
-
-Central service that coordinates file watching and operation tracking:
-
-```csharp
-public interface IFileMonitoringService : IDisposable
-{
-    // Basic monitoring
-    void StartMonitoring(string solutionPath);
-    bool IsReloadNeeded { get; }
-    void MarkReloadComplete();
-
-    // Visitor pattern for operations
-    IFileChangeVisitor BeginOperation(string operationId);
-}
-```
-
-### IFileChangeVisitor
-
-Visitor that operations use to register expected file changes:
-
-```csharp
-public interface IFileChangeVisitor
-{
-    string OperationId { get; }
-    void ExpectChange(string filePath);
-    void ExpectChanges(IEnumerable<string> filePaths);
-    void EndOperation();
-}
-```
-
-### Integration Points
-
-**SolutionManager**: Checks `IsReloadNeeded` in `ToolHelpers.EnsureSolutionLoaded()` and `ToolHelpers.EnsureSolutionLoadedWithDetails()` which all MCP tools use
-
-**CodeModificationService**: Uses visitor to register Roslyn solution changes as they're discovered:
-- Changed documents
-- Added documents
-- Removed documents
-- Git metadata files
-
-**DocumentOperationsService**: Registers non-Roslyn file operations (like `.editorconfig` edits)
-
-**MCP Tools**: Can register additional expected changes for complex operations
+A singleton implementation of IFileMonitoringService tracks changes. SolutionManager makes calls indicating when monitoring
+should start and what files are known to be relevant. DocumentOperationService notifies when any expected changes are written.
+ToolsHelper's EnsureSolutionLoaded* methods, which are called at the start of every MCP operation, notify SolutionManager to
+reload the solution if appropriate.
 
 ## File Discovery and Monitoring Strategy
 
-To simplify monitoring, the system watches the entire solution's root directory recursively. This automatically handles file additions and deletions without complex tracking.
+To minimze monitoring calls made to the operating system, the system watches the entire solution's root directory recursively. This automatically handles file additions and deletions without complex tracking.
 
 The monitoring is made efficient and relevant by filtering events against the actual files that make up the solution:
 
@@ -108,47 +61,16 @@ This approach closes the gap and guarantees that any changes occurring during th
 ### Initial Reconciliation (when known files are set)
 For each file in the provided set of known solution files:
 1. Does this file exist in the backlog of changes recorded since monitoring began?
-   - Yes -> Set IsReloadNeeded = true, and the backlog can be cleared.
+   - Yes -> Set IsReloadNeeded = true and stop monitoring
    - No -> Continue.
+2. Clear the backlog
 
 ### Real-time Change Detection (after initialization)
 For each file change detected by FileSystemWatcher:
-1. Is any operation currently active?
-   - No → Set IsReloadNeeded = true (external change)
-   - Yes → Continue to step 2
+1. Was an expected change registered for this file?
+   - No → Set IsReloadNeeded = true (external change) and stop monitoring
+   - Yes → Remove file from set of expected changes
 
-2. Is this file expected by any active operation?
-   - No → Set IsReloadNeeded = true (unexpected change)
-   - Yes → Continue to step 3
-
-3. Has this file already changed during this operation?
-   - No → Mark as occurred, continue monitoring
-   - Yes → Set IsReloadNeeded = true (external interference)
-```
-
-## Example Scenarios
-
-### Pure MCP Operation (No Reload)
-```
-1. sharp_add_member → BeginOperation with visitor
-2. CodeModificationService registers expected file: MyClass.cs
-3. File watcher sees MyClass.cs change → Expected, mark as occurred
-4. visitor.EndOperation() → No reload needed ✓
-```
-
-### External Change During Operation (Triggers Reload)
-```
-1. sharp_add_member → BeginOperation, expects MyClass.cs
-2. MyClass.cs changes (expected) → Mark as occurred
-3. User edits MyClass.cs again → Same file, 2nd change → IsReloadNeeded = true
-4. Next MCP request → Reload triggered ✓
-```
-
-### External Change While Idle (Triggers Reload)
-```
-1. No operations active
-2. User edits MyClass.cs → No operation to check against → IsReloadNeeded = true
-3. Next MCP request → Reload triggered ✓
 ```
 
 ## Error Handling Strategy

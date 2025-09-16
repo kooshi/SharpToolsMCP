@@ -20,4 +20,5 @@ public interface ISolutionManager : IDisposable {
     Task<Compilation?> GetCompilationAsync(ProjectId projectId, CancellationToken cancellationToken);
     Task ReloadSolutionFromDiskAsync(CancellationToken cancellationToken);
     void RefreshCurrentSolution();
+    Task ReloadSolutionIfChangedExternallyAsync(CancellationToken cancellationToken);
 }

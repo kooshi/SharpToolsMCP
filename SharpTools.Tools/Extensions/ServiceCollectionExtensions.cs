@@ -17,10 +17,11 @@ public static class ServiceCollectionExtensions {
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection WithSharpToolsServices(this IServiceCollection services, bool enableGit = true, string? buildConfiguration = null) {
         services.AddSingleton<IFuzzyFqnLookupService, FuzzyFqnLookupService>();
-        services.AddSingleton<ISolutionManager>(sp => 
+        services.AddSingleton<ISolutionManager>(sp =>
             new SolutionManager(
-                sp.GetRequiredService<ILogger<SolutionManager>>(), 
+                sp.GetRequiredService<ILogger<SolutionManager>>(),
                 sp.GetRequiredService<IFuzzyFqnLookupService>(),
+                sp.GetRequiredService<IFileMonitoringService>(),
                 buildConfiguration
             )
         );
@@ -36,6 +37,7 @@ public static class ServiceCollectionExtensions {
         services.AddSingleton<IComplexityAnalysisService, ComplexityAnalysisService>();
         services.AddSingleton<ISemanticSimilarityService, SemanticSimilarityService>();
         services.AddSingleton<ISourceResolutionService, SourceResolutionService>();
+        services.AddSingleton<IFileMonitoringService, FileMonitoringService>();
 
         return services;
     }

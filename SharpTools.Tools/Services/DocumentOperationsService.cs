@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.CodeAnalysis.Text;
+using SharpTools.Tools.Interfaces;
 
 namespace SharpTools.Tools.Services;
 
@@ -13,6 +14,7 @@ public class DocumentOperationsService : IDocumentOperationsService {
     private readonly ISolutionManager _solutionManager;
     private readonly ICodeModificationService _modificationService;
     private readonly IGitService _gitService;
+    private readonly IFileMonitoringService _fileMonitoring;
     private readonly ILogger<DocumentOperationsService> _logger;
 
     // Extensions for common code file types that can be formatted
@@ -29,10 +31,12 @@ public class DocumentOperationsService : IDocumentOperationsService {
         ISolutionManager solutionManager,
         ICodeModificationService modificationService,
         IGitService gitService,
+        IFileMonitoringService fileMonitoring,
         ILogger<DocumentOperationsService> logger) {
         _solutionManager = solutionManager;
         _modificationService = modificationService;
         _gitService = gitService;
+        _fileMonitoring = fileMonitoring;
         _logger = logger;
     }
 
@@ -79,8 +83,11 @@ public class DocumentOperationsService : IDocumentOperationsService {
             Directory.CreateDirectory(directory);
         }
 
+        _fileMonitoring.RegisterExpectedChange(filePath);
+
         // Write the content to the file
         await File.WriteAllTextAsync(filePath, content, cancellationToken);
+
         _logger.LogInformation("File {Operation} at {FilePath}",
             File.Exists(filePath) ? "overwritten" : "created", filePath);
 
@@ -123,8 +130,8 @@ public class DocumentOperationsService : IDocumentOperationsService {
         } else {
             _logger.LogWarning("Failed to format file: {FilePath}", filePath);
         }
-        return true;
-    }
+            return true;
+        }
 
     private async Task<Project?> TryAddFileToLegacyProjectAsync(string filePath, Project project, CancellationToken cancellationToken) {
         if (!_solutionManager.IsSolutionLoaded || !File.Exists(filePath)) {
