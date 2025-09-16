@@ -6,17 +6,20 @@
 ```csharp
 public interface IFileMonitoringService : IDisposable
 {
-    void StartMonitoring(string solutionPath);
+    // Phase 1: Start monitoring immediately on startup.
+    void StartMonitoring(string directory);
     void StopMonitoring();
-    void AddWatchPath(string filePath);
-    void RemoveWatchPath(string filePath);
+
+    // Phase 2: Provide the set of files to watch after solution load.
+    // This will reconcile any changes that happened in the interim.
+    void SetKnownFilePaths(ISet<string> filePathsToWatch);
+
     bool IsMonitoring { get; }
     bool IsReloadNeeded { get; }
     void MarkReloadComplete();
 
     // Operation tracking with file change visitor pattern
     IFileChangeVisitor BeginOperation(string operationId);
-    void EndOperation(string operationId);
     bool IsOperationInProgress(string operationId);
 
     // For backward compatibility and simple operations
@@ -30,6 +33,7 @@ public interface IFileChangeVisitor
     string OperationId { get; }
     void ExpectChange(string filePath);
     void ExpectChanges(IEnumerable<string> filePaths);
+    void EndOperation();
     bool IsChangeExpected(string filePath);
     int ExpectedChangeCount { get; }
     int ActualChangeCount { get; }
@@ -37,16 +41,15 @@ public interface IFileChangeVisitor
 ```
 
 ### 1.2 Implement FileMonitoringService
-- Use `FileSystemWatcher` for efficient file system monitoring
-- Monitor relevant file extensions: `.sln`, `.csproj`, `.vbproj`, `.fsproj`, `.cs`, `.vb`, `.fs`, `.editorconfig`
-- **Expected Change Tracking**: For each operation, track exactly which files are expected to change
-- **Precise External Change Detection**: Trigger reload only when:
-  - File changes and no operation is active, OR
-  - File changes but it wasn't in the expected files list for current operations, OR
-  - Same file changes multiple times during a single operation (indicates external interference)
-- **Change Accounting**: Track which expected changes have occurred vs. which are still pending
-- Handle watcher disposal and error recovery
-- Support both directory-based and individual file monitoring
+- On `StartMonitoring`, use a `FileSystemWatcher` to watch the root directory recursively. Record all file change events (path and timestamp) into a temporary, thread-safe backlog.
+- On `SetKnownFilePaths`:
+    - Atomically replace the internal set of known file paths.
+    - Process the backlog of changes. For each change, if the file path is in the new set of known files, set `IsReloadNeeded = true` and stop processing the backlog.
+    - Clear the backlog.
+- For new events arriving after `SetKnownFilePaths` has been called:
+    - Check if the file path is in the known set. If not, ignore it.
+    - If it is a known file, proceed with the existing logic (check for active operations, etc.).
+- Maintain thread-safe access to the backlog, the known file set, and the `IsReloadNeeded` flag.
 
 ### 1.3 Add to Dependency Injection
 - Register `IFileMonitoringService` as singleton in `ServiceCollectionExtensions.cs`
@@ -55,11 +58,12 @@ public interface IFileChangeVisitor
 ## Phase 2: Integration with SolutionManager
 
 ### 2.1 Modify SolutionManager
-- Add `IFileMonitoringService` dependency injection
+- In `LoadSolutionAsync`, call `_fileMonitoring.StartMonitoring(solutionDirectory)` *before* beginning the Roslyn solution load.
+- After the solution is loaded successfully, gather the list of file paths.
+- Call `_fileMonitoring.SetKnownFilePaths(solutionFilePaths)` to complete the setup.
 - Add lazy reload check to key operations:
   - `EnsureSolutionLoaded()` method checks `fileMonitoring.IsReloadNeeded`
   - If reload needed, calls `ReloadSolutionFromDiskAsync()` and `fileMonitoring.MarkReloadComplete()`
-- Setup monitoring in `LoadSolutionAsync()` after successful load
 
 ### 2.2 Modify CodeModificationService
 - Add `IFileMonitoringService` dependency injection
@@ -135,36 +139,68 @@ public interface IFileChangeVisitor
       }
       finally
       {
-          _fileMonitoring.EndOperation(operationId);
+          fileChangeVisitor.EndOperation();
           _logger.LogDebug("Operation {OperationId} completed. Expected: {Expected}, Actual: {Actual}",
               operationId, fileChangeVisitor.ExpectedChangeCount, fileChangeVisitor.ActualChangeCount);
       }
   }
   ```
 
-### 2.3 File Discovery Integration
-```csharp
-private void SetupFileMonitoring()
-{
-    // Monitor solution file
-    _fileMonitoring.AddWatchPath(_currentSolution.FilePath);
+### 2.3 Finalizing Monitor Configuration
 
-    // Monitor all project files
-    foreach (var project in _currentSolution.Projects)
+After the solution is loaded, the `SolutionManager` provides the file monitoring service with the definitive list of files to watch. The service can then reconcile any changes that occurred during the load process.
+
+A conceptual example of the `SolutionManager` logic:
+```csharp
+public async Task LoadSolutionAsync(string solutionPath)
+{
+    var solutionDirectory = Path.GetDirectoryName(solutionPath);
+    _fileMonitoring.StartMonitoring(solutionDirectory); // Start watching immediately
+
+    // ... proceed to load the solution with Roslyn ...
+    _currentSolution = await workspace.OpenSolutionAsync(solutionPath);
+
+    FinalizeFileMonitoring(); // Now provide the list of files
+}
+
+private void FinalizeFileMonitoring()
+{
+    var solution = _solutionManager.CurrentSolution;
+
+    // 1. Discover all file paths from the Roslyn solution
+    var solutionFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    if (!string.IsNullOrEmpty(solution.FilePath))
+    {
+        solutionFilePaths.Add(solution.FilePath);
+    }
+
+    foreach (var project in solution.Projects)
     {
         if (!string.IsNullOrEmpty(project.FilePath))
-            _fileMonitoring.AddWatchPath(project.FilePath);
+            solutionFilePaths.Add(project.FilePath);
 
-        // Monitor all source documents
         foreach (var document in project.Documents)
         {
             if (!string.IsNullOrEmpty(document.FilePath))
-                _fileMonitoring.AddWatchPath(document.FilePath);
+                solutionFilePaths.Add(document.FilePath);
+        }
+
+        // Also include AdditionalDocuments, AnalyzerConfigDocuments, etc.
+        foreach (var additionalDoc in project.AdditionalDocuments)
+        {
+            if (!string.IsNullOrEmpty(additionalDoc.FilePath))
+                solutionFilePaths.Add(additionalDoc.FilePath);
+        }
+        foreach (var configDoc in project.AnalyzerConfigDocuments)
+        {
+             if (!string.IsNullOrEmpty(configDoc.FilePath))
+                solutionFilePaths.Add(configDoc.FilePath);
         }
     }
 
-    // Monitor .editorconfig files in solution directory tree
-    MonitorEditorConfigFiles(Path.GetDirectoryName(_currentSolution.FilePath));
+    // 2. Provide the definitive set of files to the monitoring service.
+    _fileMonitoring.SetKnownFilePaths(solutionFilePaths);
+    _logger.LogInformation("File monitoring is now active for {FileCount} files in the solution.", solutionFilePaths.Count);
 }
 ```
 
@@ -216,7 +252,7 @@ private void SetupFileMonitoring()
       }
       finally
       {
-          fileMonitoring.EndOperation(operationId);
+          fileChangeVisitor.EndOperation(operationId);
       }
   }
   ```
@@ -228,7 +264,6 @@ private void SetupFileMonitoring()
 public class FileMonitoringOptions
 {
     public bool EnableFileMonitoring { get; set; } = true;
-    public string[] MonitoredExtensions { get; set; } = { ".cs", ".vb", ".fs", ".sln", ".csproj", ".vbproj", ".fsproj", ".editorconfig" };
     public bool LogFileChanges { get; set; } = true;
 }
 ```
