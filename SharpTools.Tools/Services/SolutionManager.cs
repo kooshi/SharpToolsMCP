@@ -1,12 +1,14 @@
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using ModelContextProtocol;
+using SharpTools.Tools.Interfaces;
 using SharpTools.Tools.Mcp.Tools;
 namespace SharpTools.Tools.Services;
 
 public sealed class SolutionManager : ISolutionManager {
     private readonly ILogger<SolutionManager> _logger;
     private readonly IFuzzyFqnLookupService _fuzzyFqnLookupService;
+    private readonly IFileMonitoringService _fileMonitoring;
     private MSBuildWorkspace? _workspace;
     private Solution? _currentSolution;
     private MetadataLoadContext? _metadataLoadContext;
@@ -21,9 +23,10 @@ public sealed class SolutionManager : ISolutionManager {
     public Solution? CurrentSolution => _currentSolution;
     private readonly string? _buildConfiguration;
 
-    public SolutionManager(ILogger<SolutionManager> logger, IFuzzyFqnLookupService fuzzyFqnLookupService, string? buildConfiguration = null) {
+    public SolutionManager(ILogger<SolutionManager> logger, IFuzzyFqnLookupService fuzzyFqnLookupService, IFileMonitoringService fileMonitoring, string? buildConfiguration = null) {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fuzzyFqnLookupService = fuzzyFqnLookupService ?? throw new ArgumentNullException(nameof(fuzzyFqnLookupService));
+        _fileMonitoring = fileMonitoring ?? throw new ArgumentNullException(nameof(fileMonitoring));
         _buildConfiguration = buildConfiguration;
     }
     public async Task LoadSolutionAsync(string solutionPath, CancellationToken cancellationToken) {
@@ -32,6 +35,13 @@ public sealed class SolutionManager : ISolutionManager {
             throw new FileNotFoundException("Solution file not found.", solutionPath);
         }
         UnloadSolution(); // Clears previous state including _allLoadedReflectionTypesCache
+
+        // Start file monitoring before loading solution
+        var solutionDirectory = Path.GetDirectoryName(solutionPath);
+        if (!string.IsNullOrEmpty(solutionDirectory)) {
+            _fileMonitoring.StartMonitoring(solutionDirectory);
+        }
+
         try {
             _logger.LogInformation("Creating MSBuildWorkspace...");
             var properties = new Dictionary<string, string> {
@@ -48,6 +58,7 @@ public sealed class SolutionManager : ISolutionManager {
             _currentSolution = await _workspace.OpenSolutionAsync(solutionPath, new ProgressReporter(_logger), cancellationToken);
             _logger.LogInformation("Solution loaded successfully with {ProjectCount} projects.", _currentSolution.Projects.Count());
             InitializeMetadataContextAndReflectionCache(_currentSolution, cancellationToken);
+            FocusFileMonitoring(_currentSolution);
         } catch (Exception ex) {
             _logger.LogError(ex, "Failed to load solution: {SolutionPath}", solutionPath);
             UnloadSolution();
@@ -194,6 +205,7 @@ public sealed class SolutionManager : ISolutionManager {
         }
     }
     public void UnloadSolution() {
+        _fileMonitoring.StopMonitoring();
         _logger.LogInformation("Unloading current solution and workspace.");
         _compilationCache.Clear();
         _semanticModelCache.Clear();
@@ -235,6 +247,12 @@ public sealed class SolutionManager : ISolutionManager {
         await LoadSolutionAsync(_workspace.CurrentSolution.FilePath!, cancellationToken);
         _logger.LogDebug("Current solution state has been refreshed from workspace.");
     }
+    public async Task ReloadSolutionIfChangedExternallyAsync(CancellationToken cancellationToken) {
+        if (_fileMonitoring.IsReloadNeeded) {
+            await ReloadSolutionFromDiskAsync(cancellationToken);
+        }
+    }
+    
     private void OnWorkspaceFailed(object? sender, WorkspaceDiagnosticEventArgs e) {
         var diagnostic = e.Diagnostic;
         var level = diagnostic.Kind == WorkspaceDiagnosticKind.Failure ? LogLevel.Error : LogLevel.Warning;
@@ -647,5 +665,49 @@ public sealed class SolutionManager : ISolutionManager {
             "netstandard2.0" => new[] { "netstandard2.0", "netstandard1.6" },
             _ => new[] { "net8.0", "net7.0", "net6.0", "net5.0", "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1", "netstandard2.1", "netstandard2.0", "netstandard1.6" }
         };
+    }
+
+    private void FocusFileMonitoring(Solution solution)
+    {
+        // Gather all file paths from the Roslyn solution
+        var solutionFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Add solution file
+        if (!string.IsNullOrEmpty(solution.FilePath))
+        {
+            solutionFilePaths.Add(solution.FilePath);
+        }
+
+        foreach (var project in solution.Projects)
+        {
+            // Add project file
+            if (!string.IsNullOrEmpty(project.FilePath))
+                solutionFilePaths.Add(project.FilePath);
+
+            // Add all documents
+            foreach (var document in project.Documents)
+            {
+                if (!string.IsNullOrEmpty(document.FilePath))
+                    solutionFilePaths.Add(document.FilePath);
+            }
+
+            // Add additional documents (like config files)
+            foreach (var additionalDoc in project.AdditionalDocuments)
+            {
+                if (!string.IsNullOrEmpty(additionalDoc.FilePath))
+                    solutionFilePaths.Add(additionalDoc.FilePath);
+            }
+
+            // Add analyzer config documents (like .editorconfig)
+            foreach (var configDoc in project.AnalyzerConfigDocuments)
+            {
+                if (!string.IsNullOrEmpty(configDoc.FilePath))
+                    solutionFilePaths.Add(configDoc.FilePath);
+            }
+        }
+
+        // Provide the definitive set of files to the monitoring service
+        _fileMonitoring.SetKnownFilePaths(solutionFilePaths);
+        _logger.LogInformation("File monitoring is now active for {FileCount} files in the solution.", solutionFilePaths.Count);
     }
 }
