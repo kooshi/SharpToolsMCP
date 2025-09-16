@@ -48,12 +48,18 @@ public class FileMonitoringServicesTests : IDisposable
         // Arrange
         var filePath = Path.Combine(_testDirectory, "test.txt");
         File.WriteAllText(filePath, "initial content");
+        
         _service.StartMonitoring(_testDirectory);
+        
+        
         File.WriteAllText(filePath, "changed content");
         var knownFilePaths = new HashSet<string> { filePath };
 
         // Act
         _service.SetKnownFilePaths(knownFilePaths);
+
+        await Retry.UntilPasses(() => Assert.True( _service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -67,12 +73,18 @@ public class FileMonitoringServicesTests : IDisposable
         // Arrange
         var filePath = Path.Combine(_testDirectory, "test.txt");
         File.WriteAllText(filePath, "initial content");
+        
         _service.StartMonitoring(_testDirectory);
+        
         File.Delete(filePath);
+        
         var knownFilePaths = new HashSet<string> { filePath };
 
         // Act
         _service.SetKnownFilePaths(knownFilePaths);
+        
+        await Retry.UntilPasses(() => Assert.True( _service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -84,15 +96,21 @@ public class FileMonitoringServicesTests : IDisposable
     {
         // Arrange
         var filePath = Path.Combine(_testDirectory, "test.txt");
+        
         File.WriteAllText(filePath, "initial content");
+        
         var knownFilePaths = new HashSet<string> { filePath };
+        
         _service.StartMonitoring(_testDirectory);
         _service.SetKnownFilePaths(knownFilePaths);
+        
+        Assert.Equal(0, _service.ChangeCount);
 
         // Act
         File.WriteAllText(filePath, "changed content");
-        // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -106,13 +124,15 @@ public class FileMonitoringServicesTests : IDisposable
         var filePath = Path.Combine(_testDirectory, "test.txt");
         File.WriteAllText(filePath, "initial content");
         var knownFilePaths = new HashSet<string> { filePath };
+        
         _service.StartMonitoring(_testDirectory);
         _service.SetKnownFilePaths(knownFilePaths);
 
         // Act
         File.Delete(filePath);
-        // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -127,6 +147,7 @@ public class FileMonitoringServicesTests : IDisposable
         Directory.CreateDirectory(subdirectory);
         var filePath = Path.Combine(subdirectory, "test.txt");
         File.WriteAllText(filePath, "initial content");
+        
         var knownFilePaths = new HashSet<string> { filePath };
         _service.StartMonitoring(_testDirectory);
         _service.SetKnownFilePaths(knownFilePaths);
@@ -137,7 +158,8 @@ public class FileMonitoringServicesTests : IDisposable
         Assert.False(File.Exists(filePath));
         
         // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -156,6 +178,7 @@ public class FileMonitoringServicesTests : IDisposable
         Directory.CreateDirectory(subdirectory);
         var filePath = Path.Combine(subdirectory, "test.txt");
         File.WriteAllText(filePath, "initial content");
+        
         var knownFilePaths = new HashSet<string> { filePath };
         _service.StartMonitoring(_testDirectory);
         _service.SetKnownFilePaths(knownFilePaths);
@@ -167,7 +190,8 @@ public class FileMonitoringServicesTests : IDisposable
         Assert.True(File.Exists(Path.Combine(newSubDirectory, "test.txt")));
         
         // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -188,8 +212,10 @@ public class FileMonitoringServicesTests : IDisposable
 
         // Act
         File.WriteAllText(filePath, newContent);
+        
         // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -209,8 +235,10 @@ public class FileMonitoringServicesTests : IDisposable
 
         // Act
         File.WriteAllText(filePath, "unexpected content");
+        
         // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -228,8 +256,10 @@ public class FileMonitoringServicesTests : IDisposable
 
         // Act
         File.WriteAllText(filePath, "changed content");
+        
         // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert
@@ -254,8 +284,10 @@ public class FileMonitoringServicesTests : IDisposable
 
         // Act
         File.WriteAllText(filePath, "changed content");
+        
         // Wait for the file watcher to pick up the change
-        await Task.Delay(100);
+        await Retry.UntilPasses(() => Assert.True(_service.ChangeCount >= 1));
+        
         var result = await _service.AssessIfReloadNecessary();
 
         // Assert

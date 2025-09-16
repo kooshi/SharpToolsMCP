@@ -17,7 +17,16 @@ namespace SharpTools.Tools.Services
         
         private FileChangeListener? _listener;
         private bool _disposed;
-
+        
+        /* ChangeCount is exported so tests can wait for events to come in */
+        public int ChangeCount {
+            get {
+                var listener = ThreadSafeGetCurrentListener();
+                
+                return listener?.ChangeCount ?? -1;
+            }
+        }
+        
         public FileMonitoringService(ILogger<FileMonitoringService> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

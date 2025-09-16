@@ -20,6 +20,8 @@ namespace SharpTools.Tools.Services
         private readonly List<string> _changedFiles = new();
         private readonly Dictionary<string, string> _expectedChanges = new(StringComparer.OrdinalIgnoreCase);
         private bool _reloadIsNecessary;
+        
+        public int ChangeCount { get; private set; } // For testing purposes
 
         public FileChangeListener(ILogger logger, string directory)
         {
@@ -164,8 +166,9 @@ namespace SharpTools.Tools.Services
 
         private void OnFileChanged(object sender, FileSystemEventArgs e)
         {
-            lock (_lock)
-            {
+            lock (_lock) {
+                ChangeCount++;
+                
                 if (!_enabled) return;
                 if (IsPathIgnored(_watcher.Path, e.FullPath, pathSeparators))
                 {
@@ -179,8 +182,9 @@ namespace SharpTools.Tools.Services
 
         private void OnFileRenamed(object sender, RenamedEventArgs e)
         {
-            lock (_lock)
-            {
+            lock (_lock) {
+                ChangeCount++;
+                
                 if (!_enabled) return;
                 _logger.LogTrace("File rename event: {OldFile} to {NewFile}", e.OldFullPath, e.FullPath);
 
