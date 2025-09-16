@@ -18,4 +18,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SharpTools.Tools\SharpTools.Tools.csproj" />
+  </ItemGroup>
+
 </Project>
