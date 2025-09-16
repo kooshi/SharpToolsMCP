@@ -9,7 +9,7 @@ The file monitoring system provides intelligent detection of external file chang
 ### Open Concerns
 
 - Is watching DocumentOperationService.WriteFileAsync sufficient for discovering all expected file changes? 
-- Comparison of filenames given case insensitivity on Windows?
+- Comparison of filenames given case insensitivity on Windows? (Note WSL on Windows is case sensitive)
 
 ### Comprehensive file monitoring
 
