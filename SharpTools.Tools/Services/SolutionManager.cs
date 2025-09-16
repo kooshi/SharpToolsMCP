@@ -248,7 +248,7 @@ public sealed class SolutionManager : ISolutionManager {
         _logger.LogDebug("Current solution state has been refreshed from workspace.");
     }
     public async Task ReloadSolutionIfChangedExternallyAsync(CancellationToken cancellationToken) {
-        if (_fileMonitoring.IsReloadNeeded) {
+        if (await _fileMonitoring.AssessIfReloadNecessary()) {
             await ReloadSolutionFromDiskAsync(cancellationToken);
         }
     }

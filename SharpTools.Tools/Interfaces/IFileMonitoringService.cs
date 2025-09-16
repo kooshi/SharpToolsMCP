@@ -26,11 +26,11 @@ public interface IFileMonitoringService : IDisposable
     /// <summary>
     /// Whether a solution reload is needed due to external file changes.
     /// </summary>
-    bool IsReloadNeeded { get; }
+    Task<bool> AssessIfReloadNecessary();
 
     /// <summary>
     /// Register an expected file change for backward compatibility.
     /// </summary>
     /// <param name="filePath">File path that will be modified</param>
-    void RegisterExpectedChange(string filePath);
+    void RegisterExpectedChange(string filePath, string fileContents);
 }
