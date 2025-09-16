@@ -153,7 +153,4 @@ For each file change detected by FileSystemWatcher:
 
 ## Error Handling Strategy
 
-- **FileSystemWatcher failures** → Restart monitoring, log errors
-- **Operation tracking failures** → Fail safe by assuming external changes
-- **Reload failures** → Log error, maintain current state, notify user
-- **Unknown file changes** → Treat as potentially external (better safe than sorry)
+- **FileSystemWatcher failures** → Stop monitoring and set IsReloadNeeded = true
