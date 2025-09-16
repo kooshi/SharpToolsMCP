@@ -103,7 +103,7 @@ public static class SolutionTools {
     CancellationToken cancellationToken) {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
-            ToolHelpers.EnsureSolutionLoaded(solutionManager);
+            await ToolHelpers.EnsureSolutionLoaded(solutionManager, cancellationToken);
 
             var projectsData = new List<object>();
 
@@ -370,7 +370,7 @@ public static class SolutionTools {
             ErrorHandlingHelpers.ValidateStringParameter(projectName, "projectName", logger);
             logger.LogInformation("Executing '{LoadProjectToolName}' tool for project: {ProjectName}", nameof(LoadProject), projectName);
 
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(LoadProject));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(LoadProject), cancellationToken);
             int indexOfParen = projectName.IndexOf('(');
             string projectNameNormalized = indexOfParen == -1
                 ? projectName.Trim()
