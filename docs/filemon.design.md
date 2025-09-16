@@ -2,8 +2,7 @@
 
 ## Overview
 
-The file monitoring system provides intelligent detection of external file changes to keep the MCP server's Roslyn workspace synchronized with the file system. It monitors all solution files for unexpected changes so the solution can be reloaded
-when commands are run after external changes to solution files.
+The file monitoring system provides intelligent detection of external file changes to keep the MCP server's Roslyn workspace synchronized with the file system. It monitors all solution files for unexpected changes so the solution can be reloaded when commands are run after external changes to solution files.
 
 ## Core Concepts
 
@@ -14,9 +13,7 @@ when commands are run after external changes to solution files.
 
 ### Comprehensive file monitoring
 
-The file monitoring service is starts watching the solution folder recursively before the solution is loaded. Once the
-solution is loaded information from Roslyn is used to control what files can actually trigger a reload. All MCP operations 
-will check if a reload is needed before continuing their operation.
+The file monitoring service is starts watching the solution folder recursively before the solution is loaded. Once the solution is loaded information from Roslyn is used to control what files can actually trigger a reload. All MCP operations will check if a reload is needed before continuing their operation.
 
 Monitoring always ignores certain directories altogether: ".git", "bin" and "obj".
 
@@ -29,10 +26,7 @@ This allows file monitoring to ignore expected changes and prevent unnecessary r
 
 ### Integration
 
-A singleton implementation of IFileMonitoringService tracks changes. SolutionManager makes calls indicating when monitoring
-should start and what files are known to be relevant. DocumentOperationService notifies when any expected changes are written.
-ToolsHelper's EnsureSolutionLoaded* methods, which are called at the start of every MCP operation, notify SolutionManager to
-reload the solution if appropriate.
+A singleton implementation of IFileMonitoringService tracks changes. SolutionManager makes calls indicating when monitoring should start and what files are known to be relevant. DocumentOperationService notifies when any expected changes are written.  ToolsHelper's EnsureSolutionLoaded* methods, which are called at the start of every MCP operation, notify SolutionManager to  reload the solution if appropriate.
 
 ## File Discovery and Monitoring Strategy
 
