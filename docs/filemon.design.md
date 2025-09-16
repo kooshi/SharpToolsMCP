@@ -24,14 +24,6 @@ fileChangeVisitor.ExpectChanges(additionalFiles);         // Batch registration
 fileChangeVisitor.EndOperation();
 ```
 
-### Lazy Reload Strategy
-
-Instead of immediately reloading when files change, the system sets an `IsReloadNeeded` flag and reloads only when the next MCP request is made. This provides:
-
-- **Zero overhead** when no files have changed
-- **Natural batching** of multiple file changes
-- **User sees delay only when they make a request** after changes
-
 ### External Change Detection
 
 The system triggers reload only in these scenarios:
@@ -70,8 +62,6 @@ public interface IFileChangeVisitor
     void ExpectChange(string filePath);
     void ExpectChanges(IEnumerable<string> filePaths);
     void EndOperation();
-    int ExpectedChangeCount { get; }
-    int ActualChangeCount { get; }
 }
 ```
 
@@ -160,14 +150,6 @@ For each file change detected by FileSystemWatcher:
 2. User edits MyClass.cs → No operation to check against → IsReloadNeeded = true
 3. Next MCP request → Reload triggered ✓
 ```
-
-## Performance Characteristics
-
-- **Zero impact** when no files change
-- **Minimal overhead** during operations (just registering expected files)
-- **FileSystemWatcher efficiency** for change detection
-- **Lazy loading** avoids unnecessary work
-- **Request-time cost** only when reload actually needed
 
 ## Error Handling Strategy
 

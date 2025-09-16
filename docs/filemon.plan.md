@@ -35,8 +35,6 @@ public interface IFileChangeVisitor
     void ExpectChanges(IEnumerable<string> filePaths);
     void EndOperation();
     bool IsChangeExpected(string filePath);
-    int ExpectedChangeCount { get; }
-    int ActualChangeCount { get; }
 }
 ```
 
@@ -116,8 +114,8 @@ public interface IFileChangeVisitor
               }
           }
 
-          // Register additional files (non-code files from tools like FindAndReplace)
           if (additionalFilePaths != null)
+          // Register additional files (non-code files from tools like FindAndReplace)
           {
               fileChangeVisitor.ExpectChanges(additionalFilePaths);
           }
@@ -140,8 +138,6 @@ public interface IFileChangeVisitor
       finally
       {
           fileChangeVisitor.EndOperation();
-          _logger.LogDebug("Operation {OperationId} completed. Expected: {Expected}, Actual: {Actual}",
-              operationId, fileChangeVisitor.ExpectedChangeCount, fileChangeVisitor.ActualChangeCount);
       }
   }
   ```
