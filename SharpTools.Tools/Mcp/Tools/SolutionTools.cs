@@ -1,11 +1,8 @@
-using ModelContextProtocol;
-using SharpTools.Tools.Services;
-
-namespace SharpTools.Tools.Mcp.Tools;
-
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ModelContextProtocol;
+using SharpTools.Tools.Mcp;
+using SharpTools.Tools.Mcp.Tools;
 
 // Marker class for ILogger<T> category specific to SolutionTools
 public class SolutionToolsLogCategory { }
@@ -167,7 +164,7 @@ public static class SolutionTools {
                         try {
                             if (!string.IsNullOrEmpty(project.FilePath) && File.Exists(project.FilePath)) {
                                 // Get all packages
-                                var packages = Services.LegacyNuGetPackageReader.GetAllPackages(project.FilePath);
+                                var packages = SharpTools.Tools.Services.LegacyNuGetPackageReader.GetAllPackages(project.FilePath);
                                 foreach (var package in packages) {
                                     packageRefs.Add($"{package.PackageId} ({package.Version})");
                                 }

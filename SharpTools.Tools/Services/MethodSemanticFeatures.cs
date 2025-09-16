@@ -1,6 +1,5 @@
 
 using Microsoft.CodeAnalysis; // Keep for potential future use, but not strictly needed for current properties
-using System.Collections.Generic;
 
 namespace SharpTools.Tools.Services {
     public class MethodSemanticFeatures {

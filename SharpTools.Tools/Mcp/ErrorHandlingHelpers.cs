@@ -1,9 +1,4 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 using ModelContextProtocol;
-using SharpTools.Tools.Services;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace SharpTools.Tools.Mcp;
 

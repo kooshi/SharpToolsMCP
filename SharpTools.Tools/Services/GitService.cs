@@ -1,5 +1,4 @@
 using LibGit2Sharp;
-using System.Text;
 
 namespace SharpTools.Tools.Services;
 

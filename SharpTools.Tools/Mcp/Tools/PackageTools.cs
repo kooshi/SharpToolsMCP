@@ -1,10 +1,8 @@
-using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using NuGet.Common;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
-using SharpTools.Tools.Services;
 using System.Xml.Linq;
 
 namespace SharpTools.Tools.Mcp.Tools;

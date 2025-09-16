@@ -1,16 +1,3 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SharpTools.Tools.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SharpTools.Tools.Mcp;
 
 namespace SharpTools.Tools.Services {
     public class FuzzyFqnLookupService : IFuzzyFqnLookupService {
