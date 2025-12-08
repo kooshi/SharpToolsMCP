@@ -40,7 +40,7 @@ public static class SolutionTools {
     ISolutionManager solutionManager,
     IEditorConfigProvider editorConfigProvider,
     ILogger<SolutionToolsLogCategory> logger,
-    [Description("The absolute file path to the .sln solution file.")] string solutionPath,
+    [Description("The absolute file path to the .sln or .slnx solution file.")] string solutionPath,
     CancellationToken cancellationToken) {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
@@ -53,9 +53,11 @@ public static class SolutionTools {
                 throw new McpException($"Solution file does not exist at path: {solutionPath}");
             }
 
-            if (!Path.GetExtension(solutionPath).Equals(".sln", StringComparison.OrdinalIgnoreCase)) {
+            var ext = Path.GetExtension(solutionPath);
+            if (!ext.Equals(".sln", StringComparison.OrdinalIgnoreCase) &&
+                !ext.Equals(".slnx", StringComparison.OrdinalIgnoreCase)) {
                 logger.LogError("File is not a valid solution file: {SolutionPath}", solutionPath);
-                throw new McpException($"File at path '{solutionPath}' is not a .sln file.");
+                throw new McpException($"File at path '{solutionPath}' is not a .sln or .slnx file.");
             }
 
             try {
