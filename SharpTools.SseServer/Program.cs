@@ -1,24 +1,25 @@
-using SharpTools.Tools.Services;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Mcp.Tools;
-using SharpTools.Tools.Extensions;
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using Microsoft.AspNetCore.HttpLogging;
-using Serilog;
-using ModelContextProtocol.Protocol;
 using System.Reflection;
+using Microsoft.AspNetCore.HttpLogging;
+using ModelContextProtocol.Protocol;
+using Serilog;
+using SharpTools.Tools.Extensions;
+using SharpTools.Tools.Interfaces;
+using SharpTools.Tools.Mcp.Tools;
+using SharpTools.Tools.Services;
 namespace SharpTools.SseServer;
 
-using SharpTools.Tools.Services;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Mcp.Tools;
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using Microsoft.AspNetCore.HttpLogging;
-using Serilog;
-using ModelContextProtocol.Protocol;
 using System.Reflection;
+using Microsoft.AspNetCore.HttpLogging;
+using ModelContextProtocol.Protocol;
+using ModelContextProtocol.Server;
+using Serilog;
+using SharpTools.Tools.Interfaces;
+using SharpTools.Tools.Mcp.Tools;
+using SharpTools.Tools.Services;
 
 public class Program {
     // --- Application ---
@@ -58,13 +59,25 @@ public class Program {
             DefaultValueFactory = x => false
         };
 
+        var listToolsOption = new Option<bool>("--list-tools") {
+            Description = "List available tool and prompt type names, then exit.",
+            DefaultValueFactory = x => false
+        };
+
+        var excludeToolTypesOption = new Option<List<string>>("--exclude-tool-types") {
+            Description = "List of tool type names to exclude (from --list-tools).",
+            AllowMultipleArgumentsPerToken = true
+        };
+
         var rootCommand = new RootCommand("SharpTools MCP Server") {
             portOption,
             logFileOption,
             logLevelOption,
             loadSolutionOption,
             buildConfigurationOption,
-            disableGitOption
+            disableGitOption,
+            listToolsOption,
+            excludeToolTypesOption,
         };
 
         ParseResult? parseResult = rootCommand.Parse(args);
@@ -80,6 +93,8 @@ public class Program {
         string? buildConfiguration = parseResult.GetValue(buildConfigurationOption)!;
         bool disableGit = parseResult.GetValue(disableGitOption);
         string serverUrl = $"http://localhost:{port}";
+        bool listTools = parseResult.GetValue(listToolsOption);
+        List<string> excludeToolTypes = parseResult.GetValue(excludeToolTypesOption) ?? [];
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Is(minimumLogLevel) // Set based on command line
@@ -124,6 +139,26 @@ public class Program {
             Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
         }
 
+        if (listTools) {
+            var toolAssembly = Assembly.Load("SharpTools.Tools");
+
+            Console.WriteLine("Tools:");
+            foreach (var t in toolAssembly.GetTypes()
+                .Where(t => t.GetCustomAttribute<McpServerToolTypeAttribute>() is not null)
+                .OrderBy(t => t.Name)) {
+                Console.WriteLine($"  {t.Name}");
+                foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)
+                    .Where(m => m.GetCustomAttribute<McpServerToolAttribute>() is not null)
+                    .OrderBy(m => m.Name)) {
+                    var attr = m.GetCustomAttribute<McpServerToolAttribute>()!;
+                    var name = string.IsNullOrEmpty(attr.Name) ? m.Name : attr.Name;
+                    Console.WriteLine($"    - {name}");
+                }
+            }
+
+            return 0;
+        }
+
         try {
             Log.Information("Configuring {AppName} v{AppVersion} to run on {ServerUrl} with minimum log level {LogLevel}",
                 ApplicationName, ApplicationVersion, serverUrl, minimumLogLevel);
@@ -155,7 +190,7 @@ public class Program {
                     // but ModelContextProtocol's own Debug logging should be sufficient.
                 })
                 .WithHttpTransport()
-                .WithSharpTools();
+                .WithSharpTools(excludeToolTypes);
 
             var app = builder.Build();
 

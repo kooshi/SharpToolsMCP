@@ -1,9 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Services;
-using System.Reflection;
-
 namespace SharpTools.Tools.Extensions;
 
 /// <summary>
@@ -44,12 +38,19 @@ public static class ServiceCollectionExtensions {
     /// Adds all SharpTools services and tools to the MCP service builder.
     /// </summary>
     /// <param name="builder">The MCP service builder.</param>
+    /// <param name="exclude">Tool assembly type names to exclude (e.g. AnalysisTools).</param>
     /// <returns>The MCP service builder for chaining.</returns>
-    public static IMcpServerBuilder WithSharpTools(this IMcpServerBuilder builder) {
+    public static IMcpServerBuilder WithSharpTools(this IMcpServerBuilder builder, List<string> exclude) {
         var toolAssembly = Assembly.Load("SharpTools.Tools");
+        var excludedSet = new HashSet<string>(exclude);
+
+        var tools = from t in toolAssembly.GetTypes()
+                    where t.GetCustomAttribute<McpServerToolTypeAttribute>() is not null
+                        && !excludedSet.Contains(t.Name)
+                    select t;
 
         return builder
-            .WithToolsFromAssembly(toolAssembly)
+            .WithTools(tools)
             .WithPromptsFromAssembly(toolAssembly);
     }
 }
