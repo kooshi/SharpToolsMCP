@@ -26,11 +26,6 @@ public class Program {
     public const string ApplicationVersion = "0.0.1";
     public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
     public static async Task<int> Main(string[] args) {
-        // Ensure tool assemblies are loaded for MCP SDK's WithToolsFromAssembly
-        _ = typeof(SolutionTools);
-        _ = typeof(AnalysisTools);
-        _ = typeof(ModificationTools);
-
         var portOption = new Option<int>("--port") {
             Description = "The port number for the MCP server to listen on.",
             DefaultValueFactory = x => 3001
@@ -115,6 +110,15 @@ public class Program {
         }
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();
+
+        MsBuildLocatorBootstrapper.EnsureRegistered(
+            message => Log.Information("{Message}", message),
+            message => Log.Warning("{Message}", message));
+
+        // Ensure tool assemblies are loaded for MCP SDK's WithToolsFromAssembly
+        _ = typeof(SolutionTools);
+        _ = typeof(AnalysisTools);
+        _ = typeof(ModificationTools);
 
         if (disableGit) {
             Log.Information("Git integration is disabled.");
