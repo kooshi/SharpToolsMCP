@@ -22,10 +22,6 @@ public static class Program {
     public const string ApplicationVersion = "0.0.1";
     public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
     public static async Task<int> Main(string[] args) {
-        _ = typeof(SolutionTools);
-        _ = typeof(AnalysisTools);
-        _ = typeof(ModificationTools);
-
         var logDirOption = new Option<string?>("--log-directory") {
             Description = "Optional path to a log directory. If not specified, logs only go to console."
         };
@@ -107,6 +103,14 @@ public static class Program {
         }
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();
+
+        MsBuildLocatorBootstrapper.EnsureRegistered(
+            message => Log.Information("{Message}", message),
+            message => Log.Warning("{Message}", message));
+
+        _ = typeof(SolutionTools);
+        _ = typeof(AnalysisTools);
+        _ = typeof(ModificationTools);
 
         if (disableGit) {
             Log.Information("Git integration is disabled.");

@@ -4,18 +4,19 @@
 <ImplicitUsings>enable</ImplicitUsings>
 <Nullable>enable</Nullable>
 </PropertyGroup>
-<ItemGroup>
-<PackageReference Include="DiffPlex" Version="1.9.0" />
-<PackageReference Include="ICSharpCode.Decompiler" Version="9.1.0.7988" />
-<PackageReference Include="LibGit2Sharp" Version="0.31.0" />
-<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
-<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
-<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
-<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.0" />
-<PackageReference Include="ModelContextProtocol" Version="0.4.0-preview.3" />
-<PackageReference Include="NuGet.Protocol" Version="7.0.0" />
-<PackageReference Include="System.Reflection.Metadata" Version="10.0.0" />
-<PackageReference Include="System.Reflection.MetadataLoadContext" Version="10.0.0" />
-</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DiffPlex" Version="1.9.0" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="9.1.0.7988" />
+    <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.9.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.0" />
+    <PackageReference Include="ModelContextProtocol" Version="0.4.0-preview.3" />
+    <PackageReference Include="NuGet.Protocol" Version="7.0.0" />
+    <PackageReference Include="System.Reflection.Metadata" Version="9.0.5" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.5" />
+  </ItemGroup>
 </Project>
