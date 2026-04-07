@@ -1,20 +1,14 @@
-﻿using SharpTools.Tools.Services;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Mcp.Tools;
-using SharpTools.Tools.Extensions;
-using Serilog;
-using System.CommandLine;
-using System.CommandLine.Parsing;
+﻿using System.CommandLine;
 using System.Reflection;
-using ModelContextProtocol.Protocol;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using System;
-using System.Threading.Tasks;
-using System.Threading;
-
+using ModelContextProtocol.Protocol;
+using ModelContextProtocol.Server;
+using Serilog;
+using SharpTools.Tools.Extensions;
+using SharpTools.Tools.Interfaces;
+using SharpTools.Tools.Mcp.Tools;
 namespace SharpTools.StdioServer;
 
 public static class Program {
@@ -44,12 +38,24 @@ public static class Program {
             DefaultValueFactory = x => false
         };
 
+        var listToolsOption = new Option<bool>("--list-tools") {
+            Description = "List available tool and prompt type names, then exit.",
+            DefaultValueFactory = x => false
+        };
+
+        var excludeToolTypesOption = new Option<List<string>>("--exclude-tool-types") {
+            Description = "List of tool type names to exclude (from --list-tools).",
+            AllowMultipleArgumentsPerToken = true
+        };
+
         var rootCommand = new RootCommand("SharpTools MCP StdIO Server"){
             logDirOption,
             logLevelOption,
             loadSolutionOption,
             buildConfigurationOption,
-            disableGitOption
+            disableGitOption,
+            listToolsOption,
+            excludeToolTypesOption,
         };
 
         ParseResult? parseResult = rootCommand.Parse(args);
@@ -63,6 +69,8 @@ public static class Program {
         string? solutionPath = parseResult.GetValue(loadSolutionOption);
         string? buildConfiguration = parseResult.GetValue(buildConfigurationOption)!;
         bool disableGit = parseResult.GetValue(disableGitOption);
+        bool listTools = parseResult.GetValue(listToolsOption);
+        List<string> excludeToolTypes = parseResult.GetValue(excludeToolTypesOption) ?? [];
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Is(minimumLogLevel)
@@ -120,6 +128,26 @@ public static class Program {
             Log.Information("Using build configuration: {BuildConfiguration}", buildConfiguration);
         }
 
+        if(listTools) {
+            var toolAssembly = Assembly.Load("SharpTools.Tools");
+
+            Console.WriteLine("Tools:");
+            foreach (var t in toolAssembly.GetTypes()
+                .Where(t => t.GetCustomAttribute<McpServerToolTypeAttribute>() is not null)
+                .OrderBy(t => t.Name)) {
+                Console.WriteLine($"  {t.Name}");
+                foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)
+                    .Where(m => m.GetCustomAttribute<McpServerToolAttribute>() is not null)
+                    .OrderBy(m => m.Name)) {
+                    var attr = m.GetCustomAttribute<McpServerToolAttribute>()!;
+                    var name = string.IsNullOrEmpty(attr.Name) ? m.Name : attr.Name;
+                    Console.WriteLine($"    - {name}");
+                }
+            }
+
+            return 0;
+        }
+
         var builder = Host.CreateApplicationBuilder(args);
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog();
@@ -133,7 +161,7 @@ public static class Program {
                 };
             })
             .WithStdioServerTransport()
-            .WithSharpTools();
+            .WithSharpTools(excludeToolTypes);
 
         try {
             Log.Information("Starting {AppName} v{AppVersion}", ApplicationName, ApplicationVersion);
