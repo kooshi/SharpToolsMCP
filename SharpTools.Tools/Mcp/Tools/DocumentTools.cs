@@ -31,7 +31,7 @@ public static class DocumentTools {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReadRawFromRoslynDocument));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReadRawFromRoslynDocument), cancellationToken);
 
             logger.LogInformation("Reading document at {FilePath}", filePath);
 
@@ -86,7 +86,7 @@ public static class DocumentTools {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
             ErrorHandlingHelpers.ValidateStringParameter(content, "content", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(CreateRoslynDocument));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(CreateRoslynDocument), cancellationToken);
             content = content.TrimBackslash();
 
             logger.LogInformation("Creating new document at {FilePath}", filePath);
@@ -168,7 +168,7 @@ public static class DocumentTools {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
             ErrorHandlingHelpers.ValidateStringParameter(content, "content", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(OverwriteRoslynDocument));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(OverwriteRoslynDocument), cancellationToken);
             content = content.TrimBackslash();
             logger.LogInformation("Overwriting document at {FilePath}", filePath);
 
@@ -298,7 +298,7 @@ public static class DocumentTools {
                 CancellationToken cancellationToken) {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateFilePath(filePath, logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReadTypesFromRoslynDocument));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReadTypesFromRoslynDocument), cancellationToken);
 
             var pathInfo = documentOperations.GetPathInfo(filePath);
             if (!pathInfo.Exists) {

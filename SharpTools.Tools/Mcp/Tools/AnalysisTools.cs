@@ -22,7 +22,7 @@ public static partial class AnalysisTools {
         CancellationToken cancellationToken) {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedParentTypeName, "fullyQualifiedParentTypeName", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(GetAllSubtypes));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(GetAllSubtypes), cancellationToken);
 
             logger.LogInformation("Executing {GetAllSubtypes} for: {TypeName}", nameof(GetAllSubtypes), fullyQualifiedParentTypeName);
 
@@ -161,7 +161,7 @@ public static partial class AnalysisTools {
         CancellationToken cancellationToken = default) {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedTypeName, nameof(fullyQualifiedTypeName), logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(GetMembers));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(GetMembers), cancellationToken);
             logger.LogInformation("Executing '{GetMembers}' for: {TypeName} (IncludePrivate: {IncludePrivate})",
                 nameof(GetMembers), fullyQualifiedTypeName, includePrivateMembers);
 
@@ -357,7 +357,7 @@ public static partial class AnalysisTools {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewDefinition));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewDefinition), cancellationToken);
 
             logger.LogInformation("Executing '{ViewDefinition}' for: {SymbolName}", nameof(ViewDefinition), fullyQualifiedSymbolName);
 
@@ -423,7 +423,7 @@ public static partial class AnalysisTools {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ListImplementations));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ListImplementations), cancellationToken);
 
             logger.LogInformation("Executing '{ViewImplementations}' for: {SymbolName}",
                 nameof(ListImplementations), fullyQualifiedSymbolName);
@@ -698,7 +698,7 @@ public static partial class AnalysisTools {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindReferences));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindReferences), cancellationToken);
 
             logger.LogInformation("Executing '{FindReferences}' for: {SymbolName}",
                 nameof(FindReferences), fullyQualifiedSymbolName);
@@ -830,7 +830,7 @@ public static partial class AnalysisTools {
         CancellationToken cancellationToken) {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedTypeName, "fullyQualifiedTypeName", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewInheritanceChain));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewInheritanceChain), cancellationToken);
 
             logger.LogInformation("Executing '{ViewInheritanceChain}' for: {TypeName}",
                 nameof(ViewInheritanceChain), fullyQualifiedTypeName);
@@ -1005,7 +1005,7 @@ public static partial class AnalysisTools {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedMethodName, "fullyQualifiedMethodName", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewCallGraph));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewCallGraph), cancellationToken);
 
             logger.LogInformation("Executing '{ViewCallGraph}' for: {MethodName}",
                 nameof(ViewCallGraph), fullyQualifiedMethodName);
@@ -1121,7 +1121,7 @@ public static partial class AnalysisTools {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
             ErrorHandlingHelpers.ValidateStringParameter(regexPattern, "regexPattern", logger);
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(SearchDefinitions));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(SearchDefinitions), cancellationToken);
 
             logger.LogInformation("Executing '{SearchDefinitions}' with pattern: {RegexPattern}",
                 nameof(SearchDefinitions), regexPattern);
@@ -1518,7 +1518,7 @@ public static partial class AnalysisTools {
             }
 
             // Ensure solution is loaded
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ManageUsings));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ManageUsings), cancellationToken);
             var solution = solutionManager.CurrentSolution ?? throw new McpException("Current solution is null.");
 
             var document = solution.Projects
@@ -1632,7 +1632,7 @@ public static partial class AnalysisTools {
             }
 
             // Ensure solution is loaded and get target symbol
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ManageAttributes));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ManageAttributes), cancellationToken);
             var symbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, targetDeclaration, cancellationToken);
 
             if (!symbol.DeclaringSyntaxReferences.Any()) {
@@ -1727,7 +1727,7 @@ public static partial class AnalysisTools {
             }
 
             // Ensure solution is loaded
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(AnalyzeComplexity));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(AnalyzeComplexity), cancellationToken);
 
             // Track metrics for the final report
             var metrics = new Dictionary<string, object>();
@@ -1779,7 +1779,7 @@ public static partial class AnalysisTools {
         [Description("The minimum similarity score (0.0 to 1.0) for methods to be considered similar. (start with 0.75)")] double similarityThreshold,
         CancellationToken cancellationToken) {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindPotentialDuplicates));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindPotentialDuplicates), cancellationToken);
             logger.LogInformation("Executing '{ToolName}' with threshold {Threshold}", nameof(FindPotentialDuplicates), similarityThreshold);
 
             if (similarityThreshold < 0.0 || similarityThreshold > 1.0) {

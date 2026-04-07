@@ -49,7 +49,7 @@ public static class ModificationTools {
             codeSnippet = codeSnippet.TrimBackslash();
 
             // Ensure solution is loaded
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(AddMember));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(AddMember), cancellationToken);
             logger.LogInformation("Executing '{AddMember}' for target: {TargetName}", nameof(AddMember), fullyQualifiedTargetName);
 
             // Get the target symbol
@@ -237,7 +237,7 @@ public static class ModificationTools {
             ErrorHandlingHelpers.ValidateStringParameter(newMemberCode, nameof(newMemberCode), logger);
             newMemberCode = newMemberCode.TrimBackslash();
 
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(OverwriteMember));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(OverwriteMember), cancellationToken);
             logger.LogInformation("Executing '{OverwriteMember}' for: {SymbolName}", nameof(OverwriteMember), fullyQualifiedMemberName);
 
             var symbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, fullyQualifiedMemberName, cancellationToken);
@@ -370,7 +370,7 @@ public static class ModificationTools {
             }
 
             // Ensure solution is loaded
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(RenameSymbol));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(RenameSymbol), cancellationToken);
             logger.LogInformation("Executing '{RenameSymbol}' for {SymbolName} to {NewName}", nameof(RenameSymbol), fullyQualifiedSymbolName, newName);
 
             // Get the symbol to rename
@@ -466,7 +466,7 @@ public static class ModificationTools {
             // Note: filenameFilter can be empty or null, as this indicates "replace in all files"
 
             // Ensure solution is loaded
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReplaceAllReferences));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReplaceAllReferences), cancellationToken);
             logger.LogInformation("Executing '{ReplaceAllReferences}' for {SymbolName} with text '{ReplacementCode}', filter: {Filter}",
                 nameof(ReplaceAllReferences), fullyQualifiedSymbolName, replacementCode, filenameFilter ?? "none");
 
@@ -602,7 +602,7 @@ public static class ModificationTools {
         CancellationToken cancellationToken) {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(Undo));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(Undo), cancellationToken);
             logger.LogInformation("Executing '{UndoLastChange}'", nameof(Undo));
 
             var (success, message) = await modificationService.UndoLastChangeAsync(cancellationToken);
@@ -642,7 +642,7 @@ public static class ModificationTools {
             .Replace(@"\r", @"\n");
 
             // Ensure solution is loaded
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindAndReplace));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindAndReplace), cancellationToken);
             logger.LogInformation("Executing '{FindAndReplace}' with pattern: '{Pattern}', replacement: {Replacement}, target: {Target}",
                 nameof(FindAndReplace), regexPattern, replacementText, target);
 
@@ -848,7 +848,7 @@ public static class ModificationTools {
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedMemberName, nameof(fullyQualifiedMemberName), logger);
             ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedDestinationTypeOrNamespaceName, nameof(fullyQualifiedDestinationTypeOrNamespaceName), logger);
 
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(MoveMember));
+            await ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(MoveMember), cancellationToken);
             logger.LogInformation("Executing '{MoveMember}' moving {MemberName} to {DestinationName}",
                 nameof(MoveMember), fullyQualifiedMemberName, fullyQualifiedDestinationTypeOrNamespaceName);
 

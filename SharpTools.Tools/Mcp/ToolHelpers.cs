@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using ModelContextProtocol;
+using SharpTools.Tools.Interfaces;
 using SharpTools.Tools.Services;
 
 namespace SharpTools.Tools.Mcp;
@@ -8,20 +9,24 @@ namespace SharpTools.Tools.Mcp;
 internal static class ToolHelpers {
     public const string SharpToolPrefix = "SharpTool_";
 
-    public static void EnsureSolutionLoaded(ISolutionManager solutionManager) {
+    public static async Task EnsureSolutionLoaded(ISolutionManager solutionManager, CancellationToken cancellationToken) {
         if (!solutionManager.IsSolutionLoaded) {
             throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}{nameof(Tools.SolutionTools.LoadSolution)}' first.");
         }
+
+        await solutionManager.ReloadSolutionIfChangedExternallyAsync(cancellationToken);
     }
 
     /// <summary>
     /// Safely ensures that a solution is loaded, with detailed error information.
     /// </summary>
-    public static void EnsureSolutionLoadedWithDetails(ISolutionManager solutionManager, ILogger logger, string operationName) {
+    public static async Task EnsureSolutionLoadedWithDetails(ISolutionManager solutionManager, ILogger logger, string operationName, CancellationToken cancellationToken) {
         if (!solutionManager.IsSolutionLoaded) {
             logger.LogError("Attempted to execute {Operation} without a loaded solution", operationName);
             throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}{nameof(Tools.SolutionTools.LoadSolution)}' before calling '{operationName}'.");
         }
+
+        await solutionManager.ReloadSolutionIfChangedExternallyAsync(cancellationToken);
     }
     private const string FqnHelpMessage = $" Try `{ToolHelpers.SharpToolPrefix}{nameof(Tools.AnalysisTools.SearchDefinitions)}`, `{ToolHelpers.SharpToolPrefix}{nameof(Tools.AnalysisTools.GetMembers)}`, or `{ToolHelpers.SharpToolPrefix}{nameof(Tools.DocumentTools.ReadTypesFromRoslynDocument)}`  to find what you need.";
     public static async Task<ISymbol> GetRoslynSymbolOrThrowAsync(
