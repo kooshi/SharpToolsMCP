@@ -688,7 +688,7 @@ internal static class ToolHelpers
 
     public static string TrimBackslash(this string str)
     {
-        if (str.StartsWith("\\", StringComparison.Ordinal))
+        if (str.StartsWith('\\'))
         {
             return str[1..];
         }

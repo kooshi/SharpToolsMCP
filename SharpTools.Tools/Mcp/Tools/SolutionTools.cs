@@ -98,8 +98,8 @@ public static class SolutionTools
             }
 
             int projectCount = solutionManager.GetProjects().Count();
-            string successMessage = $"Solution '{Path.GetFileName(solutionPath)}' loaded successfully with {projectCount} project(s). Caches and .editorconfig initialized.";
-            logger.LogInformation(successMessage);
+            string fileName = Path.GetFileName(solutionPath);
+            logger.LogInformation("Solution '{FileName}' loaded successfully with {ProjectCount} project(s). Caches and .editorconfig initialized.", fileName, projectCount);
 
             try
             {
@@ -383,7 +383,7 @@ public static class SolutionTools
                 // Map from old-style version format (v4.x) to new-style (.NETFramework,Version=v4.x)
                 if (string.IsNullOrEmpty(version) == false)
                 {
-                    if (version.StartsWith("v"))
+                    if (version.StartsWith('v'))
                     {
                         return $"net{version.Substring(1).Replace(".", "")}";
                     }
@@ -401,7 +401,7 @@ public static class SolutionTools
                 if (targetFrameworkIdentifier.Contains(".NETFramework"))
                 {
                     string? version = xDoc.Descendants("TargetFrameworkVersion").FirstOrDefault()?.Value?.Trim();
-                    if (string.IsNullOrEmpty(version) == false && version.StartsWith("v"))
+                    if (string.IsNullOrEmpty(version) == false && version.StartsWith('v'))
                     {
                         return $"net{version.Substring(1).Replace(".", "")}";
                     }
@@ -409,7 +409,7 @@ public static class SolutionTools
                 else if (targetFrameworkIdentifier.Contains(".NETCore"))
                 {
                     string? version = xDoc.Descendants("TargetFrameworkVersion").FirstOrDefault()?.Value?.Trim();
-                    if (string.IsNullOrEmpty(version) == false && version.StartsWith("v"))
+                    if (string.IsNullOrEmpty(version) == false && version.StartsWith('v'))
                     {
                         return $"netcoreapp{version.Substring(1).Replace(".", "")}";
                     }
@@ -417,7 +417,7 @@ public static class SolutionTools
                 else if (targetFrameworkIdentifier.Contains(".NETStandard"))
                 {
                     string? version = xDoc.Descendants("TargetFrameworkVersion").FirstOrDefault()?.Value?.Trim();
-                    if (string.IsNullOrEmpty(version) == false && version.StartsWith("v"))
+                    if (string.IsNullOrEmpty(version) == false && version.StartsWith('v'))
                     {
                         return $"netstandard{version.Substring(1).Replace(".", "")}";
                     }
@@ -631,7 +631,7 @@ public static class SolutionTools
                     List<string> sortedNamespaces = [.. namespaceContents.Keys.OrderBy(ns => ns)];
                     Dictionary<string, Dictionary<string, List<INamedTypeSymbol>>> namespaceParts =
                         BuildNamespaceHierarchy(sortedNamespaces, namespaceContents, logger);
-                    List<string> rootNamespaces = [.. namespaceParts.Keys.Where(ns => ns.IndexOf('.') == -1).OrderBy(n => n)];
+                    List<string> rootNamespaces = [.. namespaceParts.Keys.Where(ns => ns.Contains('.') == false).OrderBy(n => n)];
 
                     foreach (string rootNs in rootNamespaces)
                     {
@@ -917,7 +917,7 @@ public static class SolutionTools
             {
                 sb.Append('<').Append(type.TypeParameters.Length).Append('>');
             }
-            sb.Append("{");
+            sb.Append('{');
 
             if (detailLevel == DetailLevel.NamespacesAndTypesOnly)
             {
@@ -935,7 +935,7 @@ public static class SolutionTools
                         sb.Append($"\n{new string(' ', 2 * (indentLevel + 1))}{nestedType.Name}{{/* Error: {ex.Message} */}}");
                     }
                 }
-                sb.Append('\n').Append(indent).Append("}");
+                sb.Append('\n').Append(indent).Append('}');
                 return sb.ToString();
             }
 
@@ -960,11 +960,11 @@ public static class SolutionTools
 
             if (membersContent || type.GetTypeMembers().Any())
             {
-                sb.Append('\n').Append(indent).Append("}");
+                sb.Append('\n').Append(indent).Append('}');
             }
             else
             {
-                sb.Append("}"); // No newline if type is empty and no members shown
+                sb.Append('}'); // No newline if type is empty and no members shown
             }
         }
         catch (Exception ex)
@@ -1225,7 +1225,7 @@ public static class SolutionTools
                 m.MethodKind != MethodKind.PropertySet &&
                 m.MethodKind != MethodKind.EventAdd &&
                 m.MethodKind != MethodKind.EventRemove &&
-                m.Name.StartsWith("<") == false)];
+                m.Name.StartsWith('<') == false)];
 
         // Fields
         if (fields.Count != 0)
@@ -1348,7 +1348,7 @@ public static class SolutionTools
                     membersContent.Append($"\n{indent}  {method.Name}");
                     if (detailLevel < DetailLevel.NoMethodParamNames)
                     {
-                        membersContent.Append("(");
+                        membersContent.Append('(');
                         if (method.Parameters.Length > 0)
                         {
                             IEnumerable<string> paramStrings = method.Parameters.Select(p =>
@@ -1356,7 +1356,7 @@ public static class SolutionTools
                             );
                             membersContent.Append(string.Join(", ", paramStrings));
                         }
-                        membersContent.Append(")");
+                        membersContent.Append(')');
                     }
                     else if (method.Parameters.Length > 0)
                     {
@@ -1370,7 +1370,7 @@ public static class SolutionTools
                     {
                         membersContent.Append($":{GetTypeShortName(method.ReturnType)}");
                     }
-                    membersContent.Append(";");
+                    membersContent.Append(';');
                 }
                 if (detailLevel == DetailLevel.FiftyPercentMethodNames && methodsToShow.Count < methods.Count)
                 {

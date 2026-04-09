@@ -147,7 +147,7 @@ public class DocumentOperationsService(
         }
 
         // If it's a code file, try to format it, which will also commit it
-        if (await TryFormatAndCommitFileAsync(document, cancellationToken, commitMessage))
+        if (await TryFormatAndCommitFileAsync(document, commitMessage, cancellationToken))
         {
             _logger.LogInformation("File formatted and committed: {FilePath}", filePath);
             return true;
@@ -454,8 +454,8 @@ public class DocumentOperationsService(
 
     private async Task<bool> TryFormatAndCommitFileAsync(
         Document document,
-        CancellationToken cancellationToken,
-        string commitMessage)
+        string commitMessage,
+        CancellationToken cancellationToken)
     {
         try
         {
