@@ -245,9 +245,9 @@ public class ComplexityAnalysisService(
             Dictionary<string, object> methodDict = [];
             await AnalyzeMethodAsync(member, methodDict, recommendations, cancellationToken);
 
-            if (methodDict.ContainsKey("cyclomaticComplexity"))
+            if (methodDict.TryGetValue("cyclomaticComplexity", out object? value))
             {
-                methodComplexitySum += (int)methodDict["cyclomaticComplexity"];
+                methodComplexitySum += (int)value;
                 methodCount++;
             }
 
