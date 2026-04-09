@@ -2,16 +2,11 @@ using LibGit2Sharp;
 
 namespace SharpTools.Tools.Services;
 
-public class GitService : IGitService
+public class GitService(ILogger<GitService> logger) : IGitService
 {
-    private readonly ILogger<GitService> _logger;
+    private readonly ILogger<GitService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private const string SharpToolsBranchPrefix = "sharptools/";
     private const string SharpToolsUndoBranchPrefix = "sharptools/undo/";
-
-    public GitService(ILogger<GitService> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public async Task<bool> IsRepositoryAsync(string solutionPath, CancellationToken cancellationToken = default)
     {

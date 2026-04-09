@@ -4,7 +4,11 @@ using SharpTools.Tools.Mcp;
 
 namespace SharpTools.Tools.Services;
 
-public class SemanticSimilarityService : ISemanticSimilarityService
+public class SemanticSimilarityService(
+    ISolutionManager solutionManager,
+    ICodeAnalysisService codeAnalysisService,
+    ILogger<SemanticSimilarityService> logger,
+    IComplexityAnalysisService complexityAnalysisService) : ISemanticSimilarityService
 {
     private static class Tuning
     {
@@ -167,23 +171,11 @@ public class SemanticSimilarityService : ISemanticSimilarityService
         }
     }
 
-    private readonly ISolutionManager _solutionManager;
-    private readonly ICodeAnalysisService _codeAnalysisService;
-    private readonly ILogger<SemanticSimilarityService> _logger;
-    private readonly IComplexityAnalysisService _complexityAnalysisService;
-
-    public SemanticSimilarityService(
-        ISolutionManager solutionManager,
-        ICodeAnalysisService codeAnalysisService,
-        ILogger<SemanticSimilarityService> logger,
-        IComplexityAnalysisService complexityAnalysisService)
-    {
-        _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
-        _codeAnalysisService = codeAnalysisService ?? throw new ArgumentNullException(nameof(codeAnalysisService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _complexityAnalysisService = complexityAnalysisService
+    private readonly ISolutionManager _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
+    private readonly ICodeAnalysisService _codeAnalysisService = codeAnalysisService ?? throw new ArgumentNullException(nameof(codeAnalysisService));
+    private readonly ILogger<SemanticSimilarityService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IComplexityAnalysisService _complexityAnalysisService = complexityAnalysisService
             ?? throw new ArgumentNullException(nameof(complexityAnalysisService));
-    }
 
     public async Task<List<MethodSimilarityResult>> FindSimilarMethodsAsync(
         double similarityThreshold,

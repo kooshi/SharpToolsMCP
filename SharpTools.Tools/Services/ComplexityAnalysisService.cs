@@ -7,18 +7,12 @@ namespace SharpTools.Tools.Services;
 /// <summary>
 /// Service for analyzing code complexity metrics.
 /// </summary>
-public class ComplexityAnalysisService : IComplexityAnalysisService
+public class ComplexityAnalysisService(
+    ISolutionManager solutionManager,
+    ILogger<ComplexityAnalysisService> logger) : IComplexityAnalysisService
 {
-    private readonly ISolutionManager _solutionManager;
-    private readonly ILogger<ComplexityAnalysisService> _logger;
-
-    public ComplexityAnalysisService(
-        ISolutionManager solutionManager,
-        ILogger<ComplexityAnalysisService> logger)
-    {
-        _solutionManager = solutionManager;
-        _logger = logger;
-    }
+    private readonly ISolutionManager _solutionManager = solutionManager;
+    private readonly ILogger<ComplexityAnalysisService> _logger = logger;
 
     public async Task AnalyzeMethodAsync(
         IMethodSymbol methodSymbol,

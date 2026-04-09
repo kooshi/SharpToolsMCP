@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace SharpTools.Tools.Services;
 
-public class FuzzyFqnLookupService : IFuzzyFqnLookupService
+public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuzzyFqnLookupService
 {
-    private readonly ILogger<FuzzyFqnLookupService> _logger;
+    private readonly ILogger<FuzzyFqnLookupService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private ISolutionManager? _solutionManager;
 
     // Match scoring constants - higher score is better
@@ -23,11 +23,6 @@ public class FuzzyFqnLookupService : IFuzzyFqnLookupService
     private static readonly Regex ParamsRegex = new(@"\s*\([\s\S]*\)\s*$", RegexOptions.Compiled);
     private static readonly Regex ArityRegex = new(@"`\d+", RegexOptions.Compiled);
     private static readonly Regex GenericArgsRegex = new(@"<[^<>]+>", RegexOptions.Compiled); // Simplistic: removes <...>
-
-    public FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public static bool IsPartialType(ISymbol typeSymbol)
     {

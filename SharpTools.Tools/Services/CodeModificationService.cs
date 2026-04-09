@@ -5,21 +5,14 @@ using SharpTools.Tools.Mcp;
 
 namespace SharpTools.Tools.Services;
 
-public class CodeModificationService : ICodeModificationService
+public class CodeModificationService(
+    ISolutionManager solutionManager,
+    IGitService gitService,
+    ILogger<CodeModificationService> logger) : ICodeModificationService
 {
-    private readonly ISolutionManager _solutionManager;
-    private readonly IGitService _gitService;
-    private readonly ILogger<CodeModificationService> _logger;
-
-    public CodeModificationService(
-        ISolutionManager solutionManager,
-        IGitService gitService,
-        ILogger<CodeModificationService> logger)
-    {
-        _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
-        _gitService = gitService ?? throw new ArgumentNullException(nameof(gitService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ISolutionManager _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
+    private readonly IGitService _gitService = gitService ?? throw new ArgumentNullException(nameof(gitService));
+    private readonly ILogger<CodeModificationService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     private Solution GetCurrentSolutionOrThrow()
     {

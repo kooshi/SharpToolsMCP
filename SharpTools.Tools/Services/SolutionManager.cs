@@ -4,10 +4,14 @@ using SharpTools.Tools.Mcp.Tools;
 
 namespace SharpTools.Tools.Services;
 
-public sealed class SolutionManager : ISolutionManager
+public sealed class SolutionManager(
+    ILogger<SolutionManager> logger,
+    IFuzzyFqnLookupService fuzzyFqnLookupService,
+    string? buildConfiguration = null) : ISolutionManager
 {
-    private readonly ILogger<SolutionManager> _logger;
-    private readonly IFuzzyFqnLookupService _fuzzyFqnLookupService;
+    private readonly ILogger<SolutionManager> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IFuzzyFqnLookupService _fuzzyFqnLookupService = fuzzyFqnLookupService
+            ?? throw new ArgumentNullException(nameof(fuzzyFqnLookupService));
     private MSBuildWorkspace? _workspace;
     private Solution? _currentSolution;
     private MetadataLoadContext? _metadataLoadContext;
@@ -21,18 +25,7 @@ public sealed class SolutionManager : ISolutionManager
     public bool IsSolutionLoaded => _workspace != null && _currentSolution != null;
     public MSBuildWorkspace? CurrentWorkspace => _workspace;
     public Solution? CurrentSolution => _currentSolution;
-    private readonly string? _buildConfiguration;
-
-    public SolutionManager(
-        ILogger<SolutionManager> logger,
-        IFuzzyFqnLookupService fuzzyFqnLookupService,
-        string? buildConfiguration = null)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _fuzzyFqnLookupService = fuzzyFqnLookupService
-            ?? throw new ArgumentNullException(nameof(fuzzyFqnLookupService));
-        _buildConfiguration = buildConfiguration;
-    }
+    private readonly string? _buildConfiguration = buildConfiguration;
 
     public async Task LoadSolutionAsync(string solutionPath, CancellationToken cancellationToken)
     {
@@ -690,14 +683,9 @@ public sealed class SolutionManager : ISolutionManager
         GC.SuppressFinalize(this);
     }
 
-    private class ProgressReporter : IProgress<ProjectLoadProgress>
+    private class ProgressReporter(Microsoft.Extensions.Logging.ILogger logger) : IProgress<ProjectLoadProgress>
     {
-        private readonly Microsoft.Extensions.Logging.ILogger _logger;
-
-        public ProgressReporter(Microsoft.Extensions.Logging.ILogger logger)
-        {
-            _logger = logger;
-        }
+        private readonly Microsoft.Extensions.Logging.ILogger _logger = logger;
 
         public void Report(ProjectLoadProgress loadProgress)
         {

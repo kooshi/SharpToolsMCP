@@ -1,16 +1,10 @@
 using TypeInfo = Microsoft.CodeAnalysis.TypeInfo;
 namespace SharpTools.Tools.Services;
 
-public class CodeAnalysisService : ICodeAnalysisService
+public class CodeAnalysisService(ISolutionManager solutionManager, ILogger<CodeAnalysisService> logger) : ICodeAnalysisService
 {
-    private readonly ISolutionManager _solutionManager;
-    private readonly ILogger<CodeAnalysisService> _logger;
-
-    public CodeAnalysisService(ISolutionManager solutionManager, ILogger<CodeAnalysisService> logger)
-    {
-        _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ISolutionManager _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
+    private readonly ILogger<CodeAnalysisService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     private Solution GetCurrentSolutionOrThrow()
     {
@@ -211,19 +205,13 @@ public class CodeAnalysisService : ICodeAnalysisService
         return Task.FromResult(string.IsNullOrEmpty(commentXml) ? null : commentXml);
     }
 
-    private class InvocationWalker : CSharpSyntaxWalker
+    private class InvocationWalker(SemanticModel semanticModel, CancellationToken cancellationToken) : CSharpSyntaxWalker
     {
-        private readonly SemanticModel _semanticModel;
-        private readonly CancellationToken _cancellationToken;
+        private readonly SemanticModel _semanticModel = semanticModel;
+        private readonly CancellationToken _cancellationToken = cancellationToken;
         private readonly List<ISymbol> _calledSymbols = [];
 
         public IEnumerable<ISymbol> CalledSymbols => _calledSymbols;
-
-        public InvocationWalker(SemanticModel semanticModel, CancellationToken cancellationToken)
-        {
-            _semanticModel = semanticModel;
-            _cancellationToken = cancellationToken;
-        }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {

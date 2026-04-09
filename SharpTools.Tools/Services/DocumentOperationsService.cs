@@ -2,12 +2,16 @@ using System.Xml;
 
 namespace SharpTools.Tools.Services;
 
-public class DocumentOperationsService : IDocumentOperationsService
+public class DocumentOperationsService(
+    ISolutionManager solutionManager,
+    ICodeModificationService modificationService,
+    IGitService gitService,
+    ILogger<DocumentOperationsService> logger) : IDocumentOperationsService
 {
-    private readonly ISolutionManager _solutionManager;
-    private readonly ICodeModificationService _modificationService;
-    private readonly IGitService _gitService;
-    private readonly ILogger<DocumentOperationsService> _logger;
+    private readonly ISolutionManager _solutionManager = solutionManager;
+    private readonly ICodeModificationService _modificationService = modificationService;
+    private readonly IGitService _gitService = gitService;
+    private readonly ILogger<DocumentOperationsService> _logger = logger;
 
     // Extensions for common code file types that can be formatted
     private static readonly HashSet<string> CodeFileExtensions = new(StringComparer.OrdinalIgnoreCase)
@@ -20,18 +24,6 @@ public class DocumentOperationsService : IDocumentOperationsService
     {
         ".git", ".vs", "bin", "obj", "node_modules"
     };
-
-    public DocumentOperationsService(
-        ISolutionManager solutionManager,
-        ICodeModificationService modificationService,
-        IGitService gitService,
-        ILogger<DocumentOperationsService> logger)
-    {
-        _solutionManager = solutionManager;
-        _modificationService = modificationService;
-        _gitService = gitService;
-        _logger = logger;
-    }
 
     public async Task<(string contents, int lines)> ReadFileAsync(
         string filePath,

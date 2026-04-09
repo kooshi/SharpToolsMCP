@@ -1,15 +1,10 @@
 namespace SharpTools.Tools.Services;
 
-public class EditorConfigProvider : IEditorConfigProvider
+public class EditorConfigProvider(ILogger<EditorConfigProvider> logger) : IEditorConfigProvider
 {
-    private readonly ILogger<EditorConfigProvider> _logger;
+    private readonly ILogger<EditorConfigProvider> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private string? _solutionDirectory;
     private string? _rootEditorConfigPath;
-
-    public EditorConfigProvider(ILogger<EditorConfigProvider> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public Task InitializeAsync(string solutionDirectory, CancellationToken cancellationToken)
     {

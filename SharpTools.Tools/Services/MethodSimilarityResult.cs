@@ -1,13 +1,7 @@
 namespace SharpTools.Tools.Services;
 
-public class MethodSimilarityResult
+public class MethodSimilarityResult(List<MethodSemanticFeatures> similarMethods, double averageSimilarityScore)
 {
-    public List<MethodSemanticFeatures> SimilarMethods { get; }
-    public double AverageSimilarityScore { get; } // Or some other metric
-
-    public MethodSimilarityResult(List<MethodSemanticFeatures> similarMethods, double averageSimilarityScore)
-    {
-        SimilarMethods = similarMethods;
-        AverageSimilarityScore = averageSimilarityScore;
-    }
+    public List<MethodSemanticFeatures> SimilarMethods { get; } = similarMethods;
+    public double AverageSimilarityScore { get; } = averageSimilarityScore;
 }

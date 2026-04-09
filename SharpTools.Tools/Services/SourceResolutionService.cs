@@ -6,20 +6,13 @@ using ISymbol = Microsoft.CodeAnalysis.ISymbol;
 
 namespace SharpTools.Tools.Services;
 
-public class SourceResolutionService : ISourceResolutionService
+public class SourceResolutionService(
+    ISolutionManager solutionManager,
+    ILogger<SourceResolutionService> logger) : ISourceResolutionService
 {
-    private readonly ISolutionManager _solutionManager;
-    private readonly ILogger<SourceResolutionService> _logger;
-    private readonly HttpClient _httpClient;
-
-    public SourceResolutionService(
-        ISolutionManager solutionManager,
-        ILogger<SourceResolutionService> logger)
-    {
-        _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _httpClient = new HttpClient();
-    }
+    private readonly ISolutionManager _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
+    private readonly ILogger<SourceResolutionService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly HttpClient _httpClient = new HttpClient();
 
     public async Task<SourceResult?> ResolveSourceAsync(ISymbol symbol, CancellationToken cancellationToken)
     {
