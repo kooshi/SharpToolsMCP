@@ -1396,7 +1396,7 @@ public static partial class AnalysisTools
                                         if (declMatches.Count > 0)
                                         {
                                             matchedNodesInFile.Add(node, [.. declMatches.Cast<Match>()]);
-                                            if (matchedNodeSpans.TryGetValue(filePath, out var spans) == false)
+                                            if (matchedNodeSpans.TryGetValue(filePath, out HashSet<TextSpan>? spans) == false)
                                             {
                                                 spans = [];
                                                 matchedNodeSpans[filePath] = spans;
@@ -1412,7 +1412,7 @@ public static partial class AnalysisTools
                                 }
 
                                 // Second pass: Process only nodes that don't have a matched child
-                                foreach (var (node, nodeMatches) in matchedNodesInFile)
+                                foreach ((SyntaxNode? node, List<Match>? nodeMatches) in matchedNodesInFile)
                                 {
                                     // Check if we've already exceeded the result limit
                                     if (Interlocked.CompareExchange(ref totalMatchesFound, 0, 0) >= MaxSearchResults)
@@ -1423,7 +1423,7 @@ public static partial class AnalysisTools
 
                                     try
                                     {
-                                        if (matchedNodeSpans.TryGetValue(filePath, out var spans) &&
+                                        if (matchedNodeSpans.TryGetValue(filePath, out HashSet<TextSpan>? spans) &&
                                             node.DescendantNodes().Any(child => spans.Contains(child.Span) && child != node))
                                         {
                                             continue;
