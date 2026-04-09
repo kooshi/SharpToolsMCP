@@ -1772,7 +1772,7 @@ public static partial class AnalysisTools
                 pattern = regexPattern,
                 matchesByFile = groupedMatches,
                 resultsLimitMessage,
-                errors = errors.Any() ? errors.ToList() : null,
+                errors = errors.IsEmpty == false ? errors.ToList() : null,
                 totalMatchesFound
             });
         }, logger, nameof(SearchDefinitions), cancellationToken);

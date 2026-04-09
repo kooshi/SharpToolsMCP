@@ -525,7 +525,7 @@ public sealed class SolutionManager(
             return Task.FromResult(Enumerable.Empty<Type>());
         }
 
-        if (_allLoadedReflectionTypesCache.Any() == false)
+        if (_allLoadedReflectionTypesCache.IsEmpty)
         {
             _logger.LogInformation("Reflection type cache is empty. Search will yield no results.");
             return Task.FromResult(Enumerable.Empty<Type>());
