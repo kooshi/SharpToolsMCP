@@ -1309,10 +1309,10 @@ public static partial class AnalysisTools
                 || signature.Contains("<Clone>")            // Generated clone methods
                 || signature.Contains("<BackingField>")     // Generated backing fields
                 || signature.Contains(".+")                 // Generated nested types
-                || signature.Contains("$")                  // Generated interop types
+                || signature.Contains('$')                  // Generated interop types
                 || signature.Contains("__Backing__")        // Generated backing fields
-                || (signature.Contains("_") && signature.Contains("<"))  // Generated async methods
-                || (signature.Contains("+") && signature.Contains("`")); // Generic factory-created types
+                || (signature.Contains('_') && signature.Contains('<'))  // Generated async methods
+                || (signature.Contains('+') && signature.Contains('`')); // Generic factory-created types
         }
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>

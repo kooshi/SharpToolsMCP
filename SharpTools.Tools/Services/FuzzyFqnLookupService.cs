@@ -327,9 +327,9 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         {
             // If the user actually included generic args, but we had to strip them to match,
             // it could mean their generic args don't match the canonical ones
-            bool userHadGenericArgs = userInputNoParams.Contains("<")
+            bool userHadGenericArgs = userInputNoParams.Contains('<')
                 && userInputNoParams != userInputNoGenerics;
-            bool canonicalHadGenericArgs = canonicalFqnNoParams.Contains("<")
+            bool canonicalHadGenericArgs = canonicalFqnNoParams.Contains('<')
                 && canonicalFqnNoParams != canonicalFqnNoGenerics;
 
             if (userHadGenericArgs && canonicalHadGenericArgs)
@@ -822,7 +822,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
     private static string NormalizeGenericArgs(string typeName)
     {
         // If there are no generic arguments, return as is
-        if (typeName.Contains("<") == false)
+        if (typeName.Contains('<') == false)
         {
             return typeName;
         }

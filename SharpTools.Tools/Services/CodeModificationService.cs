@@ -419,7 +419,7 @@ public class CodeModificationService(
         Solution resultSolution = solution;
 
         // Check if the target is a fully qualified name (no wildcards)
-        if (targetString.Contains("*") == false && targetString.Contains("?") == false)
+        if (targetString.Contains('*') == false && targetString.Contains('?') == false)
         {
             try
             {

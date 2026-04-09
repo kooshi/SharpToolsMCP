@@ -740,7 +740,7 @@ public static class ModificationTools
                 Dictionary<string, string> nonCodeDiffs = [];
 
                 // First, check if the target is a file path pattern (contains wildcard or is a direct file path)
-                if (target.Contains("*") || target.Contains("?") || (File.Exists(target) && documentOperations.IsCodeFile(target) == false))
+                if (target.Contains('*') || target.Contains('?') || (File.Exists(target) && documentOperations.IsCodeFile(target) == false))
                 {
                     logger.LogInformation("Target appears to be a file path pattern or non-code file: {Target}", target);
 
@@ -761,7 +761,7 @@ public static class ModificationTools
                     }
 
                     // Handle direct file path (no wildcards)
-                    if (target.Contains("*") == false && target.Contains("?") == false && File.Exists(target))
+                    if (target.Contains('*') == false && target.Contains('?') == false && File.Exists(target))
                     {
                         // Direct file path, process just this file
                         PathInfo pathInfo = documentOperations.GetPathInfo(target);
