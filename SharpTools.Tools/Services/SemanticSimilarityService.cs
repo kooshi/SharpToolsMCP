@@ -534,7 +534,7 @@ public class SemanticSimilarityService(
             (method1.ParameterTypeNames.Count == method2.ParameterTypeNames.Count) ? 1.0 : 0.0;
         double paramTypeSimilarity = 0.0;
         if (method1.ParameterTypeNames.Count == method2.ParameterTypeNames.Count
-            && method1.ParameterTypeNames.Any())
+            && method1.ParameterTypeNames.Count != 0)
         {
             int matchingParams = 0;
             for (int k = 0; k < method1.ParameterTypeNames.Count; k++)
@@ -553,7 +553,7 @@ public class SemanticSimilarityService(
         }
 
         double invokedSimilarity = 0.0;
-        if (method1.InvokedMethodSignatures.Any() || method2.InvokedMethodSignatures.Any())
+        if (method1.InvokedMethodSignatures.Count != 0 || method2.InvokedMethodSignatures.Count != 0)
         {
             int intersection = method1.InvokedMethodSignatures.Intersect(method2.InvokedMethodSignatures).Count();
             int union = method1.InvokedMethodSignatures.Union(method2.InvokedMethodSignatures).Count();
@@ -580,7 +580,7 @@ public class SemanticSimilarityService(
             CalculateCosineSimilarity(method1.OperationCounts, method2.OperationCounts);
         double accessedTypesSimilarity = 0.0;
 
-        if (method1.DistinctAccessedMemberTypes.Any() || method2.DistinctAccessedMemberTypes.Any())
+        if (method1.DistinctAccessedMemberTypes.Count != 0 || method2.DistinctAccessedMemberTypes.Count != 0)
         {
             int intersectionTypes =
                 method1.DistinctAccessedMemberTypes.Intersect(method2.DistinctAccessedMemberTypes).Count();
@@ -621,12 +621,12 @@ public class SemanticSimilarityService(
 
     private static double CalculateCosineSimilarity(Dictionary<string, int> vec1, Dictionary<string, int> vec2)
     {
-        if (vec1.Any() == false && vec2.Any() == false)
+        if (vec1.Count == 0 && vec2.Count == 0)
         {
             return 1.0;
         }
 
-        if (vec1.Any() == false || vec2.Any() == false)
+        if (vec1.Count == 0 || vec2.Count == 0)
         {
             return 0.0;
         }
@@ -1187,7 +1187,7 @@ public class SemanticSimilarityService(
             CalculateJaccardSimilarity(class1.DistinctUsedNamespaceFqns, class2.DistinctUsedNamespaceFqns);
 
         double methodMatchingSimilarity = 0.0;
-        if (class1.MethodFeatures.Any() && class2.MethodFeatures.Any())
+        if (class1.MethodFeatures.Count != 0 && class2.MethodFeatures.Count != 0)
         {
             List<MethodSemanticFeatures> smallerList =
                 class1.MethodFeatures.Count < class2.MethodFeatures.Count
@@ -1226,9 +1226,9 @@ public class SemanticSimilarityService(
                 }
             }
 
-            methodMatchingSimilarity = smallerList.Any() ? totalMaxSimilarity / smallerList.Count : 1.0;
+            methodMatchingSimilarity = smallerList.Count != 0 ? totalMaxSimilarity / smallerList.Count : 1.0;
         }
-        else if (class1.MethodFeatures.Any() == false && class2.MethodFeatures.Any() == false)
+        else if (class1.MethodFeatures.Count == 0 && class2.MethodFeatures.Count == 0)
         {
             methodMatchingSimilarity = 1.0;
         }
@@ -1316,12 +1316,12 @@ public class SemanticSimilarityService(
 
     private static double CalculateJaccardSimilarity<T>(ICollection<T> set1, ICollection<T> set2)
     {
-        if (set1.Any() == false && set2.Any() == false)
+        if (set1.Count == 0 && set2.Count == 0)
         {
             return 1.0;
         }
 
-        if (set1.Any() == false || set2.Any() == false)
+        if (set1.Count == 0 || set2.Count == 0)
         {
             return 0.0;
         }

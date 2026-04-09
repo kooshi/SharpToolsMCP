@@ -729,7 +729,7 @@ public static class SolutionTools
                 }
 
                 // Add types to the leaf namespace
-                if (namespaceContents.TryGetValue(fullNamespace, out List<INamedTypeSymbol>? types) && types.Any())
+                if (namespaceContents.TryGetValue(fullNamespace, out List<INamedTypeSymbol>? types) && types.Count != 0)
                 {
                     Dictionary<string, List<INamedTypeSymbol>> leafNsParts = namespaceParts[fullNamespace];
                     foreach (INamedTypeSymbol type in types)
@@ -1228,7 +1228,7 @@ public static class SolutionTools
                 m.Name.StartsWith("<") == false)];
 
         // Fields
-        if (fields.Any())
+        if (fields.Count != 0)
         {
             if (detailLevel <= DetailLevel.NoConstantFieldNames)
             {
@@ -1244,7 +1244,7 @@ public static class SolutionTools
         }
 
         // Constants
-        if (constants.Any())
+        if (constants.Count != 0)
         {
             if (detailLevel < DetailLevel.NoConstantFieldNames) // Show names if detail is Full
             {
@@ -1260,7 +1260,7 @@ public static class SolutionTools
         }
 
         // Enum Members
-        if (enumValues.Any())
+        if (enumValues.Count != 0)
         {
             if (detailLevel < DetailLevel.NoEventEnumNames)
             {
@@ -1276,7 +1276,7 @@ public static class SolutionTools
         }
 
         // Events
-        if (events.Any())
+        if (events.Count != 0)
         {
             if (detailLevel < DetailLevel.NoEventEnumNames)
             {
@@ -1292,7 +1292,7 @@ public static class SolutionTools
         }
 
         // Properties
-        if (properties.Any())
+        if (properties.Count != 0)
         {
             if (detailLevel < DetailLevel.NoPropertyTypes) // Full, NoConstantFieldNames, NoEventEnumNames, NoMethodParamTypes
             {
@@ -1333,7 +1333,7 @@ public static class SolutionTools
         }
 
         // Methods (including constructors)
-        if (methods.Any())
+        if (methods.Count != 0)
         {
             if (detailLevel <= DetailLevel.FiftyPercentMethodNames)
             {

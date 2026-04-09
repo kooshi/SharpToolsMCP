@@ -692,7 +692,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
             .GroupBy(m => GetSymbolKindString(m.Symbol))
             .OrderByDescending(g => g.Count())];
 
-        if (symbolKinds.Any())
+        if (symbolKinds.Count != 0)
         {
             _logger.LogInformation("  Symbol kinds in high-scoring matches:");
 

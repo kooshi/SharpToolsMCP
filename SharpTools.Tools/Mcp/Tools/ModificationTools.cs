@@ -175,7 +175,7 @@ public static class ModificationTools
                 .OfType<IMethodSymbol>()
                 .Where(m => m.IsImplicitlyDeclared == false && m.MethodKind == MethodKind.Ordinary)];
 
-            if (existingMethods.Any() == false)
+            if (existingMethods.Count == 0)
             {
                 return true; // No method with the same name exists
             }

@@ -269,7 +269,7 @@ public class DocumentOperationsService(
 
         List<Project> projects = [.. _solutionManager.GetProjects()];
 
-        if (projects.Any() == false)
+        if (projects.Count == 0)
         {
             return null;
         }
@@ -496,7 +496,7 @@ public class DocumentOperationsService(
     {
         List<string> filesList = [.. filePaths.Where(f => string.IsNullOrEmpty(f) == false && File.Exists(f))];
 
-        if (filesList.Any() == false)
+        if (filesList.Count == 0)
         {
             return;
         }

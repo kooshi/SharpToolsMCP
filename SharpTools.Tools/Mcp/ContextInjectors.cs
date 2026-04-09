@@ -65,7 +65,7 @@ internal static class ContextInjectors
                 .Where(d => d.Severity == DiagnosticSeverity.Error || d.Severity == DiagnosticSeverity.Warning)
                 .OrderByDescending(d => d.Severity)  // Errors first, then warnings
                 .ThenBy(d => d.Location.SourceSpan.Start)];
-            if (diagnostics.Any() == false)
+            if (diagnostics.Count == 0)
             {
                 return (false, string.Empty);
             }

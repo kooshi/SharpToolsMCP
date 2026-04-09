@@ -260,7 +260,7 @@ public class SourceResolutionService(
             }
 
             // If no embedded sources found, check for standalone PDB
-            if (embeddedSources.Any() == false)
+            if (embeddedSources.Count == 0)
             {
                 string? pdbPath = Path.ChangeExtension(assemblyPath, ".pdb");
 
@@ -282,7 +282,7 @@ public class SourceResolutionService(
                 }
             }
 
-            if (embeddedSources.Any() == false)
+            if (embeddedSources.Count == 0)
             {
                 _logger.LogInformation(
                     "No embedded sources found in assembly or PDB for {SymbolName}",

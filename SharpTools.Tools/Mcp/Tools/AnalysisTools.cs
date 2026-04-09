@@ -422,7 +422,7 @@ public static partial class AnalysisTools
             Solution? solution = solutionManager.CurrentSolution;
             List<Location> locations = [.. roslynSymbol.Locations.Where(l => l.IsInSource)];
 
-            if (locations.Any() == false)
+            if (locations.Count == 0)
             {
                 // No source locations found in the solution, try to resolve from external sources
                 logger.LogInformation(
@@ -777,7 +777,7 @@ public static partial class AnalysisTools
         }
 
         // If we couldn't get any locations from DeclaringSyntaxReferences (rare), fall back to Locations
-        if (locations.Any() == false)
+        if (locations.Count == 0)
         {
             foreach (Location location in symbol.Locations.Where(l => l.IsInSource))
             {
@@ -2098,7 +2098,7 @@ public static partial class AnalysisTools
             cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cancellationTokenSource.Token).Token;
             List<MethodSimilarityResult> similarityResults = await semanticSimilarityService.FindSimilarMethodsAsync(similarityThreshold, cancellationToken);
 
-            if (similarityResults.Any() == false)
+            if (similarityResults.Count == 0)
             {
                 return "No semantically similar method groups found with the given threshold.";
             }
