@@ -343,13 +343,7 @@ public class ComplexityAnalysisService(
         List<Dictionary<string, object>> typeMetrics = [];
 
         // Project-wide metrics
-        Compilation? compilation = await project.GetCompilationAsync(cancellationToken);
-
-        if (compilation == null)
-        {
-            throw new McpException($"Could not get compilation for project {project.Name}");
-        }
-
+        Compilation? compilation = await project.GetCompilationAsync(cancellationToken) ?? throw new McpException($"Could not get compilation for project {project.Name}");
         IEnumerable<SyntaxTree> syntaxTrees = compilation.SyntaxTrees;
 
         if (includeGeneratedCode == false)

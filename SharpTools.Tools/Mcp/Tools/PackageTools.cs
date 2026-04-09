@@ -177,13 +177,7 @@ public static class PackageTools
 
             IPackageSearchMetadata? latestPackage = packages
                 .OrderByDescending(p => p.Identity.Version)
-                .FirstOrDefault();
-
-            if (latestPackage == null)
-            {
-                throw new McpException($"No stable versions found for package '{packageId}'.");
-            }
-
+                .FirstOrDefault() ?? throw new McpException($"No stable versions found for package '{packageId}'.");
             return latestPackage.Identity.Version.ToString();
         }
         catch (Exception ex)

@@ -18,12 +18,7 @@ public static class SyntaxTreeExtensions
             throw new InvalidOperationException($"File {tree.FilePath} belongs to multiple projects");
         }
 
-        Project? project = solution.GetProject(projectIds[0]);
-        if (project == null)
-        {
-            throw new InvalidOperationException($"Could not get project with ID {projectIds[0]}");
-        }
-
+        Project? project = solution.GetProject(projectIds[0]) ?? throw new InvalidOperationException($"Could not get project with ID {projectIds[0]}");
         return project;
     }
 }

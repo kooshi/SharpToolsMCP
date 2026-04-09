@@ -42,12 +42,7 @@ public static class ModificationTools
             if (string.IsNullOrEmpty(fileNameHint) == false && fileNameHint != "auto")
             {
                 targetSyntaxRef = targetSymbol.DeclaringSyntaxReferences.FirstOrDefault(sr =>
-                    sr.SyntaxTree.FilePath != null && sr.SyntaxTree.FilePath.Contains(fileNameHint));
-
-                if (targetSyntaxRef == null)
-                {
-                    throw new McpException($"File hint '{fileNameHint}' did not match any declaring syntax reference for symbol '{fullyQualifiedTargetName}'.");
-                }
+                    sr.SyntaxTree.FilePath != null && sr.SyntaxTree.FilePath.Contains(fileNameHint)) ?? throw new McpException($"File hint '{fileNameHint}' did not match any declaring syntax reference for symbol '{fullyQualifiedTargetName}'.");
             }
             else
             {
@@ -75,11 +70,7 @@ public static class ModificationTools
             MemberDeclarationSyntax? memberSyntax;
             try
             {
-                memberSyntax = SyntaxFactory.ParseMemberDeclaration(codeSnippet);
-                if (memberSyntax == null)
-                {
-                    throw new McpException("Failed to parse code snippet as a valid member declaration.");
-                }
+                memberSyntax = SyntaxFactory.ParseMemberDeclaration(codeSnippet) ?? throw new McpException("Failed to parse code snippet as a valid member declaration.");
             }
             catch (Exception ex) when ((ex is McpException || ex is OperationCanceledException) == false)
             {
@@ -322,12 +313,7 @@ public static class ModificationTools
             try
             {
                 CompilationUnitSyntax parsedCode = SyntaxFactory.ParseCompilationUnit(newMemberCode);
-                newNode = parsedCode.Members.FirstOrDefault();
-
-                if (newNode is null)
-                {
-                    throw new McpException("Failed to parse new code as a valid member or type declaration. The parsed result was empty.");
-                }
+                newNode = parsedCode.Members.FirstOrDefault() ?? throw new McpException("Failed to parse new code as a valid member or type declaration. The parsed result was empty.");
 
                 // Validate that the parsed node is of an expected type if the original was a TypeDeclaration
                 if (oldNode is TypeDeclarationSyntax && newNode is not TypeDeclarationSyntax)
@@ -996,12 +982,7 @@ public static class ModificationTools
                 throw new McpException($"Destination '{fullyQualifiedDestinationTypeOrNamespaceName}' must be a type or namespace.");
             }
 
-            SyntaxReference? sourceSyntaxRef = sourceMemberSymbol.DeclaringSyntaxReferences.FirstOrDefault();
-            if (sourceSyntaxRef == null)
-            {
-                throw new McpException($"Could not find syntax reference for member '{fullyQualifiedMemberName}'.");
-            }
-
+            SyntaxReference? sourceSyntaxRef = sourceMemberSymbol.DeclaringSyntaxReferences.FirstOrDefault() ?? throw new McpException($"Could not find syntax reference for member '{fullyQualifiedMemberName}'.");
             SyntaxNode sourceMemberNode = await sourceSyntaxRef.GetSyntaxAsync(cancellationToken);
             if (sourceMemberNode is not MemberDeclarationSyntax memberDeclaration)
             {
@@ -1016,11 +997,7 @@ public static class ModificationTools
             if (destinationSymbol is INamedTypeSymbol typeSym)
             {
                 destinationTypeSymbol = typeSym;
-                SyntaxReference? destSyntaxRef = typeSym.DeclaringSyntaxReferences.FirstOrDefault();
-                if (destSyntaxRef == null)
-                {
-                    throw new McpException($"Could not find syntax reference for destination type '{fullyQualifiedDestinationTypeOrNamespaceName}'.");
-                }
+                SyntaxReference? destSyntaxRef = typeSym.DeclaringSyntaxReferences.FirstOrDefault() ?? throw new McpException($"Could not find syntax reference for destination type '{fullyQualifiedDestinationTypeOrNamespaceName}'.");
                 SyntaxNode destNode = await destSyntaxRef.GetSyntaxAsync(cancellationToken);
                 destinationDocument = ToolHelpers.GetDocumentFromSyntaxNodeOrThrow(currentSolution, destNode);
             }
@@ -1058,11 +1035,7 @@ public static class ModificationTools
                 Document destinationDocumentFromCurrentSolution = currentSolution.GetDocument(destinationDocument.Id)
                     ?? throw new McpException($"Destination document '{destinationDocument.FilePath}' not found in current solution for symbol re-resolution.");
                 ISymbol? tempDestSymbol = await SymbolFinder.FindSymbolAtPositionAsync(destinationDocumentFromCurrentSolution, destinationTypeSymbol.Locations.First().SourceSpan.Start, cancellationToken);
-                updatedDestinationTypeSymbol = tempDestSymbol as INamedTypeSymbol;
-                if (updatedDestinationTypeSymbol == null)
-                {
-                    throw new McpException($"Could not re-resolve destination type symbol '{destinationTypeSymbol.ToDisplayString()}' in the current solution state at file '{destinationDocumentFromCurrentSolution.FilePath}'. Original location span: {destinationTypeSymbol.Locations.First().SourceSpan}");
-                }
+                updatedDestinationTypeSymbol = tempDestSymbol as INamedTypeSymbol ?? throw new McpException($"Could not re-resolve destination type symbol '{destinationTypeSymbol.ToDisplayString()}' in the current solution state at file '{destinationDocumentFromCurrentSolution.FilePath}'. Original location span: {destinationTypeSymbol.Locations.First().SourceSpan}");
             }
 
             if (updatedDestinationTypeSymbol != null && IsMemberAllowed(updatedDestinationTypeSymbol, memberDeclaration, memberName, cancellationToken) == false)
@@ -1294,12 +1267,7 @@ public static class ModificationTools
             throw new McpException($"Node is not a member declaration: {memberNode.GetType().Name}");
         }
 
-        SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken);
-        if (root == null)
-        {
-            throw new McpException("Could not get syntax root from document.");
-        }
-
+        SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken) ?? throw new McpException("Could not get syntax root from document.");
         SyntaxNode newRoot;
 
         if (memberNode.Parent is CompilationUnitSyntax compilationUnit)

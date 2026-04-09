@@ -39,14 +39,8 @@ public class CodeModificationService(
         TypeDeclarationSyntax? typeDeclarationNode =
             targetTypeSymbol.DeclaringSyntaxReferences
                 .FirstOrDefault()
-                ?.GetSyntax(cancellationToken) as TypeDeclarationSyntax;
-
-        if (typeDeclarationNode == null)
-        {
-            throw new InvalidOperationException(
+                ?.GetSyntax(cancellationToken) as TypeDeclarationSyntax ?? throw new InvalidOperationException(
                 $"Could not find syntax node for type '{targetTypeSymbol.Name}'.");
-        }
-
         _logger.LogInformation(
             "Adding member to type {TypeName} in document {DocumentPath}",
             targetTypeSymbol.Name,
@@ -241,11 +235,7 @@ public class CodeModificationService(
             _logger.LogInformation("Detected deletion operation for node {NodeKind}", oldNode.Kind());
 
             // For deletion, we need to remove the node from its parent
-            SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken);
-            if (root == null)
-            {
-                throw new InvalidOperationException("Could not get syntax root for document.");
-            }
+            SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken) ?? throw new InvalidOperationException("Could not get syntax root for document.");
 
             // Different approach based on the node's parent context
             SyntaxNode newRoot;

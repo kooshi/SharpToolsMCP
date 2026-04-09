@@ -687,19 +687,9 @@ public static partial class AnalysisTools
             throw new McpException($"Source tree not available for symbol '{roslynSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal)}'.");
         }
 
-        Document? document = solution?.GetDocument(sourceLocation.SourceTree);
-        if (document == null)
-        {
-            throw new McpException($"Could not find document for symbol '{roslynSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal)}'.");
-        }
-
+        Document? document = (solution?.GetDocument(sourceLocation.SourceTree)) ?? throw new McpException($"Could not find document for symbol '{roslynSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal)}'.");
         SyntaxNode symbolSyntax = await sourceLocation.SourceTree.GetRootAsync(cancellationToken);
-        SyntaxNode node = symbolSyntax.FindNode(sourceLocation.SourceSpan);
-
-        if (node == null)
-        {
-            throw new McpException($"Could not find syntax node for symbol '{roslynSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal)}'.");
-        }
+        SyntaxNode node = symbolSyntax.FindNode(sourceLocation.SourceSpan) ?? throw new McpException($"Could not find syntax node for symbol '{roslynSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal)}'.");
 
         // Find the appropriate parent node that represents the full definition
         SyntaxNode? definitionNode = node;
@@ -1875,19 +1865,14 @@ public static partial class AnalysisTools
             try
             {
                 string tempCode = string.Join("\n", directives);
-                newRoot = isGlobalUsings
+                newRoot = (isGlobalUsings
                     ? CSharpSyntaxTree.ParseText(tempCode).GetRoot() as CompilationUnitSyntax
                     : ((CompilationUnitSyntax)root).WithUsings(SyntaxFactory.List(
                         CSharpSyntaxTree.ParseText(tempCode + "\nnamespace N { class C { } }")
                             .GetRoot()
                             .DescendantNodes()
                             .OfType<UsingDirectiveSyntax>()
-                    ));
-
-                if (newRoot == null)
-                {
-                    throw new FormatException("Failed to create valid syntax tree.");
-                }
+                    ))) ?? throw new FormatException("Failed to create valid syntax tree.");
             }
             catch (Exception ex)
             {
@@ -2063,29 +2048,17 @@ public static partial class AnalysisTools
             switch (scope.ToLower())
             {
                 case "method":
-                    IMethodSymbol? methodSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, target, cancellationToken) as IMethodSymbol;
-                    if (methodSymbol == null)
-                    {
-                        throw new McpException($"Target '{target}' is not a method.");
-                    }
+                    IMethodSymbol? methodSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, target, cancellationToken) as IMethodSymbol ?? throw new McpException($"Target '{target}' is not a method.");
                     await complexityAnalysisService.AnalyzeMethodAsync(methodSymbol, metrics, recommendations, cancellationToken);
                     break;
 
                 case "class":
-                    INamedTypeSymbol? typeSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, target, cancellationToken) as INamedTypeSymbol;
-                    if (typeSymbol == null)
-                    {
-                        throw new McpException($"Target '{target}' is not a class or interface.");
-                    }
+                    INamedTypeSymbol? typeSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, target, cancellationToken) as INamedTypeSymbol ?? throw new McpException($"Target '{target}' is not a class or interface.");
                     await complexityAnalysisService.AnalyzeTypeAsync(typeSymbol, metrics, recommendations, false, cancellationToken);
                     break;
 
                 case "project":
-                    Project? project = solutionManager.GetProjectByName(target);
-                    if (project == null)
-                    {
-                        throw new McpException($"Project '{target}' not found.");
-                    }
+                    Project? project = solutionManager.GetProjectByName(target) ?? throw new McpException($"Project '{target}' not found.");
                     await complexityAnalysisService.AnalyzeProjectAsync(project, metrics, recommendations, false, cancellationToken);
                     break;
             }

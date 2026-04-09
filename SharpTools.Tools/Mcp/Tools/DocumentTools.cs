@@ -366,30 +366,13 @@ public static class DocumentTools
                 throw new McpException($"File is not part of the solution: {filePath}");
             }
 
-            DocumentId? documentId = solutionManager.CurrentSolution?.GetDocumentIdsWithFilePath(filePath).FirstOrDefault();
-            if (documentId == null)
-            {
-                throw new McpException($"Could not locate document in solution: {filePath}");
-            }
+            DocumentId? documentId = (solutionManager.CurrentSolution?.GetDocumentIdsWithFilePath(filePath).FirstOrDefault()) ?? throw new McpException($"Could not locate document in solution: {filePath}");
 
-            Document? sourceDoc = solutionManager.CurrentSolution?.GetDocument(documentId);
-            if (sourceDoc == null)
-            {
-                throw new McpException($"Could not load document from solution: {filePath}");
-            }
+            Document? sourceDoc = (solutionManager.CurrentSolution?.GetDocument(documentId)) ?? throw new McpException($"Could not load document from solution: {filePath}");
 
-            SyntaxNode? syntaxRoot = await sourceDoc.GetSyntaxRootAsync(cancellationToken);
-            if (syntaxRoot == null)
-            {
-                throw new McpException($"Could not parse syntax tree for document: {filePath}");
-            }
+            SyntaxNode? syntaxRoot = await sourceDoc.GetSyntaxRootAsync(cancellationToken) ?? throw new McpException($"Could not parse syntax tree for document: {filePath}");
 
-            SemanticModel? semanticModel = await sourceDoc.GetSemanticModelAsync(cancellationToken);
-            if (semanticModel == null)
-            {
-                throw new McpException($"Could not get semantic model for document: {filePath}");
-            }
-
+            SemanticModel? semanticModel = await sourceDoc.GetSemanticModelAsync(cancellationToken) ?? throw new McpException($"Could not get semantic model for document: {filePath}");
             IEnumerable<TypeDeclarationSyntax> typeNodes = syntaxRoot.DescendantNodes()
                 .OfType<TypeDeclarationSyntax>();
 
