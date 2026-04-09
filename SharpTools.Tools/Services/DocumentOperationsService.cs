@@ -267,7 +267,7 @@ public class DocumentOperationsService(
             return null;
         }
 
-        List<Project> projects = _solutionManager.GetProjects().ToList();
+        List<Project> projects = [.. _solutionManager.GetProjects()];
 
         if (projects.Any() == false)
         {
@@ -494,9 +494,7 @@ public class DocumentOperationsService(
         CancellationToken cancellationToken,
         string commitMessage)
     {
-        List<string> filesList = filePaths
-            .Where(f => string.IsNullOrEmpty(f) == false && File.Exists(f))
-            .ToList();
+        List<string> filesList = [.. filePaths.Where(f => string.IsNullOrEmpty(f) == false && File.Exists(f))];
 
         if (filesList.Any() == false)
         {

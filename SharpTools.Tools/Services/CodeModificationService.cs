@@ -82,7 +82,7 @@ public class CodeModificationService(
                 }
 
                 DocumentEditor editor = await DocumentEditor.CreateAsync(document, cancellationToken);
-                List<MemberDeclarationSyntax> membersList = typeDeclarationNode.Members.ToList();
+                List<MemberDeclarationSyntax> membersList = [.. typeDeclarationNode.Members];
                 membersList.Insert(insertIndex, newMember);
                 TypeDeclarationSyntax newTypeDeclaration =
                     typeDeclarationNode.WithMembers(SyntaxFactory.List(membersList));

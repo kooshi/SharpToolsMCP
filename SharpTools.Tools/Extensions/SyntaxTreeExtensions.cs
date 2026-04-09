@@ -4,10 +4,9 @@ public static class SyntaxTreeExtensions
 {
     public static Project GetRequiredProject(this SyntaxTree tree, Solution solution)
     {
-        List<ProjectId> projectIds = solution.Projects
+        List<ProjectId> projectIds = [.. solution.Projects
             .Where(p => p.Documents.Any(d => d.FilePath == tree.FilePath))
-            .Select(p => p.Id)
-            .ToList();
+            .Select(p => p.Id)];
 
         if (projectIds.Count == 0)
         {

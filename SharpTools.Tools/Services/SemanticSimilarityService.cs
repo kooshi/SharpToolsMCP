@@ -195,7 +195,7 @@ public class SemanticSimilarityService(
             CancellationToken = cancellationToken
         };
 
-        List<Project> projects = _solutionManager.GetProjects().ToList();
+        List<Project> projects = [.. _solutionManager.GetProjects()];
 
         await Parallel.ForEachAsync(projects, parallelOptions, async (project, ct) =>
         {
@@ -215,7 +215,7 @@ public class SemanticSimilarityService(
                 return;
             }
 
-            List<Document> documents = project.Documents.ToList();
+            List<Document> documents = [.. project.Documents];
 
             await Parallel.ForEachAsync(documents, parallelOptions, async (document, docCt) =>
             {
@@ -294,7 +294,7 @@ public class SemanticSimilarityService(
         _logger.LogInformation(
             "Extracted features for {MethodCount} methods. Starting similarity comparison.",
             allMethodFeatures.Count);
-        return CompareFeatures(allMethodFeatures.ToList(), similarityThreshold, cancellationToken);
+        return CompareFeatures([.. allMethodFeatures], similarityThreshold, cancellationToken);
     }
 
     private async Task<MethodSemanticFeatures?> ExtractFeaturesAsync(
@@ -326,9 +326,7 @@ public class SemanticSimilarityService(
             methodSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal);
         string returnTypeName =
             methodSymbol.ReturnType.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal);
-        List<string> parameterTypeNames = methodSymbol.Parameters
-            .Select(p => p.Type.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal))
-            .ToList();
+        List<string> parameterTypeNames = [.. methodSymbol.Parameters.Select(p => p.Type.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal))];
 
         HashSet<string> invokedMethodSignatures = [];
         Dictionary<string, int> operationCounts = [];
@@ -528,7 +526,7 @@ public class SemanticSimilarityService(
 
         _logger.LogInformation(
             "Semantic similarity analysis complete. Found {GroupCount} groups.", results.Count);
-        return results.OrderByDescending(r => r.AverageSimilarityScore).ToList();
+        return [.. results.OrderByDescending(r => r.AverageSimilarityScore)];
     }
 
     private double CalculateSimilarity(MethodSemanticFeatures method1, MethodSemanticFeatures method2)
@@ -635,7 +633,7 @@ public class SemanticSimilarityService(
             return 0.0;
         }
 
-        List<string> allKeys = vec1.Keys.Union(vec2.Keys).ToList();
+        List<string> allKeys = [.. vec1.Keys.Union(vec2.Keys)];
         double dotProduct = 0.0;
         double magnitude1 = 0.0;
         double magnitude2 = 0.0;
@@ -679,7 +677,7 @@ public class SemanticSimilarityService(
             CancellationToken = cancellationToken
         };
 
-        List<Project> projects = _solutionManager.GetProjects().ToList();
+        List<Project> projects = [.. _solutionManager.GetProjects()];
 
         await Parallel.ForEachAsync(projects, parallelOptions, async (project, ct) =>
         {
@@ -699,7 +697,7 @@ public class SemanticSimilarityService(
                 return;
             }
 
-            List<Document> documents = project.Documents.ToList();
+            List<Document> documents = [.. project.Documents];
 
             await Parallel.ForEachAsync(documents, parallelOptions, async (document, docCt) =>
             {
@@ -779,7 +777,7 @@ public class SemanticSimilarityService(
         _logger.LogInformation(
             "Extracted features for {ClassCount} classes. Starting similarity comparison.",
             allClassFeatures.Count);
-        return CompareClassFeatures(allClassFeatures.ToList(), similarityThreshold, cancellationToken);
+        return CompareClassFeatures([.. allClassFeatures], similarityThreshold, cancellationToken);
     }
 
     private async Task<ClassSemanticFeatures?> ExtractClassFeaturesAsync(
@@ -1086,7 +1084,7 @@ public class SemanticSimilarityService(
             startLine,
             className,
             baseClassName,
-            implementedInterfaceNames.Distinct().ToList(),
+            [.. implementedInterfaceNames.Distinct()],
             publicMethodCount,
             protectedMethodCount,
             privateMethodCount,
@@ -1179,7 +1177,7 @@ public class SemanticSimilarityService(
 
         _logger.LogInformation(
             "Class semantic similarity analysis complete. Found {GroupCount} groups.", results.Count);
-        return results.OrderByDescending(r => r.AverageSimilarityScore).ToList();
+        return [.. results.OrderByDescending(r => r.AverageSimilarityScore)];
     }
 
     private double CalculateClassSimilarity(ClassSemanticFeatures class1, ClassSemanticFeatures class2)

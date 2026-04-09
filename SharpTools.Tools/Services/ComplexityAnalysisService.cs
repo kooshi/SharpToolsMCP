@@ -134,14 +134,13 @@ public class ComplexityAnalysisService(
             if (compilation != null)
             {
                 SemanticModel semanticModel = compilation.GetSemanticModel(methodNode.SyntaxTree);
-                List<string> methodCalls = methodNode.DescendantNodes()
+                List<string> methodCalls = [.. methodNode.DescendantNodes()
                     .OfType<InvocationExpressionSyntax>()
                     .Select(i => semanticModel.GetSymbolInfo(i).Symbol)
                     .OfType<IMethodSymbol>()
                     .Where(m => SymbolEqualityComparer.Default.Equals(m.ContainingType, methodSymbol.ContainingType) == false)
                     .Select(m => m.ContainingType.ToDisplayString())
-                    .Distinct()
-                    .ToList();
+                    .Distinct()];
 
                 methodCallCount = methodCalls.Count;
                 metrics["externalMethodCalls"] = methodCallCount;

@@ -60,20 +60,17 @@ internal static class ContextInjectors
             // Get semantic model
             SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
             // Get all diagnostics for the specific syntax tree
-            List<Diagnostic> diagnostics = semanticModel
+            List<Diagnostic> diagnostics = [.. semanticModel
                 .GetDiagnostics(cancellationToken: cancellationToken)
                 .Where(d => d.Severity == DiagnosticSeverity.Error || d.Severity == DiagnosticSeverity.Warning)
                 .OrderByDescending(d => d.Severity)  // Errors first, then warnings
-                .ThenBy(d => d.Location.SourceSpan.Start)
-                .ToList();
+                .ThenBy(d => d.Location.SourceSpan.Start)];
             if (diagnostics.Any() == false)
             {
                 return (false, string.Empty);
             }
             // Focus specifically on member access errors
-            List<Diagnostic> memberAccessErrors = diagnostics
-                .Where(d => d.Id == "CS0103" || d.Id == "CS1061" || d.Id == "CS0117" || d.Id == "CS0246")
-                .ToList();
+            List<Diagnostic> memberAccessErrors = [.. diagnostics.Where(d => d.Id == "CS0103" || d.Id == "CS1061" || d.Id == "CS0117" || d.Id == "CS0246")];
             // Build error message
             StringBuilder sb = new();
             sb.AppendLine(

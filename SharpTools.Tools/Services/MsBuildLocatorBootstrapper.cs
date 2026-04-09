@@ -26,11 +26,10 @@ public static class MsBuildLocatorBootstrapper
                 return;
             }
 
-            List<VisualStudioInstance> instances = MSBuildLocator.QueryVisualStudioInstances()
+            List<VisualStudioInstance> instances = [.. MSBuildLocator.QueryVisualStudioInstances()
                 .OrderBy(instance => IsBuildTools(instance))
                 .ThenByDescending(instance => instance.Version)
-                .ThenBy(instance => instance.Name, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+                .ThenBy(instance => instance.Name, StringComparer.OrdinalIgnoreCase)];
 
             if (instances.Count > 0)
             {
@@ -74,14 +73,13 @@ public static class MsBuildLocatorBootstrapper
 
     private static string? FindPreferredMsBuildPath(Action<string>? logInformation)
     {
-        List<string> candidates = EnumerateVsInstallMsBuildPaths()
+        List<string> candidates = [.. EnumerateVsInstallMsBuildPaths()
             .Concat(EnumeratePathMsBuildPaths())
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(path => IsBuildToolsPath(path))
             .ThenByDescending(GetMsBuildVersionScore)
             .ThenBy(GetEditionRank)
-            .ThenBy(path => path, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            .ThenBy(path => path, StringComparer.OrdinalIgnoreCase)];
 
         foreach (string candidate in candidates)
         {

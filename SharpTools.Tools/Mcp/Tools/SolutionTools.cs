@@ -628,10 +628,10 @@ public static class SolutionTools
                 while (lengthAcceptable == false && currentDetailLevel <= DetailLevel.NamespacesAndTypesOnly)
                 {
                     structureBuilder.Clear();
-                    List<string> sortedNamespaces = namespaceContents.Keys.OrderBy(ns => ns).ToList();
+                    List<string> sortedNamespaces = [.. namespaceContents.Keys.OrderBy(ns => ns)];
                     Dictionary<string, Dictionary<string, List<INamedTypeSymbol>>> namespaceParts =
                         BuildNamespaceHierarchy(sortedNamespaces, namespaceContents, logger);
-                    List<string> rootNamespaces = namespaceParts.Keys.Where(ns => ns.IndexOf('.') == -1).OrderBy(n => n).ToList();
+                    List<string> rootNamespaces = [.. namespaceParts.Keys.Where(ns => ns.IndexOf('.') == -1).OrderBy(n => n)];
 
                     foreach (string rootNs in rootNamespaces)
                     {
@@ -1167,7 +1167,7 @@ public static class SolutionTools
             // Calculate the mean implementation count
             if (TotalImplementationCounts.Count > 0)
             {
-                List<int> counts = TotalImplementationCounts.Values.OrderBy(c => c).ToList();
+                List<int> counts = [.. TotalImplementationCounts.Values.OrderBy(c => c)];
                 MedianImplementationCount = counts.Count % 2 == 0
                     ? (counts[counts.Count / 2 - 1] + counts[counts.Count / 2]) / 2.0
                     : counts[counts.Count / 2];
@@ -1206,30 +1206,26 @@ public static class SolutionTools
         string indent)
     {
         StringBuilder membersContent = new();
-        List<ISymbol> publicOrInternalMembers = type.GetMembers()
+        List<ISymbol> publicOrInternalMembers = [.. type.GetMembers()
             .Where(m => m.IsImplicitlyDeclared == false &&
                 (m is INamedTypeSymbol) == false &&
                 (m.DeclaredAccessibility == Accessibility.Public ||
                 m.DeclaredAccessibility == Accessibility.Internal ||
-                m.DeclaredAccessibility == Accessibility.ProtectedOrInternal))
-            .ToList();
+                m.DeclaredAccessibility == Accessibility.ProtectedOrInternal))];
 
-        List<IFieldSymbol> fields = publicOrInternalMembers.OfType<IFieldSymbol>()
-            .Where(f => f.IsImplicitlyDeclared == false && f.Name.Contains("k__BackingField") == false && f.IsConst == false && type.TypeKind != TypeKind.Enum)
-            .ToList();
-        List<IFieldSymbol> constants = publicOrInternalMembers.OfType<IFieldSymbol>().Where(f => f.IsConst).ToList();
+        List<IFieldSymbol> fields = [.. publicOrInternalMembers.OfType<IFieldSymbol>().Where(f => f.IsImplicitlyDeclared == false && f.Name.Contains("k__BackingField") == false && f.IsConst == false && type.TypeKind != TypeKind.Enum)];
+        List<IFieldSymbol> constants = [.. publicOrInternalMembers.OfType<IFieldSymbol>().Where(f => f.IsConst)];
         List<IFieldSymbol> enumValues = type.TypeKind == TypeKind.Enum
-            ? publicOrInternalMembers.OfType<IFieldSymbol>().ToList()
+            ? [.. publicOrInternalMembers.OfType<IFieldSymbol>()]
             : [];
-        List<IEventSymbol> events = publicOrInternalMembers.OfType<IEventSymbol>().ToList();
-        List<IPropertySymbol> properties = publicOrInternalMembers.OfType<IPropertySymbol>().ToList();
-        List<IMethodSymbol> methods = publicOrInternalMembers.OfType<IMethodSymbol>()
+        List<IEventSymbol> events = [.. publicOrInternalMembers.OfType<IEventSymbol>()];
+        List<IPropertySymbol> properties = [.. publicOrInternalMembers.OfType<IPropertySymbol>()];
+        List<IMethodSymbol> methods = [.. publicOrInternalMembers.OfType<IMethodSymbol>()
             .Where(m => m.MethodKind != MethodKind.PropertyGet &&
                 m.MethodKind != MethodKind.PropertySet &&
                 m.MethodKind != MethodKind.EventAdd &&
                 m.MethodKind != MethodKind.EventRemove &&
-                m.Name.StartsWith("<") == false)
-            .ToList();
+                m.Name.StartsWith("<") == false)];
 
         // Fields
         if (fields.Any())
@@ -1314,8 +1310,8 @@ public static class SolutionTools
             }
             else if (detailLevel == DetailLevel.FiftyPercentPropertyNames)
             {
-                List<IPropertySymbol> shuffledProps = properties.OrderBy(_ => random.Next()).ToList();
-                List<IPropertySymbol> propsToShow = shuffledProps.Take(Math.Max(1, properties.Count / 2)).ToList();
+                List<IPropertySymbol> shuffledProps = [.. properties.OrderBy(_ => random.Next())];
+                List<IPropertySymbol> propsToShow = [.. shuffledProps.Take(Math.Max(1, properties.Count / 2))];
                 foreach (IPropertySymbol prop in propsToShow.OrderBy(p => p.Name))
                 {
                     membersContent.Append($"\n{indent}  {prop.Name};"); // Type omitted
@@ -1344,8 +1340,8 @@ public static class SolutionTools
                 List<IMethodSymbol> methodsToShow = methods;
                 if (detailLevel == DetailLevel.FiftyPercentMethodNames)
                 {
-                    List<IMethodSymbol> shuffledMethods = methods.OrderBy(_ => random.Next()).ToList();
-                    methodsToShow = shuffledMethods.Take(Math.Max(1, methods.Count / 2)).ToList();
+                    List<IMethodSymbol> shuffledMethods = [.. methods.OrderBy(_ => random.Next())];
+                    methodsToShow = [.. shuffledMethods.Take(Math.Max(1, methods.Count / 2))];
                 }
                 foreach (IMethodSymbol method in methodsToShow.OrderBy(m => m.Name))
                 {

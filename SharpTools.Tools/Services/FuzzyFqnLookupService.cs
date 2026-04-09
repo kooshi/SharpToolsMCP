@@ -88,11 +88,10 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         int prefilter = allRelevantSymbols.Count;
 
         //Remove all duplicates, no idea why this is needed. //TODO
-        List<IGrouping<string, ISymbol>> partialTypes = allRelevantSymbols
+        List<IGrouping<string, ISymbol>> partialTypes = [.. allRelevantSymbols
             //.OfType<INamedTypeSymbol>()
             //.Where(IsPartialType)
-            .GroupBy(GetSearchableString)
-            .ToList();
+            .GroupBy(GetSearchableString)];
 
         allRelevantSymbols = new HashSet<ISymbol>(
             allRelevantSymbols.Except(partialTypes.SelectMany(g => g.Skip(1))),
@@ -124,10 +123,9 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         cancellationToken.ThrowIfCancellationRequested();
 
         // Sort by score descending, then by FQN alphabetically for stable results
-        List<FuzzyMatchResult> results = potentialMatches
+        List<FuzzyMatchResult> results = [.. potentialMatches
             .OrderByDescending(m => m.Score)
-            .ThenBy(m => m.CanonicalFqn)
-            .ToList();
+            .ThenBy(m => m.CanonicalFqn)];
 
         _logger.LogDebug(
             "Found {MatchCount} matches for fuzzy FQN '{FuzzyFqn}'",
@@ -137,9 +135,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         // If multiple matches are found, but one is perfect, filter to that one
         if (results.Count > 1)
         {
-            List<FuzzyMatchResult> perfectMatches = results
-                .Where(m => m.Score >= PerfectMatchScore - 0.01)
-                .ToList();
+            List<FuzzyMatchResult> perfectMatches = [.. results.Where(m => m.Score >= PerfectMatchScore - 0.01)];
 
             if (perfectMatches.Count == 1)
             {
@@ -499,12 +495,8 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         const int MaxDetailedLogsPerAmbiguity = 10; // Limit detailed logs to prevent spam
 
         // Group matches by score ranges to identify ambiguity patterns
-        List<FuzzyMatchResult> highScoreMatches = results
-            .Where(r => r.Score >= HighScoreThreshold)
-            .ToList();
-        List<FuzzyMatchResult> perfectMatches = results
-            .Where(r => r.Score >= PerfectMatchScore - 0.01)
-            .ToList();
+        List<FuzzyMatchResult> highScoreMatches = [.. results.Where(r => r.Score >= HighScoreThreshold)];
+        List<FuzzyMatchResult> perfectMatches = [.. results.Where(r => r.Score >= PerfectMatchScore - 0.01)];
 
         // Log ambiguity when we have multiple high-scoring matches
         if (highScoreMatches.Count > 1)
@@ -516,9 +508,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
                 HighScoreThreshold);
 
             // Group by project to understand cross-project ambiguity
-            List<IGrouping<string, FuzzyMatchResult>> matchesByProject = highScoreMatches
-                .GroupBy(match => GetProjectName(match.Symbol))
-                .ToList();
+            List<IGrouping<string, FuzzyMatchResult>> matchesByProject = [.. highScoreMatches.GroupBy(match => GetProjectName(match.Symbol))];
 
             if (matchesByProject.Count > 1)
             {
@@ -536,7 +526,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
             }
 
             // Log detailed information for the top matches
-            List<FuzzyMatchResult> detailedMatches = highScoreMatches.Take(MaxDetailedLogsPerAmbiguity).ToList();
+            List<FuzzyMatchResult> detailedMatches = [.. highScoreMatches.Take(MaxDetailedLogsPerAmbiguity)];
 
             for (int i = 0; i < detailedMatches.Count; i++)
             {
@@ -698,10 +688,9 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         }
 
         // Symbol kind distribution
-        List<IGrouping<string, FuzzyMatchResult>> symbolKinds = highScoreMatches
+        List<IGrouping<string, FuzzyMatchResult>> symbolKinds = [.. highScoreMatches
             .GroupBy(m => GetSymbolKindString(m.Symbol))
-            .OrderByDescending(g => g.Count())
-            .ToList();
+            .OrderByDescending(g => g.Count())];
 
         if (symbolKinds.Any())
         {
@@ -714,10 +703,9 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         }
 
         // Project distribution
-        List<IGrouping<string, FuzzyMatchResult>> projects = highScoreMatches
+        List<IGrouping<string, FuzzyMatchResult>> projects = [.. highScoreMatches
             .GroupBy(m => GetProjectName(m.Symbol))
-            .OrderByDescending(g => g.Count())
-            .ToList();
+            .OrderByDescending(g => g.Count())];
 
         if (projects.Count > 1)
         {
@@ -851,7 +839,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
             }
 
             // Handle multiple type arguments separated by commas
-            string[] args = content.Split(',').Select(arg => "T").ToArray();
+            string[] args = [.. content.Split(',').Select(arg => "T")];
             return $"<{string.Join(",", args)}>";
         });
     }

@@ -84,10 +84,9 @@ public static partial class AnalysisTools
         // Sort members within each kind by signature
         foreach (string kind in membersByKind.Keys.ToList())
         {
-            membersByKind[kind] = membersByKind[kind]
+            membersByKind[kind] = [.. membersByKind[kind]
                 .OrderBy(m => ((dynamic)m).line)
-                .OrderBy(m => ((dynamic)m).signature)
-                .ToList();
+                .OrderBy(m => ((dynamic)m).signature)];
         }
 
         // Sort kinds in a logical order: Nested Types, Fields, Properties, Events, Methods
@@ -149,7 +148,7 @@ public static partial class AnalysisTools
             members.Add(memberItem);
         }
 
-        members = members.OrderBy(m => ((dynamic)m).kind)
+        members = [.. members.OrderBy(m => ((dynamic)m).kind)
             .ThenBy(m => ((dynamic)m).signature)
             .GroupBy(m => ((dynamic)m).kind)
             .Select(g => (object)new
@@ -160,8 +159,7 @@ public static partial class AnalysisTools
                     ((dynamic)m).signature,
                     ((dynamic)m).members
                 }).ToList()
-            })
-            .ToList();
+            })];
 
         return new
         {
@@ -422,7 +420,7 @@ public static partial class AnalysisTools
             // Get the symbol or throw an exception if not found
             ISymbol roslynSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, fullyQualifiedSymbolName, cancellationToken);
             Solution? solution = solutionManager.CurrentSolution;
-            List<Location> locations = roslynSymbol.Locations.Where(l => l.IsInSource).ToList();
+            List<Location> locations = [.. roslynSymbol.Locations.Where(l => l.IsInSource)];
 
             if (locations.Any() == false)
             {
@@ -589,9 +587,7 @@ public static partial class AnalysisTools
                     throw new McpException($"Symbol '{fullyQualifiedSymbolName}' is not an interface, abstract/virtual member, or class.");
                 }
 
-                implementations = implementations
-                    .OrderBy(i => ((dynamic)i).signature)
-                    .ToList();
+                implementations = [.. implementations.OrderBy(i => ((dynamic)i).signature)];
             }
             catch (Exception ex) when ((ex is McpException || ex is OperationCanceledException) == false)
             {
@@ -1073,8 +1069,8 @@ public static partial class AnalysisTools
                             : $"{errorMessage}; Could not retrieve all derived types: {ex.Message}";
                     }
 
-                    baseTypes = baseTypes.OrderBy(t => ((dynamic)t).signature).ToList();
-                    derivedTypes = derivedTypes.OrderBy(t => ((dynamic)t).signature).ToList();
+                    baseTypes = [.. baseTypes.OrderBy(t => ((dynamic)t).signature)];
+                    derivedTypes = [.. derivedTypes.OrderBy(t => ((dynamic)t).signature)];
 
                     return ToolHelpers.ToJson(new
                     {
@@ -1167,7 +1163,7 @@ public static partial class AnalysisTools
                     signature = "Derived type discovery for pure reflection types is limited in this tool version."
                 });
 
-                baseTypes = baseTypes.OrderBy(t => ((dynamic)t).signature).ToList();
+                baseTypes = [.. baseTypes.OrderBy(t => ((dynamic)t).signature)];
 
                 return ToolHelpers.ToJson(new
                 {
@@ -1278,13 +1274,9 @@ public static partial class AnalysisTools
                     }
                 }
 
-                incomingCalls = incomingCalls
-                    .OrderBy(c => ((dynamic)c).signature)
-                    .ToList();
+                incomingCalls = [.. incomingCalls.OrderBy(c => ((dynamic)c).signature)];
 
-                outgoingCalls = outgoingCalls
-                    .OrderBy(c => ((dynamic)c).signature)
-                    .ToList();
+                outgoingCalls = [.. outgoingCalls.OrderBy(c => ((dynamic)c).signature)];
             }
             catch (Exception ex) when ((ex is McpException || ex is OperationCanceledException) == false)
             {
@@ -1412,7 +1404,7 @@ public static partial class AnalysisTools
                                         MatchCollection declMatches = regex.Matches(declText);
                                         if (declMatches.Count > 0)
                                         {
-                                            matchedNodesInFile.Add(node, declMatches.Cast<Match>().ToList());
+                                            matchedNodesInFile.Add(node, [.. declMatches.Cast<Match>()]);
                                             if (matchedNodeSpans.TryGetValue(filePath, out var spans) == false)
                                             {
                                                 spans = [];
@@ -1578,7 +1570,7 @@ public static partial class AnalysisTools
                         RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.NonBacktracking);
 
                     IEnumerable<Type> allTypes = await solutionManager.SearchReflectionTypesAsync(".*", cancellationToken);
-                    List<Type> typesToProcess = allTypes.ToList();
+                    List<Type> typesToProcess = [.. allTypes];
                     int parallelism = Math.Max(1, Environment.ProcessorCount / 2);
                     int partitionCount = Math.Min(typesToProcess.Count, parallelism);
 
@@ -1844,10 +1836,9 @@ public static partial class AnalysisTools
 
             if (operation == "read")
             {
-                List<string> usingDirectives = root.DescendantNodes()
+                List<string> usingDirectives = [.. root.DescendantNodes()
                     .OfType<UsingDirectiveSyntax>()
-                    .Select(u => u.ToFullString().Trim())
-                    .ToList();
+                    .Select(u => u.ToFullString().Trim())];
 
                 // Handle global usings separately
                 List<string> globalUsings = [];
@@ -1856,10 +1847,9 @@ public static partial class AnalysisTools
                     SyntaxNode? globalRoot = await globalUsingsFile.GetSyntaxRootAsync(cancellationToken);
                     if (globalRoot != null)
                     {
-                        globalUsings = globalRoot.DescendantNodes()
+                        globalUsings = [.. globalRoot.DescendantNodes()
                             .OfType<UsingDirectiveSyntax>()
-                            .Select(u => u.ToFullString().Trim())
-                            .ToList();
+                            .Select(u => u.ToFullString().Trim())];
                     }
                 }
 
@@ -1875,11 +1865,10 @@ public static partial class AnalysisTools
             bool isGlobalUsings = document.FilePath!.EndsWith("GlobalUsings.cs", StringComparison.OrdinalIgnoreCase);
 
             // Parse and normalize directives
-            List<string> directives = codeToWrite.Split('\n')
+            List<string> directives = [.. codeToWrite.Split('\n')
                 .Select(line => line.Trim())
                 .Where(line => string.IsNullOrWhiteSpace(line) == false)
-                .Select(line => isGlobalUsings && line.StartsWith("global ") == false ? $"global {line}" : line)
-                .ToList();
+                .Select(line => isGlobalUsings && line.StartsWith("global ") == false ? $"global {line}" : line)];
 
             // Create compilation unit with new directives
             CompilationUnitSyntax? newRoot;

@@ -181,10 +181,9 @@ public static class ModificationTools
         if (newMember is MethodDeclarationSyntax newMethod)
         {
             // Get all existing methods with the same name
-            List<IMethodSymbol> existingMethods = typeSymbol.GetMembers(memberName)
+            List<IMethodSymbol> existingMethods = [.. typeSymbol.GetMembers(memberName)
                 .OfType<IMethodSymbol>()
-                .Where(m => m.IsImplicitlyDeclared == false && m.MethodKind == MethodKind.Ordinary)
-                .ToList();
+                .Where(m => m.IsImplicitlyDeclared == false && m.MethodKind == MethodKind.Ordinary)];
 
             if (existingMethods.Any() == false)
             {
@@ -447,10 +446,9 @@ public static class ModificationTools
 
                 // Check for compilation errors after renaming the symbol using centralized ContextInjectors
                 // Get the first few affected documents to check
-                List<DocumentId> affectedDocumentIds = changeset.GetProjectChanges()
+                List<DocumentId> affectedDocumentIds = [.. changeset.GetProjectChanges()
                     .SelectMany(pc => pc.GetChangedDocuments())
-                    .Take(5)  // Limit to first 5 documents to avoid excessive checking
-                    .ToList();
+                    .Take(5)];
 
                 StringBuilder errorBuilder = new("<errorCheck>");
 
@@ -630,10 +628,9 @@ public static class ModificationTools
                 await modificationService.ApplyChangesAsync(newSolution, cancellationToken, finalCommitMessage);
 
                 // Check for compilation errors in changed documents
-                List<DocumentId> changedDocIds = solutionChanges.GetProjectChanges()
+                List<DocumentId> changedDocIds = [.. solutionChanges.GetProjectChanges()
                     .SelectMany(pc => pc.GetChangedDocuments())
-                    .Take(5) // Limit to first 5 documents to avoid excessive checking
-                    .ToList();
+                    .Take(5)];
 
                 StringBuilder errorBuilder = new("<errorCheck>");
 
@@ -802,7 +799,7 @@ public static class ModificationTools
                     {
                         // Use glob pattern to find matching files
                         DirectoryInfo dirInfo = new(solutionDirectory);
-                        List<FileInfo> allFiles = dirInfo.GetFiles("*.*", SearchOption.AllDirectories).ToList();
+                        List<FileInfo> allFiles = [.. dirInfo.GetFiles("*.*", SearchOption.AllDirectories)];
                         string rootDir = Path.GetPathRoot(solutionDirectory) ?? Path.GetPathRoot(Environment.CurrentDirectory)!;
                         foreach (FileInfo file in allFiles)
                         {
@@ -887,7 +884,7 @@ public static class ModificationTools
                 }
 
                 // Check for compilation errors in changed code documents
-                List<DocumentId> changedDocIds = changedDocuments.Take(5).ToList(); // Limit to first 5 documents
+                List<DocumentId> changedDocIds = [.. changedDocuments.Take(5)]; // Limit to first 5 documents
                 StringBuilder errorBuilder = new("<errorCheck>");
 
                 // Check each affected document for compilation errors

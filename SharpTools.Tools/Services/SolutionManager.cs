@@ -130,7 +130,7 @@ public sealed class SolutionManager(
         _logger.LogInformation("Starting population of reflection type cache...");
         int typesCachedCount = 0;
 
-        List<string> pathsList = assemblyPathsToInspect.ToList();
+        List<string> pathsList = [.. assemblyPathsToInspect];
         int totalPaths = pathsList.Count;
         int processedPaths = 0;
         const int progressCheckInterval = 10;
@@ -329,7 +329,7 @@ public sealed class SolutionManager(
 
         IEnumerable<FuzzyMatchResult> matches = await _fuzzyFqnLookupService.FindMatchesAsync(
             fullyQualifiedTypeName, this, cancellationToken);
-        List<FuzzyMatchResult> matchList = matches.Where(m => m.Symbol is INamedTypeSymbol).ToList();
+        List<FuzzyMatchResult> matchList = [.. matches.Where(m => m.Symbol is INamedTypeSymbol)];
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -429,7 +429,7 @@ public sealed class SolutionManager(
 
         IEnumerable<FuzzyMatchResult> matches = await _fuzzyFqnLookupService.FindMatchesAsync(
             fullyQualifiedName, this, cancellationToken);
-        List<FuzzyMatchResult> matchList = matches.ToList();
+        List<FuzzyMatchResult> matchList = [.. matches];
 
         cancellationToken.ThrowIfCancellationRequested();
 
