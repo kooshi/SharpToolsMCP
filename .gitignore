@@ -1,6 +1,8 @@
 # app specific user settings
 .claude
 .gemini
+.gitnexus
+.vscode
 
 # Prerequisites
 *.vsconfig
