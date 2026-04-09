@@ -714,7 +714,7 @@ public class CodeModificationService(
 
     public async Task<(bool success, string message)> UndoLastChangeAsync(CancellationToken cancellationToken)
     {
-        if (_solutionManager.CurrentWorkspace is not MSBuildWorkspace)
+        if (_solutionManager.CurrentWorkspace is null)
         {
             _logger.LogError("Cannot undo changes: Workspace is not an MSBuildWorkspace or is null.");
             string message = "Error: Workspace is not an MSBuildWorkspace or is null. Cannot undo.";
