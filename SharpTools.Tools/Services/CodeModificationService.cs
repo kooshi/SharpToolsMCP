@@ -166,7 +166,7 @@ public class CodeModificationService(
         return formattedDocument.Project.Solution;
     }
 
-    private static SyntaxTrivia newline = SyntaxFactory.EndOfLine("\n");
+    private static readonly SyntaxTrivia newline = SyntaxFactory.EndOfLine("\n");
 
     private static SyntaxTriviaList NormalizeLeadingTrivia(SyntaxTriviaList trivia)
     {
