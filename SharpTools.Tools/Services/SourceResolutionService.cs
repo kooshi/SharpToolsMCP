@@ -12,7 +12,7 @@ public class SourceResolutionService(
 {
     private readonly ISolutionManager _solutionManager = solutionManager ?? throw new ArgumentNullException(nameof(solutionManager));
     private readonly ILogger<SourceResolutionService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly HttpClient _httpClient = new HttpClient();
+    private readonly HttpClient _httpClient = new();
 
     public async Task<SourceResult?> ResolveSourceAsync(ISymbol symbol, CancellationToken cancellationToken)
     {
@@ -419,7 +419,7 @@ public class SourceResolutionService(
             _logger.LogInformation("Decompiling from assembly: {AssemblyPath}", assemblyPath);
 
             // Create settings for the decompiler
-            DecompilerSettings decompilerSettings = new DecompilerSettings
+            DecompilerSettings decompilerSettings = new()
             {
                 ThrowOnAssemblyResolveErrors = false,
                 UseExpressionBodyForCalculatedGetterOnlyProperties = true,
@@ -437,7 +437,7 @@ public class SourceResolutionService(
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // Create the decompiler
-                    CSharpDecompiler decompiler = new CSharpDecompiler(assemblyPath, decompilerSettings);
+                    CSharpDecompiler decompiler = new(assemblyPath, decompilerSettings);
 
                     // Process based on symbol type
                     string? typeFullName = null;

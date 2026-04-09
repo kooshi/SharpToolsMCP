@@ -226,7 +226,7 @@ public class DocumentOperationsService(
             string content = await File.ReadAllTextAsync(projectFilePath, cancellationToken);
 
             // Use XmlDocument for proper parsing
-            XmlDocument xmlDoc = new XmlDocument();
+            XmlDocument xmlDoc = new();
             xmlDoc.LoadXml(content);
 
             XmlElement? projectNode = xmlDoc.DocumentElement;
@@ -383,7 +383,7 @@ public class DocumentOperationsService(
 
             if (string.IsNullOrEmpty(directoryPath) == false && Directory.Exists(directoryPath))
             {
-                DirectoryInfo dirInfo = new DirectoryInfo(directoryPath);
+                DirectoryInfo dirInfo = new(directoryPath);
 
                 if ((dirInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {

@@ -653,7 +653,7 @@ internal static class ToolHelpers
     /// <summary>
     /// Returns a SymbolDisplayFormat that produces fully qualified names without the global:: prefix
     /// </summary>
-    public static SymbolDisplayFormat FullyQualifiedFormatWithoutGlobal => new SymbolDisplayFormat(
+    public static SymbolDisplayFormat FullyQualifiedFormatWithoutGlobal => new(
         globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
         typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,

@@ -36,7 +36,7 @@ public class LegacyNuGetPackageReader
     /// </summary>
     public static ProjectPackageInfo GetPackagesForProject(string projectPath)
     {
-        ProjectPackageInfo info = new ProjectPackageInfo
+        ProjectPackageInfo info = new()
         {
             ProjectPath = projectPath,
             Format = DetectPackageFormat(projectPath)

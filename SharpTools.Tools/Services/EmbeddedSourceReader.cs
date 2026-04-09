@@ -8,7 +8,7 @@ namespace SharpTools.Tools.Services;
 public class EmbeddedSourceReader
 {
     // GUID for embedded source custom debug information
-    private static readonly Guid EmbeddedSourceGuid = new Guid("0E8A571B-6926-466E-B4AD-8AB04611F5FE");
+    private static readonly Guid EmbeddedSourceGuid = new("0E8A571B-6926-466E-B4AD-8AB04611F5FE");
 
     public class SourceResult
     {
@@ -23,7 +23,7 @@ public class EmbeddedSourceReader
     /// </summary>
     public static Dictionary<string, SourceResult> ReadEmbeddedSources(string pdbPath)
     {
-        using FileStream fs = new FileStream(pdbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using FileStream fs = new(pdbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using MetadataReaderProvider provider = MetadataReaderProvider.FromPortablePdbStream(fs);
         MetadataReader reader = provider.GetMetadataReader();
 
@@ -35,8 +35,8 @@ public class EmbeddedSourceReader
     /// </summary>
     public static Dictionary<string, SourceResult> ReadEmbeddedSourcesFromAssembly(string assemblyPath)
     {
-        using FileStream fs = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using PEReader peReader = new PEReader(fs);
+        using FileStream fs = new(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using PEReader peReader = new(fs);
 
         // Check for embedded portable PDB
         ImmutableArray<DebugDirectoryEntry> debugDirectories = peReader.ReadDebugDirectory();
@@ -137,9 +137,9 @@ public class EmbeddedSourceReader
         {
             // Compressed with deflate, format contains uncompressed size
             isCompressed = true;
-            using MemoryStream compressed = new MemoryStream(contentBytes);
-            using DeflateStream deflate = new DeflateStream(compressed, CompressionMode.Decompress);
-            using MemoryStream decompressed = new MemoryStream();
+            using MemoryStream compressed = new(contentBytes);
+            using DeflateStream deflate = new(compressed, CompressionMode.Decompress);
+            using MemoryStream decompressed = new();
 
             deflate.CopyTo(decompressed);
             sourceText = Encoding.UTF8.GetString(decompressed.ToArray());
@@ -166,7 +166,7 @@ public class EmbeddedSourceReader
         BlobReader blobReader = reader.GetBlobReader(handle);
         char separator = (char)blobReader.ReadByte();
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         bool first = true;
 
         while (blobReader.Offset < blobReader.Length)

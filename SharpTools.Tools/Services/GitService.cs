@@ -47,7 +47,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return false;
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
                 string currentBranch = repository.Head.FriendlyName;
                 bool isOnSharpToolsBranch = currentBranch.StartsWith(
                     SharpToolsBranchPrefix,
@@ -86,7 +86,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return;
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
                 string timestamp = DateTimeOffset.Now.ToString("yyyyMMdd/HH-mm-ss");
                 string branchName = $"{SharpToolsBranchPrefix}{timestamp}";
 
@@ -138,7 +138,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return;
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
 
                 // Stage the changed files
                 List<string> stagedFiles = [];
@@ -236,7 +236,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return string.Empty;
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
                 string timestamp = DateTimeOffset.Now.ToString("yyyyMMdd/HH-mm-ss");
                 string branchName = $"{SharpToolsUndoBranchPrefix}{timestamp}";
 
@@ -282,7 +282,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return string.Empty;
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
                 Commit? oldCommit = repository.Lookup<Commit>(oldCommitSha);
                 Commit? newCommit = repository.Lookup<Commit>(newCommitSha);
 
@@ -296,7 +296,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                 }
 
                 // Get the changes between the two commits
-                StringBuilder diffOutput = new StringBuilder();
+                StringBuilder diffOutput = new();
                 diffOutput.AppendLine($"Changes between {oldCommitSha[..8]} and {newCommitSha[..8]}:");
                 diffOutput.AppendLine();
 
@@ -350,7 +350,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return (false, string.Empty);
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
                 string currentBranch = repository.Head.FriendlyName;
 
                 // Ensure we're on a sharptools branch
@@ -434,7 +434,7 @@ public class GitService(ILogger<GitService> logger) : IGitService
                     return string.Empty;
                 }
 
-                using Repository repository = new Repository(repositoryPath);
+                using Repository repository = new(repositoryPath);
                 string currentBranch = repository.Head.FriendlyName;
 
                 // Ensure we're on a sharptools branch

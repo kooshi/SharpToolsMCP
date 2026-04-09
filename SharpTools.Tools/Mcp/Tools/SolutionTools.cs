@@ -623,7 +623,7 @@ public static class SolutionTools
                 DetailLevel currentDetailLevel = DetailLevel.Full;
                 string output = "";
                 bool lengthAcceptable = false;
-                Random random = new Random();
+                Random random = new();
 
                 while (lengthAcceptable == false && currentDetailLevel <= DetailLevel.NamespacesAndTypesOnly)
                 {

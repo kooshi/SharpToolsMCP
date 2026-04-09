@@ -31,7 +31,7 @@ public class EditorConfigProvider(ILogger<EditorConfigProvider> logger) : IEdito
 
     private static string? FindRootEditorConfig(string startDirectory)
     {
-        DirectoryInfo currentDirectory = new DirectoryInfo(startDirectory);
+        DirectoryInfo currentDirectory = new(startDirectory);
         DirectoryInfo? repositoryRoot = null;
 
         // Traverse up to find .git directory (repository root)

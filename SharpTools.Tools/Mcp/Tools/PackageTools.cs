@@ -242,7 +242,7 @@ public static class PackageTools
             else
             {
                 // Add new package reference
-                XElement packageRef = new XElement("PackageReference",
+                XElement packageRef = new("PackageReference",
                     new XAttribute("Include", packageId),
                     new XAttribute("Version", version));
 
@@ -305,7 +305,7 @@ public static class PackageTools
             else
             {
                 // Add new package entry
-                XElement newPackage = new XElement("package",
+                XElement newPackage = new("package",
                     new XAttribute("id", packageId),
                     new XAttribute("version", version),
                     new XAttribute("targetFramework", "net40")); // Default target framework

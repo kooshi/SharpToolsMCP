@@ -54,7 +54,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
 
         List<FuzzyMatchResult> potentialMatches = [];
         string trimmedFuzzyFqn = fuzzyFqnInput.Trim().Replace(" ", string.Empty);
-        HashSet<ISymbol> allRelevantSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+        HashSet<ISymbol> allRelevantSymbols = new(SymbolEqualityComparer.Default);
 
         // Process each document in the solution to collect symbols
         foreach (Project project in solutionManager.CurrentSolution.Projects)
@@ -424,7 +424,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
 
     public static string GetSearchableString(ISymbol symbol)
     {
-        SymbolDisplayFormat fullFormat = new SymbolDisplayFormat(
+        SymbolDisplayFormat fullFormat = new(
             globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
@@ -442,7 +442,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
                 | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
         // For parameters and return types, use a format that doesn't qualify types
-        SymbolDisplayFormat shortFormat = new SymbolDisplayFormat(
+        SymbolDisplayFormat shortFormat = new(
             globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
@@ -457,7 +457,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
             miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes
                 | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
 
-        SymbolDisplayFormat fqn = new SymbolDisplayFormat(
+        SymbolDisplayFormat fqn = new(
             globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,

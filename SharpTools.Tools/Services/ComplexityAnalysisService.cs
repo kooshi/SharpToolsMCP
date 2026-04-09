@@ -197,7 +197,7 @@ public class ComplexityAnalysisService(
         bool includeGeneratedCode,
         CancellationToken cancellationToken)
     {
-        Dictionary<string, object> typeMetrics = new Dictionary<string, object>
+        Dictionary<string, object> typeMetrics = new()
         {
             // Basic type metrics
             ["kind"] = typeSymbol.TypeKind.ToString(),
@@ -371,7 +371,7 @@ public class ComplexityAnalysisService(
 
         projectMetrics["totalLines"] = totalLines;
 
-        Dictionary<string, object> globalComplexityMetrics = new Dictionary<string, object>
+        Dictionary<string, object> globalComplexityMetrics = new()
         {
             ["totalCyclomaticComplexity"] = 0,
             ["totalCognitiveComplexity"] = 0,
