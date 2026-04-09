@@ -552,7 +552,7 @@ public class SemanticSimilarityService(
             paramTypeSimilarity = 1.0;
         }
 
-        double invokedSimilarity = 0.0;
+        double invokedSimilarity;
         if (method1.InvokedMethodSignatures.Count != 0 || method2.InvokedMethodSignatures.Count != 0)
         {
             int intersection = method1.InvokedMethodSignatures.Intersect(method2.InvokedMethodSignatures).Count();
@@ -578,8 +578,7 @@ public class SemanticSimilarityService(
             Tuning.Normalization.MaxCyclomaticComplexity);
         double operationCountsSimilarity =
             CalculateCosineSimilarity(method1.OperationCounts, method2.OperationCounts);
-        double accessedTypesSimilarity = 0.0;
-
+        double accessedTypesSimilarity;
         if (method1.DistinctAccessedMemberTypes.Count != 0 || method2.DistinctAccessedMemberTypes.Count != 0)
         {
             int intersectionTypes =
