@@ -8,7 +8,7 @@ namespace SharpTools.Tools.Services;
 public class EmbeddedSourceReader
 {
     // GUID for embedded source custom debug information
-    private static readonly Guid EmbeddedSourceGuid = new("0E8A571B-6926-466E-B4AD-8AB04611F5FE");
+    private static readonly Guid s_embeddedSourceGuid = new("0E8A571B-6926-466E-B4AD-8AB04611F5FE");
 
     public class SourceResult
     {
@@ -78,7 +78,7 @@ public class EmbeddedSourceReader
             // Check if this is embedded source information
             Guid kind = reader.GetGuid(cdi.Kind);
 
-            if (kind != EmbeddedSourceGuid)
+            if (kind != s_embeddedSourceGuid)
             {
                 continue;
             }
