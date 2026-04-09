@@ -111,7 +111,7 @@ public static class PackageTools
     private static async Task<bool> ValidatePackageAsync(
         string packageId,
         string? version,
-        global::Microsoft.Extensions.Logging.ILogger logger,
+        Microsoft.Extensions.Logging.ILogger logger,
         CancellationToken cancellationToken)
     {
         try
@@ -157,7 +157,7 @@ public static class PackageTools
 
     private static async Task<string> GetLatestVersionAsync(
         string packageId,
-        global::Microsoft.Extensions.Logging.ILogger logger,
+        Microsoft.Extensions.Logging.ILogger logger,
         CancellationToken cancellationToken)
     {
         try

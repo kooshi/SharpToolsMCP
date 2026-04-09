@@ -230,7 +230,7 @@ public class CodeModificationService(
         _logger.LogInformation("Replacing node in document {DocumentPath}", document.FilePath);
 
         // Check if this is a deletion operation (newNode is an EmptyStatement with a delete comment)
-        bool isDeleteOperation = newNode is Microsoft.CodeAnalysis.CSharp.Syntax.EmptyStatementSyntax emptyStmt
+        bool isDeleteOperation = newNode is EmptyStatementSyntax emptyStmt
             && emptyStmt.HasLeadingTrivia
             && emptyStmt.GetLeadingTrivia().Any(t =>
                 t.IsKind(SyntaxKind.SingleLineCommentTrivia)
@@ -250,10 +250,10 @@ public class CodeModificationService(
             // Different approach based on the node's parent context
             SyntaxNode newRoot;
 
-            if (oldNode.Parent is Microsoft.CodeAnalysis.CSharp.Syntax.CompilationUnitSyntax compilationUnit)
+            if (oldNode.Parent is CompilationUnitSyntax compilationUnit)
             {
                 // Handle top-level members in the compilation unit
-                if (oldNode is Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax memberToRemove)
+                if (oldNode is MemberDeclarationSyntax memberToRemove)
                 {
                     SyntaxList<MemberDeclarationSyntax> newMembers =
                         compilationUnit.Members.Remove(memberToRemove);
@@ -265,14 +265,14 @@ public class CodeModificationService(
                         $"Cannot delete node of type {oldNode.GetType().Name} directly from compilation unit.");
                 }
             }
-            else if (oldNode.Parent is Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax namespaceDecl)
+            else if (oldNode.Parent is NamespaceDeclarationSyntax namespaceDecl)
             {
                 // Handle members in a namespace
-                if (oldNode is Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax memberToRemove)
+                if (oldNode is MemberDeclarationSyntax memberToRemove)
                 {
                     SyntaxList<MemberDeclarationSyntax> newMembers =
                         namespaceDecl.Members.Remove(memberToRemove);
-                    Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax newNamespace =
+                    NamespaceDeclarationSyntax newNamespace =
                         namespaceDecl.WithMembers(newMembers);
                     newRoot = root.ReplaceNode(namespaceDecl, newNamespace);
                 }
@@ -282,14 +282,14 @@ public class CodeModificationService(
                         $"Cannot delete node of type {oldNode.GetType().Name} from namespace declaration.");
                 }
             }
-            else if (oldNode.Parent is Microsoft.CodeAnalysis.CSharp.Syntax.TypeDeclarationSyntax typeDecl)
+            else if (oldNode.Parent is TypeDeclarationSyntax typeDecl)
             {
                 // Handle members in a type declaration (class, struct, interface, etc.)
-                if (oldNode is Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax memberToRemove)
+                if (oldNode is MemberDeclarationSyntax memberToRemove)
                 {
                     SyntaxList<MemberDeclarationSyntax> newMembers =
                         typeDecl.Members.Remove(memberToRemove);
-                    Microsoft.CodeAnalysis.CSharp.Syntax.TypeDeclarationSyntax newType =
+                    TypeDeclarationSyntax newType =
                         typeDecl.WithMembers(newMembers);
                     newRoot = root.ReplaceNode(typeDecl, newType);
                 }

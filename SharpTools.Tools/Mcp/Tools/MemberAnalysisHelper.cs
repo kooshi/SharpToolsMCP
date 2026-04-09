@@ -75,7 +75,7 @@ public static class MemberAnalysisHelper
 
             return $"<complexity>\n{string.Join("\n", recommendations)}\n</complexity>";
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             logger.LogError(ex, "Error analyzing complexity for {SymbolType} {SymbolName}",
                 symbol.GetType().Name, symbol.ToDisplayString());
@@ -140,7 +140,7 @@ public static class MemberAnalysisHelper
 
             return string.Empty;
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             logger.LogError(ex, "Error analyzing similarity for {SymbolType} {SymbolName}",
                 symbol.GetType().Name, symbol.ToDisplayString());

@@ -562,7 +562,7 @@ public sealed class SolutionManager(
             "Found {Count} reflection types matching pattern '{Pattern}'.",
             matchedTypes.Count,
             regexPattern);
-        return Task.FromResult<IEnumerable<Type>>(matchedTypes.Distinct());
+        return Task.FromResult(matchedTypes.Distinct());
     }
 
     public IEnumerable<Project> GetProjects()
@@ -683,9 +683,9 @@ public sealed class SolutionManager(
         GC.SuppressFinalize(this);
     }
 
-    private class ProgressReporter(Microsoft.Extensions.Logging.ILogger logger) : IProgress<ProjectLoadProgress>
+    private class ProgressReporter(ILogger logger) : IProgress<ProjectLoadProgress>
     {
-        private readonly Microsoft.Extensions.Logging.ILogger _logger = logger;
+        private readonly ILogger _logger = logger;
 
         public void Report(ProjectLoadProgress loadProgress)
         {

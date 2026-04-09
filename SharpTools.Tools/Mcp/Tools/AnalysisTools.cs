@@ -435,8 +435,8 @@ public static partial class AnalysisTools
                     // Add relevant reference context based on the symbol type
                     string externalReferenceContext = roslynSymbol switch
                     {
-                        Microsoft.CodeAnalysis.INamedTypeSymbol type => await ContextInjectors.CreateTypeReferenceContextAsync(codeAnalysisService, logger, type, cancellationToken),
-                        Microsoft.CodeAnalysis.IMethodSymbol method => await ContextInjectors.CreateCallGraphContextAsync(codeAnalysisService, logger, method, cancellationToken),
+                        INamedTypeSymbol type => await ContextInjectors.CreateTypeReferenceContextAsync(codeAnalysisService, logger, type, cancellationToken),
+                        IMethodSymbol method => await ContextInjectors.CreateCallGraphContextAsync(codeAnalysisService, logger, method, cancellationToken),
                         _ => string.Empty
                     };
 
@@ -456,7 +456,7 @@ public static partial class AnalysisTools
             }
 
             // Check if this is a partial type with multiple declarations
-            bool isPartialType = roslynSymbol is Microsoft.CodeAnalysis.INamedTypeSymbol namedTypeSymbol &&
+            bool isPartialType = roslynSymbol is INamedTypeSymbol namedTypeSymbol &&
                 roslynSymbol.DeclaringSyntaxReferences.Count() > 1;
 
             if (isPartialType)
@@ -613,7 +613,7 @@ public static partial class AnalysisTools
         ILogger<AnalysisToolsLogCategory> logger,
         CancellationToken cancellationToken)
     {
-        Microsoft.CodeAnalysis.INamedTypeSymbol namedTypeSymbol = (Microsoft.CodeAnalysis.INamedTypeSymbol)roslynSymbol;
+        INamedTypeSymbol namedTypeSymbol = (INamedTypeSymbol)roslynSymbol;
         List<object> partialDeclarations = [];
         List<string> allSourceCode = [];
         List<string> allFiles = [];
@@ -703,9 +703,9 @@ public static partial class AnalysisTools
 
         // Find the appropriate parent node that represents the full definition
         SyntaxNode? definitionNode = node;
-        if (roslynSymbol is Microsoft.CodeAnalysis.IMethodSymbol || roslynSymbol is Microsoft.CodeAnalysis.IPropertySymbol ||
-            roslynSymbol is Microsoft.CodeAnalysis.IFieldSymbol || roslynSymbol is Microsoft.CodeAnalysis.IEventSymbol ||
-            roslynSymbol is Microsoft.CodeAnalysis.INamedTypeSymbol)
+        if (roslynSymbol is IMethodSymbol || roslynSymbol is IPropertySymbol ||
+            roslynSymbol is IFieldSymbol || roslynSymbol is IEventSymbol ||
+            roslynSymbol is INamedTypeSymbol)
         {
             while (definitionNode != null &&
                 (definitionNode is MemberDeclarationSyntax) == false &&
@@ -727,8 +727,8 @@ public static partial class AnalysisTools
         // Generate reference context based on symbol type
         string referenceContext = roslynSymbol switch
         {
-            Microsoft.CodeAnalysis.INamedTypeSymbol type => await ContextInjectors.CreateTypeReferenceContextAsync(codeAnalysisService, logger, type, cancellationToken),
-            Microsoft.CodeAnalysis.IMethodSymbol method => await ContextInjectors.CreateCallGraphContextAsync(codeAnalysisService, logger, method, cancellationToken),
+            INamedTypeSymbol type => await ContextInjectors.CreateTypeReferenceContextAsync(codeAnalysisService, logger, type, cancellationToken),
+            IMethodSymbol method => await ContextInjectors.CreateCallGraphContextAsync(codeAnalysisService, logger, method, cancellationToken),
             _ => string.Empty // TODO: consider adding context for properties, fields, events, etc.
         };
 
