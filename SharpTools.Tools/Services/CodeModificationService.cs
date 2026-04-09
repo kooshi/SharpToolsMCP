@@ -174,7 +174,7 @@ public class CodeModificationService(
 
     private static SyntaxTrivia newline = SyntaxFactory.EndOfLine("\n");
 
-    private SyntaxTriviaList NormalizeLeadingTrivia(SyntaxTriviaList trivia)
+    private static SyntaxTriviaList NormalizeLeadingTrivia(SyntaxTriviaList trivia)
     {
         // Remove all newlines
         IEnumerable<SyntaxTrivia> filtered =
@@ -184,7 +184,7 @@ public class CodeModificationService(
         return SyntaxFactory.TriviaList(newline, newline).AddRange(filtered);
     }
 
-    private SyntaxTriviaList NormalizeTrailingTrivia(SyntaxTriviaList trivia)
+    private static SyntaxTriviaList NormalizeTrailingTrivia(SyntaxTriviaList trivia)
     {
         // Remove all newlines
         IEnumerable<SyntaxTrivia> filtered =
@@ -197,7 +197,7 @@ public class CodeModificationService(
         return result.Add(newline).Add(newline);
     }
 
-    private SyntaxNode NormalizeMemberDeclarationTrivia(SyntaxNode member)
+    private static SyntaxNode NormalizeMemberDeclarationTrivia(SyntaxNode member)
     {
         if (member is MemberDeclarationSyntax memberDeclaration)
         {

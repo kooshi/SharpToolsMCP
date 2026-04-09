@@ -443,7 +443,7 @@ public class DocumentOperationsService(
         return false;
     }
 
-    private bool ContainsUnsafeDirectory(string filePath)
+    private static bool ContainsUnsafeDirectory(string filePath)
     {
         // Check if the path contains any unsafe directory segments
         string normalizedPath = filePath.Replace('\\', '/');

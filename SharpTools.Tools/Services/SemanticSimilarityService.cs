@@ -529,7 +529,7 @@ public class SemanticSimilarityService(
         return [.. results.OrderByDescending(r => r.AverageSimilarityScore)];
     }
 
-    private double CalculateSimilarity(MethodSemanticFeatures method1, MethodSemanticFeatures method2)
+    private static double CalculateSimilarity(MethodSemanticFeatures method1, MethodSemanticFeatures method2)
     {
         double returnTypeSimilarity = (method1.ReturnTypeName == method2.ReturnTypeName) ? 1.0 : 0.0;
         double paramCountSimilarity =
@@ -610,7 +610,7 @@ public class SemanticSimilarityService(
         return totalWeightedScore / Tuning.Weights.TotalWeight;
     }
 
-    private double CalculateNormalizedDifference(int val1, int val2, int maxValue)
+    private static double CalculateNormalizedDifference(int val1, int val2, int maxValue)
     {
         if (maxValue == 0)
         {
@@ -621,7 +621,7 @@ public class SemanticSimilarityService(
         return diff / maxValue;
     }
 
-    private double CalculateCosineSimilarity(Dictionary<string, int> vec1, Dictionary<string, int> vec2)
+    private static double CalculateCosineSimilarity(Dictionary<string, int> vec1, Dictionary<string, int> vec2)
     {
         if (vec1.Any() == false && vec2.Any() == false)
         {
@@ -1321,7 +1321,7 @@ public class SemanticSimilarityService(
         return totalWeight > 0 ? totalWeightedScore / totalWeight : 0.0;
     }
 
-    private double CalculateJaccardSimilarity<T>(ICollection<T> set1, ICollection<T> set2)
+    private static double CalculateJaccardSimilarity<T>(ICollection<T> set1, ICollection<T> set2)
     {
         if (set1.Any() == false && set2.Any() == false)
         {
@@ -1338,7 +1338,7 @@ public class SemanticSimilarityService(
         return union > 0 ? (double)intersection / union : 0.0;
     }
 
-    private double CalculateNormalizedDifference(double val1, double val2, double maxValue)
+    private static double CalculateNormalizedDifference(double val1, double val2, double maxValue)
     {
         if (maxValue == 0.0)
         {
@@ -1349,7 +1349,7 @@ public class SemanticSimilarityService(
         return diff / maxValue;
     }
 
-    private void AddTypeAndNamespaceIfExternal(
+    private static void AddTypeAndNamespaceIfExternal(
         ITypeSymbol? typeSymbol,
         INamedTypeSymbol containingClassSymbol,
         HashSet<string> externalTypeFqns,

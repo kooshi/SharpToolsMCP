@@ -194,13 +194,13 @@ public class GitService(ILogger<GitService> logger) : IGitService
         }, cancellationToken);
     }
 
-    private string? GetRepositoryPath(string solutionPath)
+    private static string? GetRepositoryPath(string solutionPath)
     {
         string? solutionDirectory = Path.GetDirectoryName(solutionPath);
         return string.IsNullOrEmpty(solutionDirectory) ? null : Repository.Discover(solutionDirectory);
     }
 
-    private Signature GetCommitSignature(Repository repository)
+    private static Signature GetCommitSignature(Repository repository)
     {
         try
         {

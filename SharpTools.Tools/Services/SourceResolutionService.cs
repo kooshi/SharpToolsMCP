@@ -606,7 +606,7 @@ public class SourceResolutionService(
         return null;
     }
 
-    private string GetSymbolDocumentPath(ISymbol symbol)
+    private static string GetSymbolDocumentPath(ISymbol symbol)
     {
         // For symbols with syntax references, get the file path directly
         if (symbol.DeclaringSyntaxReferences.Length > 0)
@@ -620,7 +620,7 @@ public class SourceResolutionService(
         return $"{symbol.ContainingType?.Name ?? symbol.Name}.cs";
     }
 
-    private bool IsPathMatch(string path, string pattern)
+    private static bool IsPathMatch(string path, string pattern)
     {
         // Source Link uses patterns with * wildcards
         if (pattern.Contains('*') == false)
@@ -636,7 +636,7 @@ public class SourceResolutionService(
             && (suffix.Length == 0 || path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
     }
 
-    private string GetWildcardMatch(string path, string pattern)
+    private static string GetWildcardMatch(string path, string pattern)
     {
         string prefix = pattern.Substring(0, pattern.IndexOf('*'));
         string suffix = pattern.Substring(pattern.IndexOf('*') + 1);

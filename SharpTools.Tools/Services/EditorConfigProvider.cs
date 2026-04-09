@@ -29,7 +29,7 @@ public class EditorConfigProvider(ILogger<EditorConfigProvider> logger) : IEdito
         return _rootEditorConfigPath;
     }
 
-    private string? FindRootEditorConfig(string startDirectory)
+    private static string? FindRootEditorConfig(string startDirectory)
     {
         DirectoryInfo currentDirectory = new DirectoryInfo(startDirectory);
         DirectoryInfo? repositoryRoot = null;

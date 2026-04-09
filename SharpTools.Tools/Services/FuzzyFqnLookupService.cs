@@ -150,7 +150,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         return results;
     }
 
-    private void CollectSymbolsFromSemanticModel(
+    private static void CollectSymbolsFromSemanticModel(
         SemanticModel semanticModel,
         HashSet<ISymbol> collectedSymbols,
         CancellationToken cancellationToken)
@@ -187,7 +187,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         }
     }
 
-    private void CollectSymbols(
+    private static void CollectSymbols(
         INamespaceOrTypeSymbol containerSymbol,
         HashSet<ISymbol> collectedSymbols,
         CancellationToken cancellationToken)
@@ -237,7 +237,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         }
     }
 
-    private (double score, string reason) CalculateMatchScore(
+    private static (double score, string reason) CalculateMatchScore(
         string userInputFqn,
         ISymbol symbol,
         string canonicalFqn,
@@ -358,7 +358,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         return (0.0, "No significant match");
     }
 
-    private string RemoveParameters(string fqn)
+    private static string RemoveParameters(string fqn)
     {
         // A more robust way to find the first '(':
         int openParenIndex = fqn.IndexOf('(');
@@ -378,7 +378,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         return fqn;
     }
 
-    private string? TryFixNestedTypeSeparator(
+    private static string? TryFixNestedTypeSeparator(
         string userInputFqnPart,
         string canonicalFqnPart,
         CancellationToken cancellationToken)
@@ -754,12 +754,12 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         }
     }
 
-    private string GetSymbolKindString(ISymbol symbol)
+    private static string GetSymbolKindString(ISymbol symbol)
     {
         return symbol.Kind.ToString();
     }
 
-    private string GetContainingTypeInfo(ISymbol symbol)
+    private static string GetContainingTypeInfo(ISymbol symbol)
     {
         if (symbol.ContainingType != null)
         {
@@ -769,12 +769,12 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         return string.Empty;
     }
 
-    private string GetAssemblyName(ISymbol symbol)
+    private static string GetAssemblyName(ISymbol symbol)
     {
         return symbol.ContainingAssembly?.Name ?? "Unknown Assembly";
     }
 
-    private string GetLocationInfo(ISymbol symbol)
+    private static string GetLocationInfo(ISymbol symbol)
     {
         Location? location = symbol.Locations.FirstOrDefault(loc => loc.IsInSource);
 
@@ -787,7 +787,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         return "No source location";
     }
 
-    private string GetSymbolModifiers(ISymbol symbol)
+    private static string GetSymbolModifiers(ISymbol symbol)
     {
         List<string> modifiers = [];
 
@@ -819,7 +819,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
     /// </summary>
     /// <param name="typeName">The type name with generic arguments</param>
     /// <returns>Type name with normalized generic arguments</returns>
-    private string NormalizeGenericArgs(string typeName)
+    private static string NormalizeGenericArgs(string typeName)
     {
         // If there are no generic arguments, return as is
         if (typeName.Contains("<") == false)
@@ -849,7 +849,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
     /// </summary>
     /// <param name="typeName">The type name with generic arguments</param>
     /// <returns>Type name without generic arguments</returns>
-    private string StripGenericArgs(string typeName)
+    private static string StripGenericArgs(string typeName)
     {
         // First, remove Roslyn-style arity indicators like List`1
         string withoutArity = ArityRegex.Replace(typeName, "");
