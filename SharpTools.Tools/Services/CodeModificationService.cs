@@ -462,9 +462,9 @@ public class CodeModificationService(
                             if (newSymbolText != symbolText)
                             {
                                 // Create new text by replacing the symbol's span with the modified text
-                                string newFullText = originalText.Substring(0, nodeSpan.Start)
-                                    + newSymbolText
-                                    + originalText.Substring(nodeSpan.Start + nodeSpan.Length);
+                                string newFullText = string.Concat(originalText.AsSpan(0, nodeSpan.Start)
+                                    , newSymbolText
+                                    , originalText.AsSpan(nodeSpan.Start + nodeSpan.Length));
 
                                 Document newDocument = document.WithText(
                                     SourceText.From(newFullText, sourceText.Encoding));

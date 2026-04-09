@@ -518,7 +518,7 @@ public static class ModificationTools
 
             // Create a shortened version of the replacement code for the commit message
             string shortReplacementCode = replacementCode.Length > 30
-                ? replacementCode.Substring(0, 30) + "..."
+                ? string.Concat(replacementCode.AsSpan(0, 30), "...")
                 : replacementCode;
 
             string finalCommitMessage = $"Replace references to {symbol.Name} with {shortReplacementCode}: " + commitMessage;
