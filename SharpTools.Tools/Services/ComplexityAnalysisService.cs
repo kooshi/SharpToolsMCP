@@ -284,7 +284,7 @@ public class ComplexityAnalysisService(
                             break;
                         }
 
-                        ISymbol? symbolInfo = semanticModel.GetSymbolInfo(node).Symbol;
+                        ISymbol? symbolInfo = semanticModel.GetSymbolInfo(node, cancellationToken: cancellationToken).Symbol;
 
                         if (symbolInfo?.ContainingType != null
                             && SymbolEqualityComparer.Default.Equals(symbolInfo.ContainingType, typeSymbol) == false
@@ -394,7 +394,7 @@ public class ComplexityAnalysisService(
             // Analyze each type in the file
             foreach (TypeDeclarationSyntax typeDecl in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
             {
-                INamedTypeSymbol? typeSymbol = semanticModel.GetDeclaredSymbol(typeDecl) as INamedTypeSymbol;
+                INamedTypeSymbol? typeSymbol = semanticModel.GetDeclaredSymbol(typeDecl, cancellationToken: cancellationToken) as INamedTypeSymbol;
 
                 if (typeSymbol != null)
                 {
