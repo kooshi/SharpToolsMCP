@@ -87,7 +87,7 @@ public class CodeAnalysisService : ICodeAnalysisService
         CancellationToken cancellationToken)
     {
         _logger.LogDebug("Finding outgoing calls for method: {MethodName}", methodSymbol.Name);
-        List<ISymbol> outgoingCalls = new();
+        List<ISymbol> outgoingCalls = [];
         if (methodSymbol.DeclaringSyntaxReferences.Any() == false)
         {
             _logger.LogWarning(
@@ -215,7 +215,7 @@ public class CodeAnalysisService : ICodeAnalysisService
     {
         private readonly SemanticModel _semanticModel;
         private readonly CancellationToken _cancellationToken;
-        private readonly List<ISymbol> _calledSymbols = new();
+        private readonly List<ISymbol> _calledSymbols = [];
 
         public IEnumerable<ISymbol> CalledSymbols => _calledSymbols;
 

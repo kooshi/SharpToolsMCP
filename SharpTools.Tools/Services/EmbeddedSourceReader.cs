@@ -23,7 +23,7 @@ public class EmbeddedSourceReader
     /// </summary>
     public static Dictionary<string, SourceResult> ReadEmbeddedSources(string pdbPath)
     {
-        Dictionary<string, SourceResult> results = new Dictionary<string, SourceResult>();
+        Dictionary<string, SourceResult> results = [];
 
         using FileStream fs = new FileStream(pdbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using MetadataReaderProvider provider = MetadataReaderProvider.FromPortablePdbStream(fs);
@@ -47,7 +47,7 @@ public class EmbeddedSourceReader
 
         if (embeddedPdbEntry.DataSize == 0)
         {
-            return new Dictionary<string, SourceResult>();
+            return [];
         }
 
         using MetadataReaderProvider embeddedProvider = peReader.ReadEmbeddedPortablePdbDebugDirectoryData(embeddedPdbEntry);
@@ -61,10 +61,10 @@ public class EmbeddedSourceReader
     /// </summary>
     public static Dictionary<string, SourceResult> ReadEmbeddedSources(MetadataReader reader)
     {
-        Dictionary<string, SourceResult> results = new Dictionary<string, SourceResult>();
+        Dictionary<string, SourceResult> results = [];
 
         // Get all documents
-        Dictionary<DocumentHandle, System.Reflection.Metadata.Document> documents = new Dictionary<DocumentHandle, System.Reflection.Metadata.Document>();
+        Dictionary<DocumentHandle, System.Reflection.Metadata.Document> documents = [];
 
         foreach (DocumentHandle docHandle in reader.Documents)
         {

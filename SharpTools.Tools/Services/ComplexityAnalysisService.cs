@@ -204,13 +204,14 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
         bool includeGeneratedCode,
         CancellationToken cancellationToken)
     {
-        Dictionary<string, object> typeMetrics = new Dictionary<string, object>();
-
-        // Basic type metrics
-        typeMetrics["kind"] = typeSymbol.TypeKind.ToString();
-        typeMetrics["isAbstract"] = typeSymbol.IsAbstract;
-        typeMetrics["isSealed"] = typeSymbol.IsSealed;
-        typeMetrics["isGeneric"] = typeSymbol.IsGenericType;
+        Dictionary<string, object> typeMetrics = new Dictionary<string, object>
+        {
+            // Basic type metrics
+            ["kind"] = typeSymbol.TypeKind.ToString(),
+            ["isAbstract"] = typeSymbol.IsAbstract,
+            ["isSealed"] = typeSymbol.IsSealed,
+            ["isGeneric"] = typeSymbol.IsGenericType
+        };
 
         // Member counts
         ImmutableArray<ISymbol> members = typeSymbol.GetMembers();
@@ -221,7 +222,7 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
         typeMetrics["eventCount"] = members.Count(m => m is IEventSymbol);
 
         // Inheritance metrics
-        List<string> baseTypes = new List<string>();
+        List<string> baseTypes = [];
         int inheritanceDepth = 0;
         INamedTypeSymbol? currentType = typeSymbol.BaseType;
 
@@ -237,7 +238,7 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
         typeMetrics["implementedInterfaces"] = typeSymbol.AllInterfaces.Select(i => i.ToDisplayString()).ToList();
 
         // Analyze methods
-        List<Dictionary<string, object>> methodMetrics = new List<Dictionary<string, object>>();
+        List<Dictionary<string, object>> methodMetrics = [];
         int methodComplexitySum = 0;
         int methodCount = 0;
 
@@ -248,7 +249,7 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
                 continue;
             }
 
-            Dictionary<string, object> methodDict = new Dictionary<string, object>();
+            Dictionary<string, object> methodDict = [];
             await AnalyzeMethodAsync(member, methodDict, recommendations, cancellationToken);
 
             if (methodDict.ContainsKey("cyclomaticComplexity"))
@@ -264,7 +265,7 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
         typeMetrics["averageMethodComplexity"] = methodCount > 0 ? (double)methodComplexitySum / methodCount : 0;
 
         // Coupling analysis
-        HashSet<string> dependencies = new HashSet<string>();
+        HashSet<string> dependencies = [];
         ImmutableArray<SyntaxReference> syntaxRefs = typeSymbol.DeclaringSyntaxReferences;
 
         // Check if solution is available before using it
@@ -345,8 +346,8 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
         bool includeGeneratedCode,
         CancellationToken cancellationToken)
     {
-        Dictionary<string, object> projectMetrics = new Dictionary<string, object>();
-        List<Dictionary<string, object>> typeMetrics = new List<Dictionary<string, object>>();
+        Dictionary<string, object> projectMetrics = [];
+        List<Dictionary<string, object>> typeMetrics = [];
 
         // Project-wide metrics
         Compilation? compilation = await project.GetCompilationAsync(cancellationToken);
@@ -410,7 +411,7 @@ public class ComplexityAnalysisService : IComplexityAnalysisService
 
                 if (typeSymbol != null)
                 {
-                    Dictionary<string, object> typeDict = new Dictionary<string, object>();
+                    Dictionary<string, object> typeDict = [];
                     await AnalyzeTypeAsync(typeSymbol, typeDict, recommendations, includeGeneratedCode, cancellationToken);
                     typeMetrics.Add(typeDict);
 

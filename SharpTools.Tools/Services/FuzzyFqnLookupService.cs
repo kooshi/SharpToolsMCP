@@ -57,7 +57,7 @@ public class FuzzyFqnLookupService : IFuzzyFqnLookupService
             return Enumerable.Empty<FuzzyMatchResult>();
         }
 
-        List<FuzzyMatchResult> potentialMatches = new List<FuzzyMatchResult>();
+        List<FuzzyMatchResult> potentialMatches = [];
         string trimmedFuzzyFqn = fuzzyFqnInput.Trim().Replace(" ", string.Empty);
         HashSet<ISymbol> allRelevantSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
 
@@ -806,7 +806,7 @@ public class FuzzyFqnLookupService : IFuzzyFqnLookupService
 
     private string GetSymbolModifiers(ISymbol symbol)
     {
-        List<string> modifiers = new List<string>();
+        List<string> modifiers = [];
 
         if (symbol.IsStatic) modifiers.Add("static");
         if (symbol.IsVirtual) modifiers.Add("virtual");

@@ -69,13 +69,13 @@ public static class MiscTools
                 }
 
                 // Load existing requests if the file exists
-                List<ToolRequest> existingRequests = new();
+                List<ToolRequest> existingRequests = [];
                 if (File.Exists(RequestLogFilePath))
                 {
                     try
                     {
                         string existingJson = await File.ReadAllTextAsync(RequestLogFilePath, cancellationToken);
-                        existingRequests = JsonSerializer.Deserialize<List<ToolRequest>>(existingJson) ?? new List<ToolRequest>();
+                        existingRequests = JsonSerializer.Deserialize<List<ToolRequest>>(existingJson) ?? [];
                     }
                     catch (JsonException ex)
                     {

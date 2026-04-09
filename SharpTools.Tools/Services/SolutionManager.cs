@@ -12,7 +12,7 @@ public sealed class SolutionManager : ISolutionManager
     private Solution? _currentSolution;
     private MetadataLoadContext? _metadataLoadContext;
     private PathAssemblyResolver? _pathAssemblyResolver;
-    private HashSet<string> _assemblyPathsForReflection = new();
+    private HashSet<string> _assemblyPathsForReflection = [];
     private readonly ConcurrentDictionary<ProjectId, Compilation> _compilationCache = new();
     private readonly ConcurrentDictionary<DocumentId, SemanticModel> _semanticModelCache = new();
     private readonly ConcurrentDictionary<string, Type> _allLoadedReflectionTypesCache = new();
@@ -541,7 +541,7 @@ public sealed class SolutionManager : ISolutionManager
         cancellationToken.ThrowIfCancellationRequested();
 
         Regex regex = new(regexPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        List<Type> matchedTypes = new();
+        List<Type> matchedTypes = [];
 
         int processedCount = 0;
         const int batchSize = 100;
@@ -796,7 +796,7 @@ public sealed class SolutionManager : ISolutionManager
         string packageId,
         string version)
     {
-        List<string> assemblies = new();
+        List<string> assemblies = [];
 
         if (Directory.Exists(libDir) == false)
         {

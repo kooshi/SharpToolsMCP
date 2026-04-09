@@ -283,7 +283,7 @@ public class DocumentOperationsService : IDocumentOperationsService
         }
 
         // Find projects where the file path is under the project directory
-        List<(Project Project, int DirectoryLevel)> projectsWithPath = new List<(Project Project, int DirectoryLevel)>();
+        List<(Project Project, int DirectoryLevel)> projectsWithPath = [];
 
         foreach (Project project in projects)
         {

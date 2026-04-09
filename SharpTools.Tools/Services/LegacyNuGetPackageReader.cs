@@ -27,7 +27,7 @@ public class LegacyNuGetPackageReader
     {
         public string ProjectPath { get; set; } = string.Empty;
         public PackageFormat Format { get; set; }
-        public List<PackageReference> Packages { get; set; } = new List<PackageReference>();
+        public List<PackageReference> Packages { get; set; } = [];
         public string? PackagesConfigPath { get; set; }
     }
 
@@ -60,7 +60,7 @@ public class LegacyNuGetPackageReader
     /// </summary>
     public static List<PackageReference> GetBasicPackageReferencesWithoutMSBuild(string projectPath)
     {
-        List<PackageReference> packages = new List<PackageReference>();
+        List<PackageReference> packages = [];
 
         try
         {
@@ -153,7 +153,7 @@ public class LegacyNuGetPackageReader
     /// </summary>
     public static List<PackageReference> GetPackagesFromConfig(string? packagesConfigPath)
     {
-        List<PackageReference> packages = new List<PackageReference>();
+        List<PackageReference> packages = [];
 
         if (string.IsNullOrEmpty(packagesConfigPath) || File.Exists(packagesConfigPath) == false)
         {
@@ -220,10 +220,10 @@ public class LegacyNuGetPackageReader
     {
         if (string.IsNullOrEmpty(projectPath) || File.Exists(projectPath) == false)
         {
-            return new List<(string, string)>();
+            return [];
         }
 
-        List<(string, string)> packages = new List<(string, string)>();
+        List<(string, string)> packages = [];
         PackageFormat format = DetectPackageFormat(projectPath);
 
         try
@@ -252,7 +252,7 @@ public class LegacyNuGetPackageReader
     {
         if (string.IsNullOrEmpty(projectPath) || File.Exists(projectPath) == false)
         {
-            return new List<PackageReference>();
+            return [];
         }
 
         PackageFormat format = DetectPackageFormat(projectPath);
@@ -272,7 +272,7 @@ public class LegacyNuGetPackageReader
         catch
         {
             // Return empty list if an error occurs
-            return new List<PackageReference>();
+            return [];
         }
     }
 }

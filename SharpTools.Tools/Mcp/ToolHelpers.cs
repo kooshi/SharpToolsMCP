@@ -151,7 +151,7 @@ internal static class ToolHelpers
 
     public static string GetRoslynSymbolModifiersString(ISymbol symbol)
     {
-        List<string> parts = new();
+        List<string> parts = [];
         string accessibility = RoslynAccessibilityToString(symbol.DeclaredAccessibility);
         if (string.IsNullOrEmpty(accessibility) == false)
         {
@@ -224,7 +224,7 @@ internal static class ToolHelpers
 
     public static string GetRoslynTypeSpecificModifiersString(INamedTypeSymbol typeSymbol)
     {
-        List<string> parts = new();
+        List<string> parts = [];
         string accessibility = RoslynAccessibilityToString(typeSymbol.DeclaredAccessibility);
         if (string.IsNullOrEmpty(accessibility) == false)
         {
@@ -359,7 +359,7 @@ internal static class ToolHelpers
 
     public static string GetReflectionMemberModifiersString(MemberInfo memberInfo)
     {
-        List<string> parts = new();
+        List<string> parts = [];
         string accessibility = memberInfo switch
         {
             MethodBase mb => ReflectionAccessibilityToString(mb),
@@ -559,7 +559,7 @@ internal static class ToolHelpers
 
     public static string GetReflectionTypeModifiersString(Type type)
     {
-        List<string> parts = new();
+        List<string> parts = [];
         string accessibility = ReflectionAccessibilityToString(type);
         if (string.IsNullOrEmpty(accessibility) == false)
         {

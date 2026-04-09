@@ -393,7 +393,7 @@ public static class DocumentTools
             IEnumerable<TypeDeclarationSyntax> typeNodes = syntaxRoot.DescendantNodes()
                 .OfType<TypeDeclarationSyntax>();
 
-            List<object> result = new();
+            List<object> result = [];
             foreach (TypeDeclarationSyntax typeNode in typeNodes)
             {
                 // Process only top-level types. Nested types are handled by BuildRoslynSubtypeTreeAsync.

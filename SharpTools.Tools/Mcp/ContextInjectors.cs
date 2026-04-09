@@ -240,8 +240,8 @@ internal static class ContextInjectors
             return "Method symbol is null.";
         }
 
-        HashSet<string> callers = new();
-        HashSet<string> callees = new();
+        HashSet<string> callers = [];
+        HashSet<string> callees = [];
 
         try
         {
@@ -321,7 +321,7 @@ internal static class ContextInjectors
             return "Type symbol is null.";
         }
 
-        HashSet<string> referencingTypes = new();
+        HashSet<string> referencingTypes = [];
         HashSet<string> referencedTypes = new(StringComparer.Ordinal);
 
         try

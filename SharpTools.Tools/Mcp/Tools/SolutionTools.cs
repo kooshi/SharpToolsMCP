@@ -128,7 +128,7 @@ public static class SolutionTools
         {
             ToolHelpers.EnsureSolutionLoaded(solutionManager);
 
-            List<object> projectsData = new();
+            List<object> projectsData = [];
 
             try
             {
@@ -148,7 +148,7 @@ public static class SolutionTools
                         }
 
                         // Get top level namespaces
-                        HashSet<string> topLevelNamespaces = new();
+                        HashSet<string> topLevelNamespaces = [];
 
                         try
                         {
@@ -185,7 +185,7 @@ public static class SolutionTools
                         }
 
                         // Get project references safely
-                        List<string> projectRefs = new();
+                        List<string> projectRefs = [];
                         try
                         {
                             if (solutionManager.CurrentSolution != null)
@@ -204,7 +204,7 @@ public static class SolutionTools
                         }
 
                         // Get NuGet package references from project file (with enhanced format detection)
-                        List<string> packageRefs = new();
+                        List<string> packageRefs = [];
                         try
                         {
                             if (string.IsNullOrEmpty(project.FilePath) == false && File.Exists(project.FilePath))
@@ -224,7 +224,7 @@ public static class SolutionTools
                         }
 
                         // Build namespace hierarchy as a nested tree representation
-                        Dictionary<string, HashSet<string>> namespaceTree = new();
+                        Dictionary<string, HashSet<string>> namespaceTree = [];
 
                         foreach (string ns in topLevelNamespaces)
                         {
@@ -238,7 +238,7 @@ public static class SolutionTools
 
                                 if (namespaceTree.TryGetValue(current, out HashSet<string>? children) == false)
                                 {
-                                    children = new HashSet<string>();
+                                    children = [];
                                     namespaceTree[current] = children;
                                 }
 
@@ -505,12 +505,12 @@ public static class SolutionTools
             }
 
             // For display (excludes nested types)
-            Dictionary<string, List<INamedTypeSymbol>> namespaceContents = new();
-            Dictionary<string, List<INamedTypeSymbol>> typesByNamespace = new();
+            Dictionary<string, List<INamedTypeSymbol>> namespaceContents = [];
+            Dictionary<string, List<INamedTypeSymbol>> typesByNamespace = [];
 
             // For analysis (includes all types including nested)
-            Dictionary<string, List<INamedTypeSymbol>> allNamespaceContents = new();
-            Dictionary<string, List<INamedTypeSymbol>> allTypesByNamespace = new();
+            Dictionary<string, List<INamedTypeSymbol>> allNamespaceContents = [];
+            Dictionary<string, List<INamedTypeSymbol>> allTypesByNamespace = [];
 
             try
             {
@@ -554,7 +554,7 @@ public static class SolutionTools
                                     // Always add to the "all types" collection for analysis
                                     if (allTypesByNamespace.TryGetValue(nsName, out List<INamedTypeSymbol>? allTypeList) == false)
                                     {
-                                        allTypeList = new List<INamedTypeSymbol>();
+                                        allTypeList = [];
                                         allTypesByNamespace[nsName] = allTypeList;
                                     }
                                     allTypeList.Add(symbol);
@@ -564,7 +564,7 @@ public static class SolutionTools
                                     {
                                         if (typesByNamespace.TryGetValue(nsName, out List<INamedTypeSymbol>? typeList) == false)
                                         {
-                                            typeList = new List<INamedTypeSymbol>();
+                                            typeList = [];
                                             typesByNamespace[nsName] = typeList;
                                         }
                                         typeList.Add(symbol);
@@ -590,7 +590,7 @@ public static class SolutionTools
                 {
                     if (namespaceContents.TryGetValue(nsEntry.Key, out List<INamedTypeSymbol>? globalTypeList) == false)
                     {
-                        globalTypeList = new List<INamedTypeSymbol>();
+                        globalTypeList = [];
                         namespaceContents[nsEntry.Key] = globalTypeList;
                     }
                     globalTypeList.AddRange(nsEntry.Value);
@@ -601,7 +601,7 @@ public static class SolutionTools
                 {
                     if (allNamespaceContents.TryGetValue(nsEntry.Key, out List<INamedTypeSymbol>? globalTypeList) == false)
                     {
-                        globalTypeList = new List<INamedTypeSymbol>();
+                        globalTypeList = [];
                         allNamespaceContents[nsEntry.Key] = globalTypeList;
                     }
                     globalTypeList.AddRange(nsEntry.Value);
@@ -683,7 +683,7 @@ public static class SolutionTools
         ILogger<SolutionToolsLogCategory> logger)
     {
         // Process namespaces to build the hierarchy
-        Dictionary<string, Dictionary<string, List<INamedTypeSymbol>>> namespaceParts = new();
+        Dictionary<string, Dictionary<string, List<INamedTypeSymbol>>> namespaceParts = [];
 
         foreach (string fullNamespace in sortedNamespaces)
         {
@@ -713,7 +713,7 @@ public static class SolutionTools
 
                     if (namespaceParts.TryGetValue(currentNs, out Dictionary<string, List<INamedTypeSymbol>>? children) == false)
                     {
-                        children = new Dictionary<string, List<INamedTypeSymbol>>();
+                        children = [];
                         namespaceParts[currentNs] = children;
                     }
 
@@ -723,7 +723,7 @@ public static class SolutionTools
                         string nextPart = parts[i + 1];
                         if (children.ContainsKey(nextPart) == false)
                         {
-                            children[nextPart] = new List<INamedTypeSymbol>();
+                            children[nextPart] = [];
                         }
                     }
                 }
@@ -737,7 +737,7 @@ public static class SolutionTools
                         string typeName = type.Name;
                         if (leafNsParts.TryGetValue(typeName, out List<INamedTypeSymbol>? typeList) == false)
                         {
-                            typeList = new List<INamedTypeSymbol>();
+                            typeList = [];
                             leafNsParts[typeName] = typeList;
                         }
                         typeList.Add(type);
@@ -1076,7 +1076,7 @@ public static class SolutionTools
 
                     try
                     {
-                        List<INamedTypeSymbol> derivedTypes = new();
+                        List<INamedTypeSymbol> derivedTypes = [];
 
                         // Find classes derived from this type
                         if (typeSymbol.TypeKind == TypeKind.Class)
@@ -1104,13 +1104,13 @@ public static class SolutionTools
                         }
 
                         // Group derived types by namespace
-                        Dictionary<string, List<INamedTypeSymbol>> byNamespace = new();
+                        Dictionary<string, List<INamedTypeSymbol>> byNamespace = [];
                         foreach (INamedTypeSymbol derivedType in derivedTypes)
                         {
                             string namespaceName = derivedType.ContainingNamespace?.ToDisplayString() ?? "global";
                             if (byNamespace.TryGetValue(namespaceName, out List<INamedTypeSymbol>? nsTypes) == false)
                             {
-                                nsTypes = new List<INamedTypeSymbol>();
+                                nsTypes = [];
                                 byNamespace[namespaceName] = nsTypes;
                             }
                             nsTypes.Add(derivedType);
@@ -1220,7 +1220,7 @@ public static class SolutionTools
         List<IFieldSymbol> constants = publicOrInternalMembers.OfType<IFieldSymbol>().Where(f => f.IsConst).ToList();
         List<IFieldSymbol> enumValues = type.TypeKind == TypeKind.Enum
             ? publicOrInternalMembers.OfType<IFieldSymbol>().ToList()
-            : new List<IFieldSymbol>();
+            : [];
         List<IEventSymbol> events = publicOrInternalMembers.OfType<IEventSymbol>().ToList();
         List<IPropertySymbol> properties = publicOrInternalMembers.OfType<IPropertySymbol>().ToList();
         List<IMethodSymbol> methods = publicOrInternalMembers.OfType<IMethodSymbol>()

@@ -751,10 +751,10 @@ public static class ModificationTools
                 Solution originalSolution = solutionManager.CurrentSolution ?? throw new McpException("Current solution is null before find and replace operation.");
 
                 // Track all modified files for both code and non-code files
-                List<string> modifiedFiles = new();
-                List<DocumentId> changedDocuments = new();
-                List<string> nonCodeFilesModified = new();
-                Dictionary<string, string> nonCodeDiffs = new();
+                List<string> modifiedFiles = [];
+                List<DocumentId> changedDocuments = [];
+                List<string> nonCodeFilesModified = [];
+                Dictionary<string, string> nonCodeDiffs = [];
 
                 // First, check if the target is a file path pattern (contains wildcard or is a direct file path)
                 if (target.Contains("*") || target.Contains("?") || (File.Exists(target) && documentOperations.IsCodeFile(target) == false))

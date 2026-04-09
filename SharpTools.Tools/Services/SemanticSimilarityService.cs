@@ -195,7 +195,7 @@ public class SemanticSimilarityService : ISemanticSimilarityService
             similarityThreshold,
             Tuning.MaxDegreesOfParallelism);
 
-        ConcurrentBag<MethodSemanticFeatures> allMethodFeatures = new();
+        ConcurrentBag<MethodSemanticFeatures> allMethodFeatures = [];
 
         ParallelOptions parallelOptions = new()
         {
@@ -338,16 +338,16 @@ public class SemanticSimilarityService : ISemanticSimilarityService
             .Select(p => p.Type.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal))
             .ToList();
 
-        HashSet<string> invokedMethodSignatures = new();
-        Dictionary<string, int> operationCounts = new();
-        HashSet<string> distinctAccessedMemberTypes = new();
+        HashSet<string> invokedMethodSignatures = [];
+        Dictionary<string, int> operationCounts = [];
+        HashSet<string> distinctAccessedMemberTypes = [];
 
         int basicBlockCount = 0;
         int conditionalBranchCount = 0;
         int loopCount = 0;
 
-        Dictionary<string, object> methodMetrics = new();
-        List<string> recommendations = new();
+        Dictionary<string, object> methodMetrics = [];
+        List<string> recommendations = [];
         await _complexityAnalysisService.AnalyzeMethodAsync(
             methodSymbol, methodMetrics, recommendations, cancellationToken);
         int cyclomaticComplexity =
@@ -447,8 +447,8 @@ public class SemanticSimilarityService : ISemanticSimilarityService
         double similarityThreshold,
         CancellationToken cancellationToken)
     {
-        List<MethodSimilarityResult> results = new();
-        HashSet<int> processedIndices = new();
+        List<MethodSimilarityResult> results = [];
+        HashSet<int> processedIndices = [];
         _logger.LogInformation(
             "Starting similarity comparison for {MethodCount} methods.", allMethodFeatures.Count);
 
@@ -465,7 +465,7 @@ public class SemanticSimilarityService : ISemanticSimilarityService
             }
 
             MethodSemanticFeatures currentMethod = allMethodFeatures[i];
-            List<MethodSemanticFeatures> similarGroup = new() { currentMethod };
+            List<MethodSemanticFeatures> similarGroup = [currentMethod];
             processedIndices.Add(i);
             double groupTotalScore = 0;
             int comparisonsMade = 0;
@@ -679,7 +679,7 @@ public class SemanticSimilarityService : ISemanticSimilarityService
             similarityThreshold,
             Tuning.MaxDegreesOfParallelism);
 
-        ConcurrentBag<ClassSemanticFeatures> allClassFeatures = new();
+        ConcurrentBag<ClassSemanticFeatures> allClassFeatures = [];
 
         ParallelOptions parallelOptions = new()
         {
@@ -817,15 +817,15 @@ public class SemanticSimilarityService : ISemanticSimilarityService
         string fullyQualifiedClassName =
             classSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal);
 
-        HashSet<string> distinctReferencedExternalTypeFqns = new();
-        HashSet<string> distinctUsedNamespaceFqns = new();
+        HashSet<string> distinctReferencedExternalTypeFqns = [];
+        HashSet<string> distinctUsedNamespaceFqns = [];
 
         AddTypeAndNamespaceIfExternal(
             classSymbol.BaseType, classSymbol, distinctReferencedExternalTypeFqns, distinctUsedNamespaceFqns);
         string? baseClassName =
             classSymbol.BaseType?.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal);
 
-        List<string> implementedInterfaceNames = new();
+        List<string> implementedInterfaceNames = [];
         foreach (INamedTypeSymbol iface in classSymbol.AllInterfaces)
         {
             AddTypeAndNamespaceIfExternal(
@@ -842,7 +842,7 @@ public class SemanticSimilarityService : ISemanticSimilarityService
         int nestedClassCount = 0, nestedStructCount = 0, nestedEnumCount = 0, nestedInterfaceCount = 0;
         double totalMethodComplexity = 0;
         int analyzedMethodCount = 0;
-        List<MethodSemanticFeatures> classMethodFeatures = new();
+        List<MethodSemanticFeatures> classMethodFeatures = [];
 
         if (classDecl.SyntaxTree.GetRoot(cancellationToken) is CompilationUnitSyntax compilationUnit)
         {
@@ -1125,8 +1125,8 @@ public class SemanticSimilarityService : ISemanticSimilarityService
         double similarityThreshold,
         CancellationToken cancellationToken)
     {
-        List<ClassSimilarityResult> results = new();
-        HashSet<int> processedIndices = new();
+        List<ClassSimilarityResult> results = [];
+        HashSet<int> processedIndices = [];
         _logger.LogInformation(
             "Starting class similarity comparison for {ClassCount} classes.", allClassFeatures.Count);
 
@@ -1143,7 +1143,7 @@ public class SemanticSimilarityService : ISemanticSimilarityService
             }
 
             ClassSemanticFeatures currentClass = allClassFeatures[i];
-            List<ClassSemanticFeatures> similarGroup = new() { currentClass };
+            List<ClassSemanticFeatures> similarGroup = [currentClass];
             processedIndices.Add(i);
             double groupTotalScore = 0;
             int comparisonsMade = 0;
@@ -1215,7 +1215,7 @@ public class SemanticSimilarityService : ISemanticSimilarityService
                     ? class2.MethodFeatures
                     : class1.MethodFeatures;
             double totalMaxSimilarity = 0.0;
-            HashSet<int> usedLargerListIndices = new HashSet<int>();
+            HashSet<int> usedLargerListIndices = [];
 
             foreach (MethodSemanticFeatures method1Feat in smallerList)
             {

@@ -19,7 +19,7 @@ public static class MemberAnalysisHelper
             return string.Empty;
         }
 
-        List<string> results = new();
+        List<string> results = [];
 
         // Get complexity recommendations
         string complexityResults = await AnalyzeComplexityAsync(addedSymbol, complexityAnalysisService, logger, cancellationToken);
@@ -49,8 +49,8 @@ public static class MemberAnalysisHelper
         ILogger logger,
         CancellationToken cancellationToken)
     {
-        List<string> recommendations = new();
-        Dictionary<string, object> metrics = new();
+        List<string> recommendations = [];
+        Dictionary<string, object> metrics = [];
 
         try
         {

@@ -146,7 +146,7 @@ public class GitService : IGitService
                 using Repository repository = new Repository(repositoryPath);
 
                 // Stage the changed files
-                List<string> stagedFiles = new List<string>();
+                List<string> stagedFiles = [];
 
                 foreach (string filePath in changedFilePaths)
                 {

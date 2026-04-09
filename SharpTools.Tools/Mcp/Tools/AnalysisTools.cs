@@ -48,7 +48,7 @@ public static partial class AnalysisTools
 
     internal static async Task<object> BuildRoslynSubtypeTreeAsync(INamedTypeSymbol typeSymbol, ICodeAnalysisService codeAnalysisService, CancellationToken cancellationToken)
     {
-        Dictionary<string, List<object>> membersByKind = new();
+        Dictionary<string, List<object>> membersByKind = [];
 
         foreach (ISymbol member in typeSymbol.GetMembers())
         {
@@ -66,7 +66,7 @@ public static partial class AnalysisTools
             // Create an entry for this kind if it doesn't exist
             if (membersByKind.ContainsKey(kind) == false)
             {
-                membersByKind[kind] = new List<object>();
+                membersByKind[kind] = [];
             }
 
             var memberInfo = new
@@ -193,7 +193,7 @@ public static partial class AnalysisTools
             {
                 INamedTypeSymbol roslynSymbol = await ToolHelpers.GetRoslynNamedTypeSymbolOrThrowAsync(solutionManager, fullyQualifiedTypeName, cancellationToken);
                 string typeName = ToolHelpers.RemoveGlobalPrefix(roslynSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal));
-                Dictionary<string, Dictionary<string, List<string>>> membersByLocation = new();
+                Dictionary<string, Dictionary<string, List<string>>> membersByLocation = [];
                 string defaultLocation = "Unknown Location";
 
                 foreach (ISymbol member in roslynSymbol.GetMembers())
@@ -235,13 +235,13 @@ public static partial class AnalysisTools
 
                             if (membersByLocation.ContainsKey(locationKey) == false)
                             {
-                                membersByLocation[locationKey] = new Dictionary<string, List<string>>();
+                                membersByLocation[locationKey] = [];
                             }
                             Dictionary<string, List<string>> membersByKind = membersByLocation[locationKey];
 
                             if (membersByKind.ContainsKey(kind) == false)
                             {
-                                membersByKind[kind] = new List<string>();
+                                membersByKind[kind] = [];
                             }
                             membersByKind[kind].Add(memberInfo);
                         }
@@ -255,13 +255,13 @@ public static partial class AnalysisTools
                             string kind = ToolHelpers.GetSymbolKindString(member);
                             if (membersByLocation.ContainsKey(defaultLocation) == false)
                             {
-                                membersByLocation[defaultLocation] = new Dictionary<string, List<string>>();
+                                membersByLocation[defaultLocation] = [];
                             }
                             Dictionary<string, List<string>> membersByKind = membersByLocation[defaultLocation];
 
                             if (membersByKind.ContainsKey(kind) == false)
                             {
-                                membersByKind[kind] = new List<string>();
+                                membersByKind[kind] = [];
                             }
                             membersByKind[kind].Add(memberInfo);
                         }
@@ -297,7 +297,7 @@ public static partial class AnalysisTools
         ILogger<AnalysisToolsLogCategory> logger,
         CancellationToken cancellationToken)
     {
-        List<object> apiMembers = new();
+        List<object> apiMembers = [];
         try
         {
             foreach (MemberInfo memberInfo in reflectionType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic |
@@ -501,7 +501,7 @@ public static partial class AnalysisTools
             logger.LogInformation("Executing '{ViewImplementations}' for: {SymbolName}",
                 nameof(ListImplementations), fullyQualifiedSymbolName);
 
-            List<object> implementations = new();
+            List<object> implementations = [];
             ISymbol roslynSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, fullyQualifiedSymbolName, cancellationToken);
 
             try
@@ -618,9 +618,9 @@ public static partial class AnalysisTools
         CancellationToken cancellationToken)
     {
         Microsoft.CodeAnalysis.INamedTypeSymbol namedTypeSymbol = (Microsoft.CodeAnalysis.INamedTypeSymbol)roslynSymbol;
-        List<object> partialDeclarations = new();
-        List<string> allSourceCode = new();
-        List<string> allFiles = new();
+        List<object> partialDeclarations = [];
+        List<string> allSourceCode = [];
+        List<string> allFiles = [];
 
         // Generate reference context for the type
         string referenceContext = await ContextInjectors.CreateTypeReferenceContextAsync(codeAnalysisService, logger, namedTypeSymbol, cancellationToken);
@@ -756,7 +756,7 @@ public static partial class AnalysisTools
 
     private static List<LocationInfo> GetDeclarationLocationInfo(ISymbol symbol)
     {
-        List<LocationInfo> locations = new();
+        List<LocationInfo> locations = [];
 
         foreach (SyntaxReference syntaxRef in symbol.DeclaringSyntaxReferences)
         {
@@ -834,7 +834,7 @@ public static partial class AnalysisTools
             ISymbol symbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, fullyQualifiedSymbolName, cancellationToken);
             IEnumerable<ReferencedSymbol> referencedSymbols = await codeAnalysisService.FindReferencesAsync(symbol, cancellationToken);
 
-            List<object> references = new();
+            List<object> references = [];
             int maxToShow = 20;
             int count = 0;
 
@@ -865,7 +865,7 @@ public static partial class AnalysisTools
                                 SourceText sourceText = await sourceTree.GetTextAsync(cancellationToken);
                                 FileLinePositionSpan lineSpan = location.Location.GetLineSpan();
 
-                                List<string> contextLines = new();
+                                List<string> contextLines = [];
                                 const int linesAround = 2;
                                 for (int i = Math.Max(0, lineSpan.StartLinePosition.Line - linesAround);
                                     i <= Math.Min(sourceText.Lines.Count - 1, lineSpan.EndLinePosition.Line + linesAround);
@@ -993,8 +993,8 @@ public static partial class AnalysisTools
             logger.LogInformation("Executing '{ViewInheritanceChain}' for: {TypeName}",
                 nameof(ViewInheritanceChain), fullyQualifiedTypeName);
 
-            List<object> baseTypes = new();
-            List<object> derivedTypes = new();
+            List<object> baseTypes = [];
+            List<object> derivedTypes = [];
             bool hasPartialResults = false;
             string? errorMessage = null;
 
@@ -1212,8 +1212,8 @@ public static partial class AnalysisTools
                 throw new McpException($"Symbol '{fullyQualifiedMethodName}' is not a method.");
             }
 
-            List<object> incomingCalls = new();
-            List<object> outgoingCalls = new();
+            List<object> incomingCalls = [];
+            List<object> outgoingCalls = [];
             bool hasPartialResults = false;
             string? errorMessage = null;
 
@@ -1353,7 +1353,7 @@ public static partial class AnalysisTools
 
             var matches = new ConcurrentBag<dynamic>();
             bool hasPartialResults = false;
-            ConcurrentBag<string> errors = new();
+            ConcurrentBag<string> errors = [];
             int projectsProcessed = 0;
             int projectsSkipped = 0;
             ConcurrentDictionary<string, HashSet<TextSpan>> matchedNodeSpans = new();
@@ -1391,7 +1391,7 @@ public static partial class AnalysisTools
                                 string filePath = syntaxTree.FilePath ?? "unknown file";
 
                                 SyntaxNode root = await syntaxTree.GetRootAsync(cancellationToken);
-                                Dictionary<SyntaxNode, List<Match>> matchedNodesInFile = new();
+                                Dictionary<SyntaxNode, List<Match>> matchedNodesInFile = [];
 
                                 // First pass: Find all nodes with regex matches
                                 foreach (SyntaxNode node in root.DescendantNodes()
@@ -1415,7 +1415,7 @@ public static partial class AnalysisTools
                                             matchedNodesInFile.Add(node, declMatches.Cast<Match>().ToList());
                                             if (matchedNodeSpans.TryGetValue(filePath, out var spans) == false)
                                             {
-                                                spans = new HashSet<TextSpan>();
+                                                spans = [];
                                                 matchedNodeSpans[filePath] = spans;
                                             }
                                             spans.Add(node.Span);
@@ -1585,7 +1585,7 @@ public static partial class AnalysisTools
                     if (partitionCount > 0)
                     {
                         int partitionSize = typesToProcess.Count / partitionCount;
-                        List<Task> partitionTasks = new();
+                        List<Task> partitionTasks = [];
 
                         for (int i = 0; i < partitionCount; i++)
                         {
@@ -1850,7 +1850,7 @@ public static partial class AnalysisTools
                     .ToList();
 
                 // Handle global usings separately
-                List<string> globalUsings = new();
+                List<string> globalUsings = [];
                 if (globalUsingsFile != null)
                 {
                     SyntaxNode? globalRoot = await globalUsingsFile.GetSyntaxRootAsync(cancellationToken);
@@ -2068,8 +2068,8 @@ public static partial class AnalysisTools
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(AnalyzeComplexity));
 
             // Track metrics for the final report
-            Dictionary<string, object> metrics = new();
-            List<string> recommendations = new();
+            Dictionary<string, object> metrics = [];
+            List<string> recommendations = [];
 
             switch (scope.ToLower())
             {

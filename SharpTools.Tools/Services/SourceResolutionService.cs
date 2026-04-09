@@ -252,7 +252,7 @@ public class SourceResolutionService : ISourceResolutionService
             }
 
             // Check for PDB embedded in the assembly
-            Dictionary<string, EmbeddedSourceReader.SourceResult> embeddedSources = new();
+            Dictionary<string, EmbeddedSourceReader.SourceResult> embeddedSources = [];
 
             try
             {

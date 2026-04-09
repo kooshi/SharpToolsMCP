@@ -503,7 +503,7 @@ public class CodeModificationService : ICodeModificationService
         }
 
         // Handle as file path with potential wildcards
-        List<DocumentId> documentIds = new();
+        List<DocumentId> documentIds = [];
 
         // Log the pattern we're using
         _logger.LogInformation("Treating '{Target}' as a file path pattern", targetString);
@@ -596,7 +596,7 @@ public class CodeModificationService : ICodeModificationService
         Solution finalSolutionToApply = newSolution;
 
         // Collect changed file paths for git operations - include both changed and new documents
-        List<string> changedFilePaths = new();
+        List<string> changedFilePaths = [];
 
         foreach (ProjectChanges projectChange in solutionChanges.GetProjectChanges())
         {
