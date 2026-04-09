@@ -113,7 +113,7 @@ internal static class ErrorHandlingHelpers
     /// </summary>
     public static void ValidateFilePath(string? filePath, ILogger logger)
     {
-        ValidateStringParameter(filePath, "filePath", logger);
+        ValidateStringParameter(filePath, nameof(filePath), logger);
 
         try
         {

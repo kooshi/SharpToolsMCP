@@ -28,11 +28,11 @@ public static class MiscTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(toolName, "toolName", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(toolDescription, "toolDescription", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(expectedParameters, "expectedParameters", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(expectedOutput, "expectedOutput", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(justification, "justification", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(toolName, nameof(toolName), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(toolDescription, nameof(toolDescription), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(expectedParameters, nameof(expectedParameters), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(expectedOutput, nameof(expectedOutput), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(justification, nameof(justification), logger);
 
             logger.LogInformation("Tool request received: {ToolName}", toolName);
 

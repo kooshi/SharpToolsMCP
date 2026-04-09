@@ -45,7 +45,7 @@ public static class SolutionTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(solutionPath, "solutionPath", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(solutionPath, nameof(solutionPath), logger);
             logger.LogInformation(
                 "Executing '{LoadSolution}' tool for path: {SolutionPath}",
                 nameof(LoadSolution),
@@ -462,7 +462,7 @@ public static class SolutionTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(projectName, "projectName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(projectName, nameof(projectName), logger);
             logger.LogInformation(
                 "Executing '{LoadProjectToolName}' tool for project: {ProjectName}",
                 nameof(LoadProject),

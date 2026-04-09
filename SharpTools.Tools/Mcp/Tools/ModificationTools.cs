@@ -27,8 +27,8 @@ public static class ModificationTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedTargetName, "fullyQualifiedTargetName", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(codeSnippet, "codeSnippet", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedTargetName, nameof(fullyQualifiedTargetName), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(codeSnippet, nameof(codeSnippet), logger);
             codeSnippet = codeSnippet.TrimBackslash();
 
             // Ensure solution is loaded
@@ -388,8 +388,8 @@ public static class ModificationTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(newName, "newName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, nameof(fullyQualifiedSymbolName), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(newName, nameof(newName), logger);
 
             // Validate that the new name is a valid C# identifier
             if (IsValidCSharpIdentifier(newName) == false)
@@ -501,8 +501,8 @@ public static class ModificationTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(replacementCode, "replacementCode", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, nameof(fullyQualifiedSymbolName), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(replacementCode, nameof(replacementCode), logger);
             replacementCode = replacementCode.TrimBackslash();
 
             // Note: filenameFilter can be empty or null, as this indicates "replace in all files"
@@ -700,7 +700,7 @@ public static class ModificationTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(regexPattern, "regexPattern", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(regexPattern, nameof(regexPattern), logger);
             ErrorHandlingHelpers.ValidateStringParameter(target, "targetString", logger);
 
             //normalize newlines in pattern

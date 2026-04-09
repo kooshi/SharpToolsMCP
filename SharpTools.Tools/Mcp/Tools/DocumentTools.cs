@@ -23,7 +23,7 @@ public static class DocumentTools
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(filePath, nameof(filePath), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ReadRawFromRoslynDocument));
 
             logger.LogInformation("Reading document at {FilePath}", filePath);
@@ -93,8 +93,8 @@ public static class DocumentTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(content, "content", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(filePath, nameof(filePath), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(content, nameof(content), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(CreateRoslynDocument));
             content = content.TrimBackslash();
 
@@ -192,8 +192,8 @@ public static class DocumentTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(content, "content", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(filePath, nameof(filePath), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(content, nameof(content), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(OverwriteRoslynDocument));
             content = content.TrimBackslash();
             logger.LogInformation("Overwriting document at {FilePath}", filePath);

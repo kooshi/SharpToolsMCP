@@ -22,7 +22,7 @@ public static partial class AnalysisTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedParentTypeName, "fullyQualifiedParentTypeName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedParentTypeName, nameof(fullyQualifiedParentTypeName), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(GetAllSubtypes));
 
             logger.LogInformation("Executing {GetAllSubtypes} for: {TypeName}", nameof(GetAllSubtypes), fullyQualifiedParentTypeName);
@@ -412,7 +412,7 @@ public static partial class AnalysisTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, nameof(fullyQualifiedSymbolName), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewDefinition));
 
             logger.LogInformation("Executing '{ViewDefinition}' for: {SymbolName}", nameof(ViewDefinition), fullyQualifiedSymbolName);
@@ -493,7 +493,7 @@ public static partial class AnalysisTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, nameof(fullyQualifiedSymbolName), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ListImplementations));
 
             logger.LogInformation("Executing '{ViewImplementations}' for: {SymbolName}",
@@ -810,7 +810,7 @@ public static partial class AnalysisTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, "fullyQualifiedSymbolName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedSymbolName, nameof(fullyQualifiedSymbolName), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(FindReferences));
 
             logger.LogInformation("Executing '{FindReferences}' for: {SymbolName}",
@@ -972,7 +972,7 @@ public static partial class AnalysisTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedTypeName, "fullyQualifiedTypeName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedTypeName, nameof(fullyQualifiedTypeName), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewInheritanceChain));
 
             logger.LogInformation("Executing '{ViewInheritanceChain}' for: {TypeName}",
@@ -1185,7 +1185,7 @@ public static partial class AnalysisTools
     {
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedMethodName, "fullyQualifiedMethodName", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(fullyQualifiedMethodName, nameof(fullyQualifiedMethodName), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(ViewCallGraph));
 
             logger.LogInformation("Executing '{ViewCallGraph}' for: {MethodName}",
@@ -1316,7 +1316,7 @@ public static partial class AnalysisTools
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
-            ErrorHandlingHelpers.ValidateStringParameter(regexPattern, "regexPattern", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(regexPattern, nameof(regexPattern), logger);
             ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(SearchDefinitions));
 
             logger.LogInformation("Executing '{SearchDefinitions}' with pattern: {RegexPattern}",
@@ -1790,8 +1790,8 @@ public static partial class AnalysisTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(operation, "operation", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(filePath, "filePath", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(operation, nameof(operation), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(filePath, nameof(filePath), logger);
             ErrorHandlingHelpers.ValidateFileExists(filePath, logger);
 
             if (operation != "read" && operation != "write")
@@ -1911,8 +1911,8 @@ public static partial class AnalysisTools
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
         {
             // Validate parameters
-            ErrorHandlingHelpers.ValidateStringParameter(operation, "operation", logger);
-            ErrorHandlingHelpers.ValidateStringParameter(targetDeclaration, "targetDeclaration", logger);
+            ErrorHandlingHelpers.ValidateStringParameter(operation, nameof(operation), logger);
+            ErrorHandlingHelpers.ValidateStringParameter(targetDeclaration, nameof(targetDeclaration), logger);
 
             if (operation != "read" && operation != "write")
             {
