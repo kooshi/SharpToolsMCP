@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.HttpLogging;
 using ModelContextProtocol.Protocol;
 using Serilog;
+using Serilog.Events;
 using SharpTools.Tools.Extensions;
 using SharpTools.Tools.Interfaces;
 using SharpTools.Tools.Mcp.Tools;
@@ -28,10 +29,10 @@ public class Program
             Description = "Optional path to a log file. If not specified, logs only go to console."
         };
 
-        Option<Serilog.Events.LogEventLevel> logLevelOption = new("--log-level")
+        Option<LogEventLevel> logLevelOption = new("--log-level")
         {
             Description = "Minimum log level for console and file.",
-            DefaultValueFactory = x => Serilog.Events.LogEventLevel.Information
+            DefaultValueFactory = x => LogEventLevel.Information
         };
 
         Option<string?> loadSolutionOption = new("--load-solution")
@@ -69,7 +70,7 @@ public class Program
 
         int port = parseResult.GetValue(portOption);
         string? logFilePath = parseResult.GetValue(logFileOption);
-        Serilog.Events.LogEventLevel minimumLogLevel = parseResult.GetValue(logLevelOption);
+        LogEventLevel minimumLogLevel = parseResult.GetValue(logLevelOption);
         string? solutionPath = parseResult.GetValue(loadSolutionOption);
         string? buildConfiguration = parseResult.GetValue(buildConfigurationOption)!;
         bool disableGit = parseResult.GetValue(disableGitOption);
@@ -77,18 +78,18 @@ public class Program
 
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Is(minimumLogLevel)
-            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Hosting.Diagnostics", Serilog.Events.LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Routing", Serilog.Events.LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Server.Kestrel", Serilog.Events.LogEventLevel.Debug)
-            .MinimumLevel.Override("Microsoft.CodeAnalysis", Serilog.Events.LogEventLevel.Information)
-            .MinimumLevel.Override("ModelContextProtocol", Serilog.Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Hosting.Diagnostics", LogEventLevel.Information)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Information)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Server.Kestrel", LogEventLevel.Debug)
+            .MinimumLevel.Override("Microsoft.CodeAnalysis", LogEventLevel.Information)
+            .MinimumLevel.Override("ModelContextProtocol", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .WriteTo.Async(a => a.Console(
                 outputTemplate: LogOutputTemplate,
-                standardErrorFromLevel: Serilog.Events.LogEventLevel.Verbose,
+                standardErrorFromLevel: LogEventLevel.Verbose,
                 restrictedToMinimumLevel: minimumLogLevel));
 
         if (string.IsNullOrWhiteSpace(logFilePath) == false)
