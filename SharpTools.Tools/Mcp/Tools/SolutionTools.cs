@@ -253,7 +253,7 @@ public static class SolutionTools
                         string namespaceStructure = namespaceTreeBuilder.ToString();
 
                         // Local function to recursively build the tree string
-                        void BuildNamespaceTreeString(string current, Dictionary<string, HashSet<string>> tree, StringBuilder builder)
+                        static void BuildNamespaceTreeString(string current, Dictionary<string, HashSet<string>> tree, StringBuilder builder)
                         {
                             if (tree.TryGetValue(current, out HashSet<string>? children) == false || children.Count == 0)
                             {
