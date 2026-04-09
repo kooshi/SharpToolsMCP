@@ -115,7 +115,7 @@ public static partial class AnalysisTools
             signature = ToolHelpers.GetRoslynTypeSpecificModifiersString(typeSymbol) + " " +
                 typeSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal),
             fullyQualifiedName = FuzzyFqnLookupService.GetSearchableString(typeSymbol),
-            location = location,
+            location,
             membersByKind = orderedKinds
         };
     }
@@ -270,11 +270,11 @@ public static partial class AnalysisTools
 
                 return ToolHelpers.ToJson(new
                 {
-                    typeName = typeName,
+                    typeName,
                     note = $"Use {ToolHelpers.SharpToolPrefix}{nameof(ViewDefinition)} to view the full source code of the types or members.",
                     locations = typeLocations,
                     includesPrivateMembers = includePrivateMembers,
-                    membersByLocation = membersByLocation
+                    membersByLocation
                 });
             }
             catch (McpException ex)
@@ -1487,8 +1487,8 @@ public static partial class AnalysisTools
                                                     matches.Add(new
                                                     {
                                                         kind = ToolHelpers.GetSymbolKindString(symbol),
-                                                        parentFqn = parentFqn,
-                                                        signature = signature,
+                                                        parentFqn,
+                                                        signature,
                                                         match = matchLine,
                                                         location = new
                                                         {
@@ -1641,7 +1641,7 @@ public static partial class AnalysisTools
                                                     {
                                                         kind = ToolHelpers.GetReflectionMemberTypeKindString(memberInfo),
                                                         parentFqn = type.FullName ?? type.Name,
-                                                        signature = signature,
+                                                        signature,
                                                         match = memberInfo.Name,
                                                         location = new
                                                         {
@@ -1750,7 +1750,7 @@ public static partial class AnalysisTools
                                         .DistinctBy(m => ((dynamic)m).match)
                                         .Select(m => new
                                         {
-                                            match = ((dynamic)m).match,
+                                            ((dynamic)m).match,
                                             line = ((dynamic)m).location.line > 0 ? ((dynamic)m).location.line : null,
                                         }).OrderBy(m => m.line).ToList()
                                 )
