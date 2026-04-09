@@ -166,7 +166,7 @@ public class CodeModificationService(
         return formattedDocument.Project.Solution;
     }
 
-    private static readonly SyntaxTrivia newline = SyntaxFactory.EndOfLine("\n");
+    private static readonly SyntaxTrivia s_newline = SyntaxFactory.EndOfLine("\n");
 
     private static SyntaxTriviaList NormalizeLeadingTrivia(SyntaxTriviaList trivia)
     {
@@ -175,7 +175,7 @@ public class CodeModificationService(
             trivia.Where(t => t.IsKind(SyntaxKind.EndOfLineTrivia) == false);
 
         // Create a new list with a newline at the beginning followed by the filtered trivia
-        return SyntaxFactory.TriviaList(newline, newline).AddRange(filtered);
+        return SyntaxFactory.TriviaList(s_newline, s_newline).AddRange(filtered);
     }
 
     private static SyntaxTriviaList NormalizeTrailingTrivia(SyntaxTriviaList trivia)
@@ -188,7 +188,7 @@ public class CodeModificationService(
         SyntaxTriviaList result = SyntaxFactory.TriviaList(filtered);
 
         // Add the end-of-line trivia and return
-        return result.Add(newline).Add(newline);
+        return result.Add(s_newline).Add(s_newline);
     }
 
     private static SyntaxNode NormalizeMemberDeclarationTrivia(SyntaxNode member)
