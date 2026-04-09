@@ -8,7 +8,7 @@ public class DocumentToolsLogCategory { }
 [McpServerToolType]
 public static class DocumentTools
 {
-    private static string previousFilePathWarned = string.Empty;
+    private static string s_previousFilePathWarned = string.Empty;
 
     [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(ReadRawFromRoslynDocument), Idempotent = true, ReadOnly = true, Destructive = false, OpenWorld = false),
         Description("Reads the content of a file in the solution or referenced directories. Omits indentation to save tokens.")]
@@ -44,16 +44,16 @@ public static class DocumentTools
 
                 if (lines > LineCountWarningThreshold)
                 {
-                    if (previousFilePathWarned != filePath)
+                    if (s_previousFilePathWarned != filePath)
                     {
-                        previousFilePathWarned = filePath;
+                        s_previousFilePathWarned = filePath;
 
                         throw new McpException(
                             $"WARNING: '{filePath}' is very long (over {LineCountWarningThreshold} lines). " +
                             "Consider using more focused tools to accomplish your task, " +
                             "or call this tool again with the same arguments to override this warning.");
                     }
-                    previousFilePathWarned = string.Empty;
+                    s_previousFilePathWarned = string.Empty;
                     logger.LogInformation(
                         "Proceeding with reading large file ({LineCount} lines) after warning acknowledgment",
                         lines);

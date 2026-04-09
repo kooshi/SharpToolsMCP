@@ -190,7 +190,7 @@ public class DocumentOperationsService(
             // Determine appropriate folder path relative to the project
             string? projectDir = Path.GetDirectoryName(project.FilePath);
             string relativePath = string.Empty;
-            string[] folders = Array.Empty<string>();
+            string[] folders = [];
 
             if (string.IsNullOrEmpty(projectDir) == false)
             {

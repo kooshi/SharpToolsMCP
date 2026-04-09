@@ -48,7 +48,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         if (solutionManager.IsSolutionLoaded == false)
         {
             _logger.LogWarning("Cannot perform fuzzy FQN lookup: No solution loaded.");
-            return Enumerable.Empty<FuzzyMatchResult>();
+            return [];
         }
 
         List<FuzzyMatchResult> potentialMatches = [];
@@ -736,7 +736,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
             {
                 SyntaxTree syntaxTree = syntaxRefs.First().SyntaxTree;
 
-                foreach (Project project in _solutionManager?.CurrentSolution?.Projects ?? Enumerable.Empty<Project>())
+                foreach (Project project in _solutionManager?.CurrentSolution?.Projects ?? [])
                 {
                     if (project.Documents.Any(d => d.GetSyntaxTreeAsync().Result == syntaxTree))
                     {

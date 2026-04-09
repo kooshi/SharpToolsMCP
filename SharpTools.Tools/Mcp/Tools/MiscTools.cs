@@ -8,7 +8,7 @@ public class MiscToolsLogCategory { }
 [McpServerToolType]
 public static class MiscTools
 {
-    private static readonly string RequestLogFilePath = Path.Combine(
+    private static readonly string s_requestLogFilePath = Path.Combine(
         AppContext.BaseDirectory,
         "logs",
         "tool-requests.json");
@@ -49,7 +49,7 @@ public static class MiscTools
             try
             {
                 // Ensure the logs directory exists
-                string? logsDirectory = Path.GetDirectoryName(RequestLogFilePath);
+                string? logsDirectory = Path.GetDirectoryName(s_requestLogFilePath);
                 if (string.IsNullOrEmpty(logsDirectory))
                 {
                     throw new InvalidOperationException("Failed to determine logs directory path");
@@ -70,11 +70,11 @@ public static class MiscTools
 
                 // Load existing requests if the file exists
                 List<ToolRequest> existingRequests = [];
-                if (File.Exists(RequestLogFilePath))
+                if (File.Exists(s_requestLogFilePath))
                 {
                     try
                     {
-                        string existingJson = await File.ReadAllTextAsync(RequestLogFilePath, cancellationToken);
+                        string existingJson = await File.ReadAllTextAsync(s_requestLogFilePath, cancellationToken);
                         existingRequests = JsonSerializer.Deserialize<List<ToolRequest>>(existingJson) ?? [];
                     }
                     catch (JsonException ex)
@@ -100,18 +100,18 @@ public static class MiscTools
 
                 try
                 {
-                    await File.WriteAllTextAsync(RequestLogFilePath, jsonContent, cancellationToken);
+                    await File.WriteAllTextAsync(s_requestLogFilePath, jsonContent, cancellationToken);
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                 {
-                    logger.LogError(ex, "Failed to write tool requests to file at {FilePath}", RequestLogFilePath);
+                    logger.LogError(ex, "Failed to write tool requests to file at {FilePath}", s_requestLogFilePath);
                     throw new McpException($"Failed to save tool request: {ex.Message}");
                 }
 
                 logger.LogInformation(
                     "Tool request for '{ToolName}' has been logged to {RequestLogFilePath}",
                     toolName,
-                    RequestLogFilePath);
+                    s_requestLogFilePath);
                 return $"Thank you for your tool request. '{toolName}' has been logged for review. Tool requests are evaluated periodically for potential implementation.";
             }
             catch (McpException)
