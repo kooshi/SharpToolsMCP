@@ -459,7 +459,7 @@ public static partial class AnalysisTools
 
             // Check if this is a partial type with multiple declarations
             bool isPartialType = roslynSymbol is INamedTypeSymbol namedTypeSymbol &&
-                roslynSymbol.DeclaringSyntaxReferences.Count() > 1;
+                roslynSymbol.DeclaringSyntaxReferences.Length > 1;
 
             if (isPartialType)
             {
