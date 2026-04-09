@@ -247,9 +247,7 @@ public class SemanticSimilarityService(
                         break;
                     }
 
-                    IMethodSymbol? methodSymbol =
-                        semanticModel.GetDeclaredSymbol(methodDecl, docCt) as IMethodSymbol;
-                    if (methodSymbol == null
+                    if (semanticModel.GetDeclaredSymbol(methodDecl, docCt) is not IMethodSymbol methodSymbol
                         || methodSymbol.IsAbstract
                         || methodSymbol.IsExtern
                         || ToolHelpers.IsPropertyAccessor(methodSymbol))
@@ -733,9 +731,7 @@ public class SemanticSimilarityService(
                         break;
                     }
 
-                    INamedTypeSymbol? classSymbol =
-                        semanticModel.GetDeclaredSymbol(classDecl, docCt) as INamedTypeSymbol;
-                    if (classSymbol == null || classSymbol.IsAbstract || classSymbol.IsStatic)
+                    if (semanticModel.GetDeclaredSymbol(classDecl, docCt) is not INamedTypeSymbol classSymbol || classSymbol.IsAbstract || classSymbol.IsStatic)
                     {
                         continue;
                     }
@@ -840,10 +836,7 @@ public class SemanticSimilarityService(
             {
                 if (usingDirective.Name != null)
                 {
-                    INamespaceSymbol? namespaceSymbol =
-                        semanticModel.GetSymbolInfo(usingDirective.Name, cancellationToken).Symbol
-                            as INamespaceSymbol;
-                    if (namespaceSymbol != null && namespaceSymbol.IsGlobalNamespace == false)
+                    if (semanticModel.GetSymbolInfo(usingDirective.Name, cancellationToken).Symbol is INamespaceSymbol namespaceSymbol && namespaceSymbol.IsGlobalNamespace == false)
                     {
                         distinctUsedNamespaceFqns.Add(
                             namespaceSymbol.ToDisplayString(ToolHelpers.FullyQualifiedFormatWithoutGlobal));

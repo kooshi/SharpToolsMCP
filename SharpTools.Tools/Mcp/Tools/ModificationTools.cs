@@ -115,9 +115,8 @@ public static class ModificationTools
                 if (updatedSemanticModel != null)
                 {
                     // Find the type symbol in the updated document by FQN instead of using old syntax reference
-                    INamedTypeSymbol? updatedTypeSymbol = await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, fullyQualifiedTargetName, cancellationToken) as INamedTypeSymbol;
 
-                    if (updatedTypeSymbol != null)
+                    if (await ToolHelpers.GetRoslynSymbolOrThrowAsync(solutionManager, fullyQualifiedTargetName, cancellationToken) is INamedTypeSymbol updatedTypeSymbol)
                     {
                         // Find the added member by name
                         ISymbol? addedSymbol = updatedTypeSymbol.GetMembers(memberName).FirstOrDefault();

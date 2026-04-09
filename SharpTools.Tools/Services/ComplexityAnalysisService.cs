@@ -28,9 +28,7 @@ public class ComplexityAnalysisService(
             return;
         }
 
-        MethodDeclarationSyntax? methodNode = await syntaxRef.GetSyntaxAsync(cancellationToken) as MethodDeclarationSyntax;
-
-        if (methodNode == null)
+        if (await syntaxRef.GetSyntaxAsync(cancellationToken) is not MethodDeclarationSyntax methodNode)
         {
             _logger.LogWarning("Could not get method syntax for {Method}", methodSymbol.Name);
             return;
@@ -394,9 +392,7 @@ public class ComplexityAnalysisService(
             // Analyze each type in the file
             foreach (TypeDeclarationSyntax typeDecl in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
             {
-                INamedTypeSymbol? typeSymbol = semanticModel.GetDeclaredSymbol(typeDecl, cancellationToken: cancellationToken) as INamedTypeSymbol;
-
-                if (typeSymbol != null)
+                if (semanticModel.GetDeclaredSymbol(typeDecl, cancellationToken: cancellationToken) is INamedTypeSymbol typeSymbol)
                 {
                     Dictionary<string, object> typeDict = [];
                     await AnalyzeTypeAsync(typeSymbol, typeDict, recommendations, includeGeneratedCode, cancellationToken);
