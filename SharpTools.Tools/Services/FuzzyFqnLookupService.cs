@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace SharpTools.Tools.Services;
 
-public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuzzyFqnLookupService
+public partial class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuzzyFqnLookupService
 {
     private readonly ILogger<FuzzyFqnLookupService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private ISolutionManager? _solutionManager;
@@ -20,8 +20,8 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
     private const double MinScoreThreshold = 0.7; // Minimum score to be considered a match
 
     // Regex patterns for normalization
-    private static readonly Regex s_arityRegex = new(@"`\d+", RegexOptions.Compiled);
-    private static readonly Regex s_genericArgsRegex = new(@"<[^<>]+>", RegexOptions.Compiled); // Simplistic: removes <...>
+    private static readonly Regex s_arityRegex = ArityRegex();
+    private static readonly Regex s_genericArgsRegex = GenericArgsRegex(); // Simplistic: removes <...>
 
     public static bool IsPartialType(ISymbol typeSymbol)
     {
@@ -827,7 +827,7 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         }
 
         // Match angle bracket content, keeping the brackets
-        return Regex.Replace(typeName, @"<([^<>]*)>", match =>
+        return AngleBracketContentRegex().Replace(typeName, match =>
         {
             // Replace the content with a normalized form
             string content = match.Groups[1].Value;
@@ -856,4 +856,13 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
         // Then remove angle bracket content including brackets
         return s_genericArgsRegex.Replace(withoutArity, "");
     }
+
+    [GeneratedRegex(@"`\d+", RegexOptions.Compiled)]
+    private static partial Regex ArityRegex();
+
+    [GeneratedRegex(@"<[^<>]+>", RegexOptions.Compiled)]
+    private static partial Regex GenericArgsRegex();
+
+    [GeneratedRegex(@"<([^<>]*)>")]
+    private static partial Regex AngleBracketContentRegex();
 }
