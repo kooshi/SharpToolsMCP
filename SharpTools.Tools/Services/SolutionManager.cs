@@ -850,58 +850,58 @@ public sealed class SolutionManager(
     {
         return targetFramework.ToLowerInvariant() switch
         {
-            "net10.0" => new[]
-            {
+            "net10.0" =>
+            [
                 "net10.0", "net9.0", "net8.0", "net7.0", "net6.0", "net5.0",
                 "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "net9.0" => new[]
-            {
+            ],
+            "net9.0" =>
+            [
                 "net9.0", "net8.0", "net7.0", "net6.0", "net5.0",
                 "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "net8.0" => new[]
-            {
+            ],
+            "net8.0" =>
+            [
                 "net8.0", "net7.0", "net6.0", "net5.0",
                 "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "net7.0" => new[]
-            {
+            ],
+            "net7.0" =>
+            [
                 "net7.0", "net6.0", "net5.0",
                 "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "net6.0" => new[]
-            {
+            ],
+            "net6.0" =>
+            [
                 "net6.0", "net5.0", "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "net5.0" => new[]
-            {
+            ],
+            "net5.0" =>
+            [
                 "net5.0", "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "netcoreapp3.1" => new[]
-            {
+            ],
+            "netcoreapp3.1" =>
+            [
                 "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "netcoreapp3.0" => new[]
-            {
+            ],
+            "netcoreapp3.0" =>
+            [
                 "netcoreapp3.0", "netcoreapp2.1", "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            },
-            "netcoreapp2.1" => new[] { "netcoreapp2.1", "netstandard2.0", "netstandard1.6" },
-            "netstandard2.1" => new[] { "netstandard2.1", "netstandard2.0", "netstandard1.6" },
-            "netstandard2.0" => new[] { "netstandard2.0", "netstandard1.6" },
-            _ => new[]
-            {
+            ],
+            "netcoreapp2.1" => ["netcoreapp2.1", "netstandard2.0", "netstandard1.6"],
+            "netstandard2.1" => ["netstandard2.1", "netstandard2.0", "netstandard1.6"],
+            "netstandard2.0" => ["netstandard2.0", "netstandard1.6"],
+            _ =>
+            [
                 "net8.0", "net7.0", "net6.0", "net5.0",
                 "netcoreapp3.1", "netcoreapp3.0", "netcoreapp2.1",
                 "netstandard2.1", "netstandard2.0", "netstandard1.6"
-            }
+            ]
         };
     }
 }

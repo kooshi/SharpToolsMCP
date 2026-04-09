@@ -400,6 +400,8 @@ public static partial class AnalysisTools
         });
     }
 
+    private static readonly string[] s_separator = ["\r\n", "\r", "\n"];
+
     [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(ViewDefinition), Idempotent = true, ReadOnly = true, Destructive = false, OpenWorld = false)]
     [Description("Displays the verbatim source code from the declaration of a target symbol (class, method, property, etc.) with indentation omitted to save tokens. Essential to fully understand a specific implementation without opening files.")]
     public static async Task<string> ViewDefinition(
@@ -441,7 +443,7 @@ public static partial class AnalysisTools
                     };
 
                     // Remove leading whitespace from each line of the resolved source
-                    string[] sourceLines = sourceResult.Source.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    string[] sourceLines = sourceResult.Source.Split(s_separator, StringSplitOptions.None);
                     for (int i = 0; i < sourceLines.Length; i++)
                     {
                         sourceLines[i] = TrimLeadingWhitespace(sourceLines[i]);
@@ -656,7 +658,7 @@ public static partial class AnalysisTools
             FileLinePositionSpan lineInfo = definitionNode.GetLocation().GetLineSpan();
 
             // Remove leading whitespace from each line
-            string[] lines = result.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            string[] lines = result.Split(s_separator, StringSplitOptions.None);
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = TrimLeadingWhitespace(lines[i]);
@@ -722,7 +724,7 @@ public static partial class AnalysisTools
         };
 
         // Remove leading whitespace from each line
-        string[] lines = result.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        string[] lines = result.Split(s_separator, StringSplitOptions.None);
         for (int i = 0; i < lines.Length; i++)
         {
             lines[i] = TrimLeadingWhitespace(lines[i]);
@@ -2016,6 +2018,8 @@ public static partial class AnalysisTools
         }, logger, nameof(ManageAttributes), cancellationToken);
     }
 
+    private static readonly string[] sourceArray = ["method", "class", "project"];
+
     [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(AnalyzeComplexity), Idempotent = true, ReadOnly = true, Destructive = false, OpenWorld = false)]
     [Description("Deep analysis of code complexity metrics including cyclomatic complexity, cognitive complexity, method stats, coupling, and inheritance depth. Scans methods, classes, or entire projects to identify maintenance risks and guide refactoring decisions.")]
     public static async Task<string> AnalyzeComplexity(
@@ -2032,7 +2036,7 @@ public static partial class AnalysisTools
             ErrorHandlingHelpers.ValidateStringParameter(scope, nameof(scope), logger);
             ErrorHandlingHelpers.ValidateStringParameter(target, nameof(target), logger);
 
-            if (new[] { "method", "class", "project" }.Contains(scope.ToLower()) == false)
+            if (sourceArray.Contains(scope.ToLower()) == false)
             {
                 throw new McpException($"Invalid scope '{scope}'. Must be 'method', 'class', or 'project'.");
             }

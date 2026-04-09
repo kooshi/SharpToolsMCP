@@ -109,6 +109,8 @@ internal static class ContextInjectors
         }
     }
 
+    internal static readonly char[] s_separator = ['\r', '\n'];
+
     /// <summary>
     /// Creates a pretty diff between old and new code, with whitespace and formatting normalized
     /// </summary>
@@ -120,7 +122,7 @@ internal static class ContextInjectors
     {
         // Helper function to trim lines for cleaner diff
         static string trimLines(string code) =>
-            string.Join("\n", code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+            string.Join("\n", code.Split(s_separator, StringSplitOptions.RemoveEmptyEntries)
                 .Select(line => line.Trim())
                 .Where(line => string.IsNullOrWhiteSpace(line) == false));
         string strippedOldCode = trimLines(oldCode);
