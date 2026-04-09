@@ -289,7 +289,7 @@ public static partial class AnalysisTools
         }, logger, nameof(GetMembers), cancellationToken);
     }
 
-    private static object GetReflectionTypeMembersAsync(
+    private static string GetReflectionTypeMembersAsync(
         Type reflectionType,
         bool includePrivateMembers,
         ILogger<AnalysisToolsLogCategory> logger,
