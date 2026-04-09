@@ -5,18 +5,18 @@ namespace SharpTools.Tools.Services;
 
 public static class MsBuildLocatorBootstrapper
 {
-    private static readonly object SyncRoot = new();
-    private static VisualStudioInstance? _registeredInstance;
+    private static readonly object s_syncRoot = new();
+    private static VisualStudioInstance? s_registeredInstance;
 
     public static void EnsureRegistered(Action<string>? logInformation = null, Action<string>? logWarning = null)
     {
-        lock (SyncRoot)
+        lock (s_syncRoot)
         {
             if (MSBuildLocator.IsRegistered)
             {
-                logInformation?.Invoke(_registeredInstance == null
+                logInformation?.Invoke(s_registeredInstance == null
                     ? "MSBuildLocator is already registered."
-                    : $"MSBuildLocator is already registered for '{Describe(_registeredInstance)}'.");
+                    : $"MSBuildLocator is already registered for '{Describe(s_registeredInstance)}'.");
                 return;
             }
 
@@ -38,9 +38,9 @@ public static class MsBuildLocatorBootstrapper
                     logInformation?.Invoke($"Discovered MSBuild instance '{Describe(instance)}'.");
                 }
 
-                _registeredInstance = instances[0];
-                MSBuildLocator.RegisterInstance(_registeredInstance);
-                logInformation?.Invoke($"Registered MSBuild instance '{Describe(_registeredInstance)}'.");
+                s_registeredInstance = instances[0];
+                MSBuildLocator.RegisterInstance(s_registeredInstance);
+                logInformation?.Invoke($"Registered MSBuild instance '{Describe(s_registeredInstance)}'.");
                 return;
             }
 
@@ -55,8 +55,8 @@ public static class MsBuildLocatorBootstrapper
 
             try
             {
-                _registeredInstance = MSBuildLocator.RegisterDefaults();
-                logInformation?.Invoke($"Registered default MSBuild instance '{Describe(_registeredInstance)}'.");
+                s_registeredInstance = MSBuildLocator.RegisterDefaults();
+                logInformation?.Invoke($"Registered default MSBuild instance '{Describe(s_registeredInstance)}'.");
             }
             catch (InvalidOperationException ex)
             {

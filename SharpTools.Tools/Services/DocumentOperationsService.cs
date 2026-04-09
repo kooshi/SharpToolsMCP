@@ -14,13 +14,13 @@ public class DocumentOperationsService(
     private readonly ILogger<DocumentOperationsService> _logger = logger;
 
     // Extensions for common code file types that can be formatted
-    private static readonly HashSet<string> CodeFileExtensions = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_codeFileExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".cs", ".csproj", ".sln", ".css", ".js", ".ts", ".jsx", ".tsx", ".html", ".cshtml", ".razor", ".yml", ".yaml",
         ".json", ".xml", ".config", ".md", ".fs", ".fsx", ".fsi", ".vb"
     };
 
-    private static readonly HashSet<string> UnsafeDirectories = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_unsafeDirectories = new(StringComparer.OrdinalIgnoreCase)
     {
         ".git", ".vs", "bin", "obj", "node_modules"
     };
@@ -338,7 +338,7 @@ public class DocumentOperationsService(
 
         // Check by extension
         string extension = Path.GetExtension(filePath);
-        return string.IsNullOrEmpty(extension) == false && CodeFileExtensions.Contains(extension);
+        return string.IsNullOrEmpty(extension) == false && s_codeFileExtensions.Contains(extension);
     }
 
     public PathInfo GetPathInfo(string filePath)
@@ -449,7 +449,7 @@ public class DocumentOperationsService(
         string normalizedPath = filePath.Replace('\\', '/');
         string[] pathSegments = normalizedPath.Split('/');
 
-        return pathSegments.Any(segment => UnsafeDirectories.Contains(segment));
+        return pathSegments.Any(segment => s_unsafeDirectories.Contains(segment));
     }
 
     private async Task<bool> TryFormatAndCommitFileAsync(

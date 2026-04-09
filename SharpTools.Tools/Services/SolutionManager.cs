@@ -567,7 +567,7 @@ public sealed class SolutionManager(
 
     public IEnumerable<Project> GetProjects()
     {
-        return CurrentSolution?.Projects ?? Enumerable.Empty<Project>();
+        return CurrentSolution?.Projects ?? [];
     }
 
     public Project? GetProjectByName(string projectName)

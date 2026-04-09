@@ -2018,7 +2018,7 @@ public static partial class AnalysisTools
         }, logger, nameof(ManageAttributes), cancellationToken);
     }
 
-    private static readonly string[] sourceArray = ["method", "class", "project"];
+    private static readonly string[] s_sourceArray = ["method", "class", "project"];
 
     [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(AnalyzeComplexity), Idempotent = true, ReadOnly = true, Destructive = false, OpenWorld = false)]
     [Description("Deep analysis of code complexity metrics including cyclomatic complexity, cognitive complexity, method stats, coupling, and inheritance depth. Scans methods, classes, or entire projects to identify maintenance risks and guide refactoring decisions.")]
@@ -2036,7 +2036,7 @@ public static partial class AnalysisTools
             ErrorHandlingHelpers.ValidateStringParameter(scope, nameof(scope), logger);
             ErrorHandlingHelpers.ValidateStringParameter(target, nameof(target), logger);
 
-            if (sourceArray.Contains(scope.ToLower()) == false)
+            if (s_sourceArray.Contains(scope.ToLower()) == false)
             {
                 throw new McpException($"Invalid scope '{scope}'. Must be 'method', 'class', or 'project'.");
             }

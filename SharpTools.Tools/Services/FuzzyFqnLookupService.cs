@@ -20,9 +20,8 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
     private const double MinScoreThreshold = 0.7; // Minimum score to be considered a match
 
     // Regex patterns for normalization
-    private static readonly Regex ParamsRegex = new(@"\s*\([\s\S]*\)\s*$", RegexOptions.Compiled);
-    private static readonly Regex ArityRegex = new(@"`\d+", RegexOptions.Compiled);
-    private static readonly Regex GenericArgsRegex = new(@"<[^<>]+>", RegexOptions.Compiled); // Simplistic: removes <...>
+    private static readonly Regex s_arityRegex = new(@"`\d+", RegexOptions.Compiled);
+    private static readonly Regex s_genericArgsRegex = new(@"<[^<>]+>", RegexOptions.Compiled); // Simplistic: removes <...>
 
     public static bool IsPartialType(ISymbol typeSymbol)
     {
@@ -852,9 +851,9 @@ public class FuzzyFqnLookupService(ILogger<FuzzyFqnLookupService> logger) : IFuz
     private static string StripGenericArgs(string typeName)
     {
         // First, remove Roslyn-style arity indicators like List`1
-        string withoutArity = ArityRegex.Replace(typeName, "");
+        string withoutArity = s_arityRegex.Replace(typeName, "");
 
         // Then remove angle bracket content including brackets
-        return GenericArgsRegex.Replace(withoutArity, "");
+        return s_genericArgsRegex.Replace(withoutArity, "");
     }
 }

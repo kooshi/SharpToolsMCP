@@ -1173,7 +1173,7 @@ public class SemanticSimilarityService(
         return [.. results.OrderByDescending(r => r.AverageSimilarityScore)];
     }
 
-    private double CalculateClassSimilarity(ClassSemanticFeatures class1, ClassSemanticFeatures class2)
+    private static double CalculateClassSimilarity(ClassSemanticFeatures class1, ClassSemanticFeatures class2)
     {
         double baseClassSimilarity = (class1.BaseClassName == class2.BaseClassName) ? 1.0 :
             (string.IsNullOrEmpty(class1.BaseClassName) && string.IsNullOrEmpty(class2.BaseClassName)
