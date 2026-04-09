@@ -614,7 +614,6 @@ public static partial class AnalysisTools
         CancellationToken cancellationToken)
     {
         INamedTypeSymbol namedTypeSymbol = (INamedTypeSymbol)roslynSymbol;
-        List<object> partialDeclarations = [];
         List<string> allSourceCode = [];
         List<string> allFiles = [];
 

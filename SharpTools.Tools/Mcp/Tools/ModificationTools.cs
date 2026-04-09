@@ -160,7 +160,7 @@ public static class ModificationTools
             DelegateDeclarationSyntax del => del.Identifier.Text,
             EventDeclarationSyntax evt => evt.Identifier.Text,
             EventFieldDeclarationSyntax evtField => evtField.Declaration.Variables.First().Identifier.Text,
-            IndexerDeclarationSyntax indexer => "this[]", // Indexers don't have names but use the 'this' keyword
+            IndexerDeclarationSyntax => "this[]", // Indexers don't have names but use the 'this' keyword
             _ => throw new NotSupportedException($"Unsupported member type: {memberSyntax.GetType().Name}")
         };
     }

@@ -23,8 +23,6 @@ public class EmbeddedSourceReader
     /// </summary>
     public static Dictionary<string, SourceResult> ReadEmbeddedSources(string pdbPath)
     {
-        Dictionary<string, SourceResult> results = [];
-
         using FileStream fs = new FileStream(pdbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using MetadataReaderProvider provider = MetadataReaderProvider.FromPortablePdbStream(fs);
         MetadataReader reader = provider.GetMetadataReader();
