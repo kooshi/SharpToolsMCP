@@ -3,7 +3,8 @@ namespace SharpTools.Tools.Services;
 /// <summary>
 /// Represents information about a path's relationship to a solution
 /// </summary>
-public readonly record struct PathInfo {
+public readonly record struct PathInfo
+{
     /// <summary>
     /// The absolute file path
     /// </summary>
@@ -20,7 +21,7 @@ public readonly record struct PathInfo {
     public bool IsWithinSolutionDirectory { get; init; }
 
     /// <summary>
-    /// Whether the path is referenced by a project in the solution 
+    /// Whether the path is referenced by a project in the solution
     /// (either directly or through referenced projects)
     /// </summary>
     public bool IsReferencedBySolution { get; init; }

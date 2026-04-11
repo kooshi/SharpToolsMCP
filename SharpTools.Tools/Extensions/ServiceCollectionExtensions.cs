@@ -1,33 +1,34 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SharpTools.Tools.Interfaces;
-using SharpTools.Tools.Services;
-using System.Reflection;
-
 namespace SharpTools.Tools.Extensions;
 
 /// <summary>
 /// Extension methods for IServiceCollection to register SharpTools services.
 /// </summary>
-public static class ServiceCollectionExtensions {
+public static class ServiceCollectionExtensions
+{
     /// <summary>
     /// Adds all SharpTools services to the service collection.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection WithSharpToolsServices(this IServiceCollection services, bool enableGit = true, string? buildConfiguration = null) {
+    public static IServiceCollection WithSharpToolsServices(
+        this IServiceCollection services,
+        bool enableGit = true,
+        string? buildConfiguration = null)
+    {
         services.AddSingleton<IFuzzyFqnLookupService, FuzzyFqnLookupService>();
-        services.AddSingleton<ISolutionManager>(sp => 
+        services.AddSingleton<ISolutionManager>(sp =>
             new SolutionManager(
-                sp.GetRequiredService<ILogger<SolutionManager>>(), 
+                sp.GetRequiredService<ILogger<SolutionManager>>(),
                 sp.GetRequiredService<IFuzzyFqnLookupService>(),
                 buildConfiguration
-            )
-        );
+            ));
         services.AddSingleton<ICodeAnalysisService, CodeAnalysisService>();
-        if (enableGit) {
+        if (enableGit)
+        {
             services.AddSingleton<IGitService, GitService>();
-        } else {
+        }
+        else
+        {
             services.AddSingleton<IGitService, NoOpGitService>();
         }
         services.AddSingleton<ICodeModificationService, CodeModificationService>();
@@ -45,8 +46,9 @@ public static class ServiceCollectionExtensions {
     /// </summary>
     /// <param name="builder">The MCP service builder.</param>
     /// <returns>The MCP service builder for chaining.</returns>
-    public static IMcpServerBuilder WithSharpTools(this IMcpServerBuilder builder) {
-        var toolAssembly = Assembly.Load("SharpTools.Tools");
+    public static IMcpServerBuilder WithSharpTools(this IMcpServerBuilder builder)
+    {
+        Assembly toolAssembly = Assembly.Load("SharpTools.Tools");
 
         return builder
             .WithToolsFromAssembly(toolAssembly)

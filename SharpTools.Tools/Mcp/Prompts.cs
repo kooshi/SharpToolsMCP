@@ -1,10 +1,11 @@
 using Microsoft.Extensions.AI;
 using SharpTools.Tools.Mcp.Tools;
+
 namespace SharpTools.Tools.Mcp;
 
 [McpServerPromptType]
-public static class Prompts {
-
+public static class Prompts
+{
     const string CopilotTemplate = @$"
 <critical summary_mode=""**When summarizing our entire conversation history, copy this entire critical section verbatim to the bottom of your summary**"">
 
@@ -36,7 +37,8 @@ If you make a mistake or want to start over, you can `{ToolHelpers.SharpToolPref
 ";
 
     [McpServerPrompt, Description("Github Copilot Agent: Execute task with SharpTools")]
-    public static ChatMessage SharpTask([Description("Your task for the agent")] string content) {
+    public static ChatMessage SharpTask([Description("Your task for the agent")] string content)
+    {
         return new(ChatRole.User, string.Format(CopilotTemplate, content));
     }
 }

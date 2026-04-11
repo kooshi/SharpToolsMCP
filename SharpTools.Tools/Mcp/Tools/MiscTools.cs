@@ -1,6 +1,4 @@
 using ModelContextProtocol;
-using SharpTools.Tools.Services;
-using System.Text.Json;
 
 namespace SharpTools.Tools.Mcp.Tools;
 
@@ -8,7 +6,8 @@ namespace SharpTools.Tools.Mcp.Tools;
 public class MiscToolsLogCategory { }
 
 [McpServerToolType]
-public static class MiscTools {
+public static class MiscTools
+{
     private static readonly string RequestLogFilePath = Path.Combine(
         AppContext.BaseDirectory,
         "logs",
@@ -16,7 +15,7 @@ public static class MiscTools {
 
     //TODO: Convert into `CreateIssue` for feature requests and bug reports combined
     [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(RequestNewTool), Idempotent = true, ReadOnly = false, Destructive = false, OpenWorld = false),
-    Description("Allows requesting a new tool to be added to the SharpTools MCP server. Logs the request for review.")]
+        Description("Allows requesting a new tool to be added to the SharpTools MCP server. Logs the request for review.")]
     public static async Task<string> RequestNewTool(
         ILogger<MiscToolsLogCategory> logger,
         [Description("Name for the proposed tool.")] string toolName,
@@ -24,9 +23,10 @@ public static class MiscTools {
         [Description("Expected input parameters and their descriptions.")] string expectedParameters,
         [Description("Expected output and format.")] string expectedOutput,
         [Description("Justification for why this tool would be valuable.")] string justification,
-        CancellationToken cancellationToken = default) {
-
-        return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
+        CancellationToken cancellationToken = default)
+    {
+        return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () =>
+        {
             // Validate parameters
             ErrorHandlingHelpers.ValidateStringParameter(toolName, "toolName", logger);
             ErrorHandlingHelpers.ValidateStringParameter(toolDescription, "toolDescription", logger);
@@ -36,7 +36,8 @@ public static class MiscTools {
 
             logger.LogInformation("Tool request received: {ToolName}", toolName);
 
-            var request = new ToolRequest {
+            ToolRequest request = new()
+            {
                 RequestTimestamp = DateTimeOffset.UtcNow,
                 ToolName = toolName,
                 Description = toolDescription,
@@ -45,17 +46,23 @@ public static class MiscTools {
                 Justification = justification
             };
 
-            try {
+            try
+            {
                 // Ensure the logs directory exists
-                var logsDirectory = Path.GetDirectoryName(RequestLogFilePath);
-                if (string.IsNullOrEmpty(logsDirectory)) {
+                string? logsDirectory = Path.GetDirectoryName(RequestLogFilePath);
+                if (string.IsNullOrEmpty(logsDirectory))
+                {
                     throw new InvalidOperationException("Failed to determine logs directory path");
                 }
 
-                if (!Directory.Exists(logsDirectory)) {
-                    try {
+                if (Directory.Exists(logsDirectory) == false)
+                {
+                    try
+                    {
                         Directory.CreateDirectory(logsDirectory);
-                    } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
                         logger.LogError(ex, "Failed to create logs directory at {LogsDirectory}", logsDirectory);
                         throw new McpException($"Failed to create logs directory: {ex.Message}");
                     }
@@ -63,14 +70,20 @@ public static class MiscTools {
 
                 // Load existing requests if the file exists
                 List<ToolRequest> existingRequests = new();
-                if (File.Exists(RequestLogFilePath)) {
-                    try {
+                if (File.Exists(RequestLogFilePath))
+                {
+                    try
+                    {
                         string existingJson = await File.ReadAllTextAsync(RequestLogFilePath, cancellationToken);
                         existingRequests = JsonSerializer.Deserialize<List<ToolRequest>>(existingJson) ?? new List<ToolRequest>();
-                    } catch (JsonException ex) {
+                    }
+                    catch (JsonException ex)
+                    {
                         logger.LogWarning(ex, "Failed to deserialize existing tool requests, starting with a new list");
                         // Continue with an empty list
-                    } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
                         logger.LogError(ex, "Failed to read existing tool requests file");
                         throw new McpException($"Failed to read existing tool requests: {ex.Message}");
                     }
@@ -80,22 +93,33 @@ public static class MiscTools {
                 existingRequests.Add(request);
 
                 // Write the updated requests back to the file
-                string jsonContent = JsonSerializer.Serialize(existingRequests, new JsonSerializerOptions {
+                string jsonContent = JsonSerializer.Serialize(existingRequests, new JsonSerializerOptions
+                {
                     WriteIndented = true
                 });
 
-                try {
+                try
+                {
                     await File.WriteAllTextAsync(RequestLogFilePath, jsonContent, cancellationToken);
-                } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
                     logger.LogError(ex, "Failed to write tool requests to file at {FilePath}", RequestLogFilePath);
                     throw new McpException($"Failed to save tool request: {ex.Message}");
                 }
 
-                logger.LogInformation("Tool request for '{ToolName}' has been logged to {RequestLogFilePath}", toolName, RequestLogFilePath);
+                logger.LogInformation(
+                    "Tool request for '{ToolName}' has been logged to {RequestLogFilePath}",
+                    toolName,
+                    RequestLogFilePath);
                 return $"Thank you for your tool request. '{toolName}' has been logged for review. Tool requests are evaluated periodically for potential implementation.";
-            } catch (McpException) {
+            }
+            catch (McpException)
+            {
                 throw;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 logger.LogError(ex, "Failed to log tool request for '{ToolName}'", toolName);
                 throw new McpException($"Failed to log tool request: {ex.Message}");
             }
@@ -103,7 +127,8 @@ public static class MiscTools {
     }
 
     // Define a record to store tool requests
-    private record ToolRequest {
+    private record ToolRequest
+    {
         public DateTimeOffset RequestTimestamp { get; init; }
         public string ToolName { get; init; } = string.Empty;
         public string Description { get; init; } = string.Empty;

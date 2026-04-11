@@ -1,11 +1,7 @@
-using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace SharpTools.Tools.Interfaces;
 
-public interface IComplexityAnalysisService {
+public interface IComplexityAnalysisService
+{
     Task AnalyzeMethodAsync(
         IMethodSymbol methodSymbol,
         Dictionary<string, object> metrics,

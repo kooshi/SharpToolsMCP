@@ -1,9 +1,3 @@
-
-using SharpTools.Tools.Interfaces;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace SharpTools.Tools.Services;
 
 public class NoOpGitService : IGitService
@@ -23,12 +17,18 @@ public class NoOpGitService : IGitService
         return Task.CompletedTask;
     }
 
-    public Task CommitChangesAsync(string solutionPath, IEnumerable<string> changedFilePaths, string commitMessage, CancellationToken cancellationToken = default)
+    public Task CommitChangesAsync(
+        string solutionPath,
+        IEnumerable<string> changedFilePaths,
+        string commitMessage,
+        CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
 
-    public Task<(bool success, string diff)> RevertLastCommitAsync(string solutionPath, CancellationToken cancellationToken = default)
+    public Task<(bool success, string diff)> RevertLastCommitAsync(
+        string solutionPath,
+        CancellationToken cancellationToken = default)
     {
         return Task.FromResult((false, string.Empty));
     }
@@ -43,7 +43,11 @@ public class NoOpGitService : IGitService
         return Task.FromResult(string.Empty);
     }
 
-    public Task<string> GetDiffAsync(string solutionPath, string oldCommitSha, string newCommitSha, CancellationToken cancellationToken = default)
+    public Task<string> GetDiffAsync(
+        string solutionPath,
+        string oldCommitSha,
+        string newCommitSha,
+        CancellationToken cancellationToken = default)
     {
         return Task.FromResult(string.Empty);
     }

@@ -4,7 +4,8 @@ namespace SharpTools.Tools.Interfaces;
 /// Service for performing file system operations on documents within a solution.
 /// Provides capabilities for reading, writing, and manipulating files.
 /// </summary>
-public interface IDocumentOperationsService {
+public interface IDocumentOperationsService
+{
     /// <summary>
     /// Reads the content of a file at the specified path
     /// </summary>
@@ -12,7 +13,10 @@ public interface IDocumentOperationsService {
     /// <param name="omitLeadingSpaces">If true, leading spaces are removed from each line</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The content of the file as a string</returns>
-    Task<(string contents, int lines)> ReadFileAsync(string filePath, bool omitLeadingSpaces, CancellationToken cancellationToken);
+    Task<(string contents, int lines)> ReadFileAsync(
+        string filePath,
+        bool omitLeadingSpaces,
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Creates a new file with the specified content at the given path
@@ -23,7 +27,12 @@ public interface IDocumentOperationsService {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <param name="commitMessage">The commit message to use if the file is in a Git repository</param>
     /// <returns>True if the file was created, false if it already exists and overwrite was not allowed</returns>
-    Task<bool> WriteFileAsync(string filePath, string content, bool overwriteIfExists, CancellationToken cancellationToken, string commitMessage);
+    Task<bool> WriteFileAsync(
+        string filePath,
+        string content,
+        bool overwriteIfExists,
+        CancellationToken cancellationToken,
+        string commitMessage);
 
     /// <summary>
     /// Processes Git operations for multiple file paths
@@ -32,7 +41,10 @@ public interface IDocumentOperationsService {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <param name="commitMessage">The commit message to use</param>
     /// <returns>A Task representing the asynchronous operation</returns>
-    Task ProcessGitOperationsAsync(IEnumerable<string> filePaths, CancellationToken cancellationToken, string commitMessage);
+    Task ProcessGitOperationsAsync(
+        IEnumerable<string> filePaths,
+        CancellationToken cancellationToken,
+        string commitMessage);
 
     /// <summary>
     /// Checks if a file exists at the specified path
