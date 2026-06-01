@@ -40,7 +40,7 @@ public static class SolutionTools {
     ISolutionManager solutionManager,
     IEditorConfigProvider editorConfigProvider,
     ILogger<SolutionToolsLogCategory> logger,
-    [Description("The absolute file path to the .sln or .slnx solution file.")] string solutionPath,
+    [Description("The absolute file path to the .sln, .slnx, or .slnf (solution filter) solution file.")] string solutionPath,
     CancellationToken cancellationToken) {
 
         return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(async () => {
@@ -55,9 +55,10 @@ public static class SolutionTools {
 
             var ext = Path.GetExtension(solutionPath);
             if (!ext.Equals(".sln", StringComparison.OrdinalIgnoreCase) &&
-                !ext.Equals(".slnx", StringComparison.OrdinalIgnoreCase)) {
+                !ext.Equals(".slnx", StringComparison.OrdinalIgnoreCase) &&
+                !ext.Equals(".slnf", StringComparison.OrdinalIgnoreCase)) {
                 logger.LogError("File is not a valid solution file: {SolutionPath}", solutionPath);
-                throw new McpException($"File at path '{solutionPath}' is not a .sln or .slnx file.");
+                throw new McpException($"File at path '{solutionPath}' is not a .sln, .slnx, or .slnf file.");
             }
 
             try {
