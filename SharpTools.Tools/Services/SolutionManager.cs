@@ -20,6 +20,7 @@ public sealed class SolutionManager : ISolutionManager {
     public MSBuildWorkspace? CurrentWorkspace => _workspace;
     public Solution? CurrentSolution => _currentSolution;
     private readonly string? _buildConfiguration;
+    private string? _requestedSolutionPath;
 
     public SolutionManager(ILogger<SolutionManager> logger, IFuzzyFqnLookupService fuzzyFqnLookupService, string? buildConfiguration = null) {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -32,6 +33,7 @@ public sealed class SolutionManager : ISolutionManager {
             throw new FileNotFoundException("Solution file not found.", solutionPath);
         }
         UnloadSolution(); // Clears previous state including _allLoadedReflectionTypesCache
+        _requestedSolutionPath = solutionPath;
         try {
             _logger.LogInformation("Creating MSBuildWorkspace...");
             var properties = new Dictionary<string, string> {
@@ -204,6 +206,7 @@ public sealed class SolutionManager : ISolutionManager {
             _workspace.Dispose();
             _workspace = null;
         }
+        _requestedSolutionPath = null;
         _metadataLoadContext?.Dispose();
         _metadataLoadContext = null;
         _pathAssemblyResolver = null; // PathAssemblyResolver doesn't implement IDisposable
@@ -232,7 +235,8 @@ public sealed class SolutionManager : ISolutionManager {
             _logger.LogWarning("Cannot reload solution: No solution loaded.");
             return;
         }
-        await LoadSolutionAsync(_workspace.CurrentSolution.FilePath!, cancellationToken);
+        var pathToReload = _requestedSolutionPath ?? _workspace.CurrentSolution.FilePath!;
+        await LoadSolutionAsync(pathToReload, cancellationToken);
         _logger.LogDebug("Current solution state has been refreshed from workspace.");
     }
     private void OnWorkspaceFailed(object? sender, WorkspaceDiagnosticEventArgs e) {
