@@ -20,9 +20,16 @@ internal static class ErrorHandlingHelpers {
         string operationName,
         CancellationToken cancellationToken,
         [CallerMemberName] string callerName = "") {
+        var syncNotice = new StrongBox<DiskSyncResult?>();
+        ToolHelpers.DiskSyncNotice.Value = syncNotice;
+        using var operationScope = OperationScope.Begin();
         try {
             cancellationToken.ThrowIfCancellationRequested();
-            return await operation();
+            var result = await operation();
+            if (syncNotice.Value is { Any: true } sync && result is string text) {
+                return (T)(object)(text + ToolHelpers.FormatDiskSyncNotice(sync));
+            }
+            return result;
         } catch (OperationCanceledException) {
             logger.LogWarning("{Operation} operation in {Caller} was cancelled", operationName, callerName);
             throw new McpException($"The operation '{operationName}' was cancelled by the user or system.");

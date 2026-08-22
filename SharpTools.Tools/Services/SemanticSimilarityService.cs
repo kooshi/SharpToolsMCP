@@ -186,7 +186,7 @@ namespace SharpTools.Tools.Services {
         public async Task<List<MethodSimilarityResult>> FindSimilarMethodsAsync(
         double similarityThreshold,
         CancellationToken cancellationToken) {
-            ToolHelpers.EnsureSolutionLoadedWithDetails(_solutionManager, _logger, nameof(FindSimilarMethodsAsync));
+            ToolHelpers.EnsureSolutionLoaded(_solutionManager);
             _logger.LogInformation("Starting semantic similarity analysis with threshold {Threshold}, MaxDOP: {MaxDop}", similarityThreshold, Tuning.MaxDegreesOfParallelism);
 
             var allMethodFeatures = new System.Collections.Concurrent.ConcurrentBag<MethodSemanticFeatures>();
@@ -504,7 +504,7 @@ namespace SharpTools.Tools.Services {
         public async Task<List<ClassSimilarityResult>> FindSimilarClassesAsync(
         double similarityThreshold,
         CancellationToken cancellationToken) {
-            ToolHelpers.EnsureSolutionLoadedWithDetails(_solutionManager, _logger, nameof(FindSimilarClassesAsync));
+            ToolHelpers.EnsureSolutionLoaded(_solutionManager);
             _logger.LogInformation("Starting class semantic similarity analysis with threshold {Threshold}, MaxDOP: {MaxDop}", similarityThreshold, Tuning.MaxDegreesOfParallelism);
 
             var allClassFeatures = new System.Collections.Concurrent.ConcurrentBag<ClassSemanticFeatures>();

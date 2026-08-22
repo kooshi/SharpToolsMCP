@@ -481,21 +481,17 @@ public class CodeModificationService : ICodeModificationService {
             solutionChanges.GetProjectChanges().SelectMany(pc => pc.GetChangedDocuments().Concat(pc.GetAddedDocuments()).Concat(pc.GetRemovedDocuments())).Count(),
             solutionChanges.GetProjectChanges().Count());
 
-        if (workspace.TryApplyChanges(finalSolutionToApply)) {
-            _logger.LogInformation("Changes applied successfully to the workspace.");
+        // The solution manager rebases onto the workspace's own solution, so only documents this operation actually
+        // changed are written; files edited outside SharpTools in the meantime are left alone.
+        await _solutionManager.ApplyChangesAsync(finalSolutionToApply, cancellationToken);
+        _logger.LogInformation("Changes applied successfully to the workspace.");
 
-            // If additional file paths are provided, add them to the changed file paths
-            if (additionalFilePaths != null) {
-                changedFilePaths.AddRange(additionalFilePaths.Where(fp => !string.IsNullOrEmpty(fp) && File.Exists(fp)));
-            }
-            // Git operations after successful changes
-            await ProcessGitOperationsAsync(solutionPath, changedFilePaths, commitMessage, cancellationToken);
-
-            _solutionManager.RefreshCurrentSolution();
-        } else {
-            _logger.LogError("Failed to apply changes to the workspace.");
-            throw new InvalidOperationException("Failed to apply changes to the workspace. Files might have been modified externally.");
+        // If additional file paths are provided, add them to the changed file paths
+        if (additionalFilePaths != null) {
+            changedFilePaths.AddRange(additionalFilePaths.Where(fp => !string.IsNullOrEmpty(fp) && File.Exists(fp)));
         }
+        // Git operations after successful changes
+        await ProcessGitOperationsAsync(solutionPath, changedFilePaths, commitMessage, cancellationToken);
     }
     private async Task ProcessGitOperationsAsync(string solutionPath, List<string> changedFilePaths, string commitMessage, CancellationToken cancellationToken) {
         if (string.IsNullOrEmpty(solutionPath) || changedFilePaths.Count == 0) {

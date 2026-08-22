@@ -47,6 +47,10 @@ I intend to maintain and improve it for as long as I am using it, and I welcome 
 *   **Concise AI Feedback Loop:**
     *   Confirms changes with precise diffs instead of full code blocks.
     *   Provides immediate, in-tool compilation error reports after modifications.
+*   **Stays in Step with the File System:**
+    *   Before every operation, documents edited outside SharpTools (your editor, git, other tools) are re-read, and the tool result reports them in an `<externalChanges>` note so the agent knows to look again.
+    *   Files added or removed, or project files changed, trigger a solution reload automatically.
+    *   SharpTools only ever writes the documents an operation actually changed, so outside edits are never overwritten; an operation that raced with another change to the same document fails and asks to be retried.
 *   **Proactive Code Quality Analysis:**
     *   Detects and warns about high code complexity (cyclomatic, cognitive).
     *   Identifies semantically similar code to flag potential duplicates upon member addition.
@@ -67,6 +71,7 @@ SharpTools exposes a variety of "SharpTool_*" functions via MCP. Here's a brief 
 
 *   `SharpTool_LoadSolution`: Initializes the workspace with a given `.sln` file. This is the primary entry point.
 *   `SharpTool_LoadProject`: Provides a detailed structural overview of a specific project within the loaded solution, including namespaces and types, to aid AI understanding of the project's layout.
+*   `SharpTool_UnloadSolution`: Releases the loaded solution, its workspace and caches. `SharpTool_LoadSolution` must be called again afterwards.
 
 ### Analysis Tools
 
