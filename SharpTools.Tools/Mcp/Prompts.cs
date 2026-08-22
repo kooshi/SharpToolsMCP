@@ -35,7 +35,8 @@ If you make a mistake or want to start over, you can `{ToolHelpers.SharpToolPref
 </critical>
 ";
 
-    [McpServerPrompt, Description("Github Copilot Agent: Execute task with SharpTools")]
+    // Explicit name: since ModelContextProtocol 2.x unnamed prompts default to snake_case ("sharp_task").
+    [McpServerPrompt(Name = nameof(SharpTask)), Description("Github Copilot Agent: Execute task with SharpTools")]
     public static ChatMessage SharpTask([Description("Your task for the agent")] string content) {
         return new(ChatRole.User, string.Format(CopilotTemplate, content));
     }

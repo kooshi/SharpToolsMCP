@@ -115,7 +115,7 @@ SharpTools exposes a variety of "SharpTool_*" functions via MCP. Here's a brief 
 
 ## Prerequisites
 
-*   .NET 8+ SDK for running the server
+*   .NET 10 SDK for running the server
 *   The .NET SDK of your target solution
 
 ## Building
@@ -162,7 +162,7 @@ VSCode Copilot example:
     "servers": {
         "SharpTools": {
             "type": "stdio",
-            "command": "/path/to/repo/SharpToolsMCP/SharpTools.StdioServer/bin/Debug/net8.0/SharpTools.StdioServer",
+            "command": "/path/to/repo/SharpToolsMCP/SharpTools.StdioServer/bin/Debug/net10.0/SharpTools.StdioServer",
             "args": [
                 "--log-directory",
                 "/var/log/sharptools/",

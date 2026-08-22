@@ -24,8 +24,8 @@ public sealed class SolutionManagerDiskSyncTests : IAsyncLifetime {
         Directory.CreateDirectory(lib);
         File.WriteAllText(Path.Combine(_root, "Probe.slnx"), "<Solution>\r\n  <Project Path=\"Lib/Lib.csproj\" />\r\n</Solution>\r\n");
         // A global.json further up the temp path can pin an older SDK; insist on one that can target net8.0.
-        File.WriteAllText(Path.Combine(_root, "global.json"), "{ \"sdk\": { \"version\": \"8.0.100\", \"rollForward\": \"latestMajor\" } }");
-        File.WriteAllText(Path.Combine(lib, "Lib.csproj"), "<Project Sdk=\"Microsoft.NET.Sdk\">\r\n  <PropertyGroup>\r\n    <TargetFramework>net8.0</TargetFramework>\r\n  </PropertyGroup>\r\n</Project>\r\n");
+        File.WriteAllText(Path.Combine(_root, "global.json"), "{ \"sdk\": { \"version\": \"10.0.100\", \"rollForward\": \"latestMajor\" } }");
+        File.WriteAllText(Path.Combine(lib, "Lib.csproj"), "<Project Sdk=\"Microsoft.NET.Sdk\">\r\n  <PropertyGroup>\r\n    <TargetFramework>net10.0</TargetFramework>\r\n  </PropertyGroup>\r\n</Project>\r\n");
         _a = Path.Combine(lib, "A.cs");
         _b = Path.Combine(lib, "B.cs");
         File.WriteAllText(_a, Source("public class A { public int One() => 1; }"));
