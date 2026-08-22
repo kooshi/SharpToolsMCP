@@ -4,7 +4,7 @@ using ModelContextProtocol;
 using SharpTools.Tools.Mcp.Tools;
 namespace SharpTools.Tools.Services;
 
-public sealed class SolutionManager : ISolutionManager {
+public sealed partial class SolutionManager : ISolutionManager {
     private readonly ILogger<SolutionManager> _logger;
     private readonly IFuzzyFqnLookupService _fuzzyFqnLookupService;
     private MSBuildWorkspace? _workspace;
@@ -18,7 +18,13 @@ public sealed class SolutionManager : ISolutionManager {
     [MemberNotNullWhen(true, nameof(_workspace), nameof(_currentSolution))]
     public bool IsSolutionLoaded => _workspace != null && _currentSolution != null;
     public MSBuildWorkspace? CurrentWorkspace => _workspace;
-    public Solution? CurrentSolution => _currentSolution;
+    public Solution? CurrentSolution {
+        get {
+            var solution = _currentSolution;
+            OperationScope.Observe(solution);
+            return solution;
+        }
+    }
     private readonly string? _buildConfiguration;
     private string? _requestedSolutionPath;
 
@@ -50,6 +56,7 @@ public sealed class SolutionManager : ISolutionManager {
             _currentSolution = await _workspace.OpenSolutionAsync(solutionPath, new ProgressReporter(_logger), cancellationToken);
             _logger.LogInformation("Solution loaded successfully with {ProjectCount} projects.", _currentSolution.Projects.Count());
             InitializeMetadataContextAndReflectionCache(_currentSolution, cancellationToken);
+            await SnapshotDiskStateAsync(_currentSolution, cancellationToken);
         } catch (Exception ex) {
             _logger.LogError(ex, "Failed to load solution: {SolutionPath}", solutionPath);
             UnloadSolution();
@@ -197,6 +204,7 @@ public sealed class SolutionManager : ISolutionManager {
     }
     public void UnloadSolution() {
         _logger.LogInformation("Unloading current solution and workspace.");
+        ResetDiskState();
         _compilationCache.Clear();
         _semanticModelCache.Clear();
         _allLoadedReflectionTypesCache.Clear();
@@ -221,9 +229,7 @@ public sealed class SolutionManager : ISolutionManager {
             _logger.LogWarning("Cannot refresh solution: No solution loaded.");
             return;
         }
-        _currentSolution = _workspace.CurrentSolution;
-        _compilationCache.Clear();
-        _semanticModelCache.Clear();
+        SetCurrentSolution(ApplyOverrides(_workspace.CurrentSolution));
         _logger.LogDebug("Current solution state has been refreshed from workspace.");
     }
     public async Task ReloadSolutionFromDiskAsync(CancellationToken cancellationToken) {

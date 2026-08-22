@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <!-- Microsoft.Build.Locator 1.11+ fails the build when Microsoft.Build.Framework / NuGet.Frameworks are copied to the
+         output, to prevent mixing MSBuild versions in-process. MSBuild is never loaded in this process (Roslyn's MSBuildWorkspace
+         builds in its out-of-proc BuildHost); the copies come transitively from Roslyn and NuGet.Protocol, which needs
+         NuGet.Frameworks at runtime, so the check doesn't apply here. -->
+    <DisableMSBuildAssemblyCopyCheck>true</DisableMSBuildAssemblyCopyCheck>
+  </PropertyGroup>
+</Project>

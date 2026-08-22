@@ -8,6 +8,9 @@ namespace SharpTools.Tools.Mcp;
 internal static class ToolHelpers {
     public const string SharpToolPrefix = "SharpTool_";
 
+    // Set by ErrorHandlingHelpers around each tool invocation so the disk-sync outcome can be appended to the tool's result.
+    internal static readonly AsyncLocal<StrongBox<DiskSyncResult?>?> DiskSyncNotice = new();
+
     public static void EnsureSolutionLoaded(ISolutionManager solutionManager) {
         if (!solutionManager.IsSolutionLoaded) {
             throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}{nameof(Tools.SolutionTools.LoadSolution)}' first.");
@@ -15,13 +18,24 @@ internal static class ToolHelpers {
     }
 
     /// <summary>
-    /// Safely ensures that a solution is loaded, with detailed error information.
+    /// Ensures a solution is loaded and brings it in step with the file system before the tool reads or writes anything.
     /// </summary>
-    public static void EnsureSolutionLoadedWithDetails(ISolutionManager solutionManager, ILogger logger, string operationName) {
+    public static async Task EnsureSolutionLoadedWithDetailsAsync(ISolutionManager solutionManager, ILogger logger, string operationName, CancellationToken cancellationToken) {
         if (!solutionManager.IsSolutionLoaded) {
             logger.LogError("Attempted to execute {Operation} without a loaded solution", operationName);
             throw new McpException($"No solution is currently loaded. Please use '{SharpToolPrefix}{nameof(Tools.SolutionTools.LoadSolution)}' before calling '{operationName}'.");
         }
+        var sync = await solutionManager.SyncWithDiskAsync(cancellationToken);
+        if (sync.Any && DiskSyncNotice.Value is { } box) {
+            box.Value = sync;
+        }
+    }
+
+    public static string FormatDiskSyncNotice(DiskSyncResult sync) {
+        if (sync.Reloaded) {
+            return $"\n\n<externalChanges>The solution was reloaded from disk because {sync.ReloadReason}. Symbols and line numbers you saw earlier may have moved.</externalChanges>";
+        }
+        return $"\n\n<externalChanges>These files were modified outside SharpTools since they were last read and have been re-synced from disk; re-read them before editing: {string.Join("; ", sync.RefreshedFiles)}</externalChanges>";
     }
     private const string FqnHelpMessage = $" Try `{ToolHelpers.SharpToolPrefix}{nameof(Tools.AnalysisTools.SearchDefinitions)}`, `{ToolHelpers.SharpToolPrefix}{nameof(Tools.AnalysisTools.GetMembers)}`, or `{ToolHelpers.SharpToolPrefix}{nameof(Tools.DocumentTools.ReadTypesFromRoslynDocument)}`  to find what you need.";
     public static async Task<ISymbol> GetRoslynSymbolOrThrowAsync(

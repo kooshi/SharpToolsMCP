@@ -360,6 +360,24 @@ public static class SolutionTools {
             return "Unknown";
         }
     }
+    [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(UnloadSolution), Idempotent = true, Destructive = false, OpenWorld = false, ReadOnly = false)]
+    [Description($"Unloads the current solution and releases its workspace, caches, and reflection context. Use it to free memory or before switching solutions (`{ToolHelpers.SharpToolPrefix}{nameof(LoadSolution)}` also replaces a loaded solution). Every other SharpTool fails until `{ToolHelpers.SharpToolPrefix}{nameof(LoadSolution)}` is called again.")]
+    public static async Task<string> UnloadSolution(
+        ISolutionManager solutionManager,
+        ILogger<SolutionToolsLogCategory> logger,
+        CancellationToken cancellationToken) {
+
+        return await ErrorHandlingHelpers.ExecuteWithErrorHandlingAsync(() => {
+            if (!solutionManager.IsSolutionLoaded) {
+                return Task.FromResult("No solution is loaded.");
+            }
+            var solutionName = Path.GetFileName(solutionManager.CurrentSolution.FilePath) ?? "solution";
+            logger.LogInformation("Executing '{UnloadSolution}' for {Solution}", nameof(UnloadSolution), solutionName);
+            solutionManager.UnloadSolution();
+            return Task.FromResult($"Unloaded {solutionName}. Call `{ToolHelpers.SharpToolPrefix}{nameof(LoadSolution)}` before using other SharpTools.");
+        }, logger, nameof(UnloadSolution), cancellationToken);
+    }
+
     [McpServerTool(Name = ToolHelpers.SharpToolPrefix + nameof(LoadProject), ReadOnly = true, OpenWorld = false, Destructive = false, Idempotent = false)]
     [Description($"Use this immediately after {nameof(LoadSolution)}. This injects a comprehensive understanding of the project structure into your context.")]
     public static async Task<object> LoadProject(
@@ -373,7 +391,7 @@ public static class SolutionTools {
             ErrorHandlingHelpers.ValidateStringParameter(projectName, "projectName", logger);
             logger.LogInformation("Executing '{LoadProjectToolName}' tool for project: {ProjectName}", nameof(LoadProject), projectName);
 
-            ToolHelpers.EnsureSolutionLoadedWithDetails(solutionManager, logger, nameof(LoadProject));
+            await ToolHelpers.EnsureSolutionLoadedWithDetailsAsync(solutionManager, logger, nameof(LoadProject), cancellationToken);
             int indexOfParen = projectName.IndexOf('(');
             string projectNameNormalized = indexOfParen == -1
                 ? projectName.Trim()
